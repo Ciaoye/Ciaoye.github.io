@@ -5,7 +5,8 @@
 # For technical reasons, this file is *NOT* reloaded automatically when you use
 # 'jekyll serve'. If you change this file, please restart the server process.
 
-# Site settings 下面是用在footer里面为了找工作的几个陈述，可以修改
+# Site settings 下面是用在footer里面为了找工作的几个陈述，可以修改 
+# 事实证明主页没有变 需要修改 index
 title-bold: QUERY
 title-normal: QUERY THINGS AROUND {...}
 email: helloworld.zoey@gmail.com
