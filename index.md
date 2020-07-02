@@ -1,7 +1,7 @@
 ---
 layout: home
 title: Home
-landing-title: Hi, my name is Lta
+landing-title: 俏也！好的！
 description:
 author:
 menu: true
