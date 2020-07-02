@@ -4,14 +4,14 @@ http://ethanschoonover.com/solarized
 SOLARIZED HEX      ROLE
 --------- -------- ------------------------------------------
 */
-$bg-color: #151427; //  background
-$base01:   #9F9F9F; //  comments / secondary content
-$body:     #DDECEC; //  body text / default code / primary content
-$orange:   #FF8900; //  constants
-$red:      #FF2B27; //  regex, special keywords
-$blue:     #6DC2FD; //  reserved keywords
-$cyan:     #69FFF4; //  strings, numbers
-$green:    #3AE25C; //  operators, other keywords
+$bg-color: #F0F1EC; //  background
+$base01:   #7F7F7F; //  comments / secondary content
+$body:     #323433; //  body text / default code / primary content
+$orange:   #FAF1B6; //  constants
+$red:      #AE9D96; //  regex, special keywords
+$blue:     #A7D8DD; //  reserved keywords
+$cyan:     #9882b1; //  strings, numbers
+$green:    #9db9a2; //  operators, other keywords
 
 .highlight {
     background-color: $bg-color; color: $body;
