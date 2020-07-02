@@ -5,16 +5,16 @@
 # For technical reasons, this file is *NOT* reloaded automatically when you use
 # 'jekyll serve'. If you change this file, please restart the server process.
 
-# Site settings
-title-bold: LTA
-title-normal: Live Thoughs About {...}
-email: contact@lta.io
-description: Here I talk about fun things I do
+# Site settings 下面是用在footer里面为了找工作的几个陈述，可以修改
+title-bold: QUERY
+title-normal: QUERY THINGS AROUND {...}
+email: helloworld.zoey@gmail.com
+description: a twenty-something-year-old girl having a hard time introducing herself
 baseurl: '' # the subpath of your site, e.g. /blog
-url: "https://blog.lta.io" # the base hostname & protocol for your site
-author: Julien 'Lta' BALLET
-phone: +33 (0)7 68 16 42 96
-languages: Ruby, C, C++, Python
+url: "https://naliece.github.io" # the base hostname & protocol for your site
+author: Qiaoye 'QUERY' Zou
+phone: +86 15061790616
+languages: Python
 skills: System development, Production engineering (DevOps), Ruby on Rails
 rates: Discounted rates for OpenSource
 workplace: Available worldwide
@@ -30,24 +30,24 @@ plugins:
 tiles-source: posts # accepts "posts" or "pages"
 tiles-count: 6
 
-# Social settings
+# Social settings 直接写social media 的 url 也是 footer 的 link
 500px_url:
 facebook_url:
-github_url: https://github.com/elthariel
+github_url: 
 gitlab_url:
 googleplus_url:
-instagram_url: https://instagram.com/djlta
-linkedin_url: https://www.linkedin.com/in/balletjulien
+instagram_url: 
+linkedin_url: 
 pinterest_url:
 slack_url:
-twitter_url: https://twitter.com/find_lta
+twitter_url: 
 
 # Build settings
 markdown: kramdown
 
 # Plugin: jekyll-seo-tag
 twitter:
-  username: find_lta
+  username: 
 # Add one or more of the following
 facebook:
   app_id:
