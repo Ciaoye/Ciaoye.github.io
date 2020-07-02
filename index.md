@@ -16,7 +16,7 @@ menu: true
     <div class="content">
       <p style="text-transform: uppercase;">{{ site.description }}</p>
       <ul class="actions">
-        <li><a href="#one" class="button next scrolly">Like What ?</a></li>
+        <li><a href="#one" class="button next scrolly">就这?我他妈就这</a></li>
       </ul>
     </div>
   </div>
