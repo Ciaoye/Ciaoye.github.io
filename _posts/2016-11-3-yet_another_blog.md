@@ -2,7 +2,7 @@
 layout: post
 title: Working on my blog
 description: Jekyll is fun, themes are hard
-image: assets/images/working_on_my_blog.png
+image: assets/images/test1.gif
 ---
 
 After delaying this for a few ~~weeks~~ ~~months~~ years. I'm finally

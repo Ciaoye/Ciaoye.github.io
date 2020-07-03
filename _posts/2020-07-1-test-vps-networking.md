@@ -2,7 +2,7 @@
 layout: post
 title: 试一下中文标题
 description: 改了日期和标题
-image:
+image: assets/images/bannerproject.png
 ---
 
 While I was having fun planning a few personal deployments on
