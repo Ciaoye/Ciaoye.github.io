@@ -30,7 +30,7 @@ plugins:
 
 # Homepage tiles
 tiles-source: posts # accepts "posts" or "pages"
-tiles-count: 6
+tiles-count: 9
 
 # Social settings 直接写social media 的 url 也是 footer 的 link
 500px_url:
