@@ -1,6 +1,7 @@
 ---
 layout: landing
 title: zhelishibushikeyisuibianda
+menu: true
 ---
 
 <!-- Main -->
