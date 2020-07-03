@@ -2,7 +2,7 @@
 layout: post
 title: Chef Server on Scaleway
 description: Chef goodness on a tiny ARM box
-image:  assets/images/7-4.gif
+image:  assets/images/5.gif
 ---
 
 

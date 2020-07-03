@@ -2,7 +2,7 @@
 layout: post
 title: Benchmarking Scaleway's internal bandwidth
 description: Just a quick benchmark with iperf
-image: assets/images/test2.gif
+image: assets/images/3.png
 ---
 
 While I was having fun planning a few personal deployments on
