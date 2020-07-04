@@ -16,7 +16,7 @@
 		}
 
 		article {
-			@include vendor('align-items', 'start');
+			@include vendor('align-items', 'end');
 			@include vendor('display', 'flex');
 			@include vendor('transition', (
 				'transform 0.25s ease',
