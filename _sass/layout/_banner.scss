@@ -145,7 +145,8 @@
 
 					> * {
 						margin-left: 0;
-						margin-bottom: _size(element-margin);
+						// margin-bottom: _size(element-margin);
+						margin-bottom: 0;
 					}
 				}
 			}
