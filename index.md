@@ -10,7 +10,7 @@ menu: true
 <!-- Banner -->
 <section id="banner" class="major">
     <div class="inner">
-    <header class="major">
+    <!-- <header class="major">
       <h1>{{ page.landing-title }}</h1>
     </header>
     <div class="content">
@@ -18,7 +18,7 @@ menu: true
       <ul class="actions">
         <li><a href="#one" class="button next scrolly">就这?我他妈就这</a></li>
       </ul>
-    </div>
+    </div> -->
   </div>
 </section>
 
