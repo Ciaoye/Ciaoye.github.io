@@ -13,7 +13,7 @@ title-normal: 俏也 {...}
 email: helloworld.zoey@gmail.com
 description: a twenty-something-year-old girl having a hard time introducing herself
 baseurl: '' # the subpath of your site, e.g. /blog
-url: "https://naliece.github.io" # the base hostname & protocol for your site
+url: "https://ciaoye.github.io" # the base hostname & protocol for your site
 author: Qiaoye 'QUERY' Zou
 phone: +86 15061790616
 languages: Python
