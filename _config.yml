@@ -8,13 +8,13 @@
 # Site settings 下面是用在footer里面为了找工作的几个陈述，可以修改 
 # 事实证明主页没有变 需要修改 index
 
-title-bold: QUERY
+title-bold: QIAOYE
 title-normal: 俏也 {...}
 email: helloworld.zoey@gmail.com
 description: a twenty-something-year-old girl having a hard time introducing herself
 baseurl: '' # the subpath of your site, e.g. /blog
 url: "https://ciaoye.github.io" # the base hostname & protocol for your site
-author: Qiaoye 'QUERY' Zou
+author: Qiaoye Zou
 phone: +86 15061790616
 languages: Python
 skills: System development, Production engineering (DevOps), Ruby on Rails
