@@ -19,9 +19,9 @@ var OSO_Letter = (function() {
 
         threads = loadThreads();
 
-        // Add demo letter if empty
-        if (threads.length === 0) {
-            threads.push({
+        // Add demo letter if empty, or replace old demo
+        if (threads.length === 0 || (threads.length === 1 && threads[0].subject === '给俏也的第一封信')) {
+            threads = [{
                 id: 'demo-001',
                 subject: '你好呀！',
                 messages: [
@@ -30,7 +30,7 @@ var OSO_Letter = (function() {
                 status: 'received',
                 createdAt: Date.now() - 3600000,
                 updatedAt: Date.now() - 1800000
-            });
+            }];
             saveThreads();
         }
 
