@@ -39,7 +39,8 @@ OSO.Desktop = (function() {
         } catch(e) {}
 
         var colW = 88, rowH = 88;
-        var startX = 12, startY = 12;
+        var cols = 3;
+        var startX = 40, startY = 60;
 
         appRegistry.forEach(function(app, i) {
             const iconEl = document.createElement('div');
@@ -53,8 +54,8 @@ OSO.Desktop = (function() {
                 iconEl.style.left = pos.x + 'px';
                 iconEl.style.top = pos.y + 'px';
             } else {
-                var col = i % 2;
-                var row = Math.floor(i / 2);
+                var col = i % cols;
+                var row = Math.floor(i / cols);
                 iconEl.style.left = (startX + col * colW) + 'px';
                 iconEl.style.top = (startY + row * rowH) + 'px';
             }

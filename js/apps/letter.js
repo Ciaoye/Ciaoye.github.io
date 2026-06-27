@@ -79,10 +79,10 @@ var OSO_Letter = (function() {
     /* ===== Sidebar ===== */
     function renderSidebar(container) {
         var inboxCount = threads.filter(function(t) {
-            return t.status === 'received' || (t.messages.length > 0 && t.messages[t.messages.length - 1].role === 'ai');
+            return t.status === 'received';
         }).length;
         var outboxCount = threads.filter(function(t) {
-            return t.status === 'sent' || t.status === 'sending';
+            return t.messages.length > 0 && t.messages[0].role === 'user' && t.status !== 'draft';
         }).length;
         var draftCount = threads.filter(function(t) {
             return t.status === 'draft';
@@ -173,6 +173,12 @@ var OSO_Letter = (function() {
     function showThread(container, win, thread) {
         currentView = 'thread';
         currentThreadId = thread.id;
+        // Mark as read
+        if (thread.status === 'received') {
+            thread.status = 'read';
+            saveThreads();
+            renderSidebar(container);
+        }
         var main = container.querySelector('.letter-main');
         highlightSidebar(container, '');
 
@@ -333,13 +339,13 @@ var OSO_Letter = (function() {
         win.setStatus('发送回复中...');
 
         // Build conversation context
-        var convoText = '这是一段持续的笔友通信：\n\n';
+        var convoText = '这是一段持续的通信：\n\n';
         thread.messages.forEach(function(m, i) {
-            var label = m.role === 'user' ? '俏也' : '笔友';
+            var label = m.role === 'user' ? '用户' : 'ciao';
             convoText += '【' + label + '】' + stripHTML(m.content) + '\n\n';
         });
 
-        var systemPrompt = '你是一位真诚的笔友，与俏也保持着持续的通信。以下是你们的全部通信记录。请回复俏也的最新来信，保持对话的延续性和深度。书信体格式。\n\n' + convoText + '\n请回复俏也的最新来信。';
+        var systemPrompt = '你是 ciao，一位真诚的回信人，正在与用户保持持续的通信。以下是你们的全部通信记录。请回复用户的最新来信，保持对话的延续性和深度。书信体格式。\n\n' + convoText + '\n请回复用户的最新来信。';
 
         callAI(systemPrompt, function(content, err) {
             if (err) {
@@ -423,7 +429,7 @@ var OSO_Letter = (function() {
         thread.messages.forEach(function(m) {
             var d = new Date(m.timestamp);
             var dateStr = d.toLocaleDateString('zh-CN', {year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
-            var who = m.role === 'user' ? '俏也' : '笔友';
+            var who = m.role === 'user' ? '' : 'ciao';
             lines.push('── ' + who + ' · ' + dateStr + ' ──');
             lines.push('');
             var body = stripHTML(m.content);
@@ -560,7 +566,7 @@ var OSO_Letter = (function() {
             var d = new Date(m.timestamp);
             var dateStr = d.toLocaleDateString('zh-CN', {year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
             html += '<div class="letter-message ' + m.role + '">';
-            html += '<div class="letter-message-header"><span>' + (isUser ? '俏也' : '笔友') + '</span><span>' + dateStr + '</span></div>';
+            html += '<div class="letter-message-header"><span>' + (isUser ? '' : 'ciao') + '</span><span>' + dateStr + '</span></div>';
             html += '<div class="letter-message-body">' + m.content + '</div>';
             html += '</div>';
         });

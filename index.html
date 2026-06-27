@@ -195,7 +195,7 @@
             OSO_Chat.open();
             var chatWin = OSO.WM.get('chat');
             if (chatWin) {
-                var cp = savedPos.chat || { x: 8, y: 8 };
+                var cp = savedPos.chat || { x: 40, y: 40 };
                 chatWin._el.style.left = cp.x + 'px';
                 chatWin._el.style.top = cp.y + 'px';
             }
@@ -203,7 +203,7 @@
             OSO_Notepad.open({
                 content: '你好呀！我是俏也。\n\n这是我在做的一些小项目的展示。\n\n你可以跟 ciao 发短消息（Chat） ！也可以写很长的信（Letter）。\n\n另外，还有几个我这几天在做的小项目：\n- Mood：2008 年到现在，2400+ 情绪的数据可视化\n- Wiki：整理的 Wikipedia 知识图谱\n- Explorer：我写过的东西，和目前整理的 Wikipedia\n\n除此之外加了一些有的没的，比如画画、扫雷、2048……\n\n我应该会经常更新这里的东西。欢迎随时来看看。\n如果想加什么东西，遇到什么问题，请随时联系我！\n\n— 俏也',
                 filename: '/notepad/readme.txt',
-                position: savedPos.notepad || { x: Math.max(0, desktopW - 540), y: 8 }
+                position: savedPos.notepad || { x: Math.max(60, desktopW - 560), y: 40 }
             });
         } catch(e) {
             console.error('Auto-open failed:', e);
@@ -270,9 +270,8 @@
 
         var stations = [
             { name:'LOFI GIRL',   url:'https://boxradio-edge-00.streamafrica.net/lofi' },
-            { name:'CHILL SKY',   url:'http://chill.radioca.st/stream' },
-            { name:'GROOVE SALAD',url:'https://ice1.somafm.com/groovesalad-128-mp3' },
             { name:'PARADISE',    url:'https://stream.radioparadise.com/mellow-128' },
+            { name:'GROOVE SALAD',url:'https://ice1.somafm.com/groovesalad-128-mp3' },
             { name:'JAZZ BOX',    url:'https://boxradio-edge-01.streamafrica.net/jazz' },
             { name:'RAIN',        url:'https://boxradio-edge-01.streamafrica.net/rain' },
             { name:'DRONE ZONE',  url:'https://ice1.somafm.com/dronezone-128-mp3' }
@@ -292,10 +291,11 @@
                 audio.src = s.url;
                 audio.volume = curVol;
                 audio.play().then(function() {
-                    playBtn.classList.add('playing');
+                    setPlaying(true);
                     statusEl.textContent = 'NOW: ' + s.name;
                     statusEl.style.color = '#73d4ff';
                 }).catch(function() {
+                    setPlaying(false);
                     statusEl.textContent = 'OFFLINE: ' + s.name;
                     statusEl.style.color = '#d12e7a';
                 });
@@ -303,18 +303,29 @@
             stationsEl.appendChild(btn);
         });
 
+        // Auto-select PARADISE as default
+        var defaultBtn = stationsEl.querySelectorAll('.lofi-st-btn')[1]; // PARADISE is 2nd
+        if (defaultBtn) {
+            defaultBtn.classList.add('active');
+            statusEl.textContent = 'READY: PARADISE';
+        }
+
         // Play/Pause
         playBtn.onclick = function() {
             if (!curUrl) return;
             if (audio.paused) {
                 audio.src = curUrl;
                 audio.play().then(function() {
-                    playBtn.classList.add('playing');
+                    setPlaying(true);
                     statusEl.style.color = '#73d4ff';
-                }).catch(function(){});
+                }).catch(function(){
+                    setPlaying(false);
+                    statusEl.textContent = 'OFFLINE';
+                    statusEl.style.color = '#d12e7a';
+                });
             } else {
                 audio.pause();
-                playBtn.classList.remove('playing');
+                setPlaying(false);
                 statusEl.textContent = 'PAUSED';
                 statusEl.style.color = '#b89eff';
             }
@@ -324,10 +335,20 @@
         stopBtn.onclick = function() {
             audio.pause();
             audio.currentTime = 0;
-            playBtn.classList.remove('playing');
+            setPlaying(false);
             statusEl.textContent = 'STOPPED';
             statusEl.style.color = '#b89eff';
         };
+
+        function setPlaying(on) {
+            if (on) {
+                playBtn.classList.add('playing');
+                playBtn.innerHTML = '⏸';
+            } else {
+                playBtn.classList.remove('playing');
+                playBtn.innerHTML = '▶';
+            }
+        }
 
         // Volume bar (click to set)
         volBar.onclick = function(e) {
