@@ -168,6 +168,7 @@ var OSO_Chat = (function() {
             var decoder = new TextDecoder();
             var buffer = '';
             var rawContent = '';
+            streamBubbles = [];  // clear previous round's stream tracking
 
             function pump() {
                 reader.read().then(function(result) {
