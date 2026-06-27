@@ -82,7 +82,7 @@
 <script src="js/core/sound.js?v=2"></script>
 
 <!-- App Scripts -->
-<script src="js/apps/chat.js?v=2"></script>
+<script src="js/apps/chat.js?v=20260627c"></script>
 <script src="js/apps/paint.js?v=2"></script>
 <script src="js/apps/letter.js?v=2"></script>
 <script src="js/apps/moodTracker.js?v=2"></script>
@@ -267,6 +267,7 @@
         audio.crossOrigin = 'anonymous';
         var curVol = 0.5;
         var curUrl = '';
+        var connectTimer = null;
 
         var stations = [
             { name:'LOFI GIRL',   url:'https://boxradio-edge-00.streamafrica.net/lofi' },
@@ -290,15 +291,23 @@
                 curUrl = s.url;
                 audio.src = s.url;
                 audio.volume = curVol;
-                audio.play().then(function() {
-                    setPlaying(true);
-                    statusEl.textContent = 'NOW: ' + s.name;
-                    statusEl.style.color = '#73d4ff';
-                }).catch(function() {
-                    setPlaying(false);
-                    statusEl.textContent = 'OFFLINE: ' + s.name;
-                    statusEl.style.color = '#d12e7a';
-                });
+                // Optimistic: show connecting first
+                setPlaying(true);
+                statusEl.textContent = 'CONNECTING: ' + s.name;
+                statusEl.style.color = '#ffb84d';
+                if (connectTimer) { clearTimeout(connectTimer); }
+                audio.play().catch(function(){});
+                // Wait 3s then check if stream actually started
+                connectTimer = setTimeout(function() {
+                    if (!audio.paused && audio.readyState >= 2) {
+                        statusEl.textContent = 'NOW: ' + s.name;
+                        statusEl.style.color = '#73d4ff';
+                    } else {
+                        setPlaying(false);
+                        statusEl.textContent = 'OFFLINE: ' + s.name;
+                        statusEl.style.color = '#d12e7a';
+                    }
+                }, 3000);
             });
             stationsEl.appendChild(btn);
         });
@@ -315,16 +324,24 @@
             if (!curUrl) return;
             if (audio.paused) {
                 audio.src = curUrl;
-                audio.play().then(function() {
-                    setPlaying(true);
-                    statusEl.style.color = '#73d4ff';
-                }).catch(function(){
-                    setPlaying(false);
-                    statusEl.textContent = 'OFFLINE';
-                    statusEl.style.color = '#d12e7a';
-                });
+                // Optimistic: show connecting first
+                setPlaying(true);
+                statusEl.textContent = 'CONNECTING...';
+                statusEl.style.color = '#ffb84d';
+                if (connectTimer) { clearTimeout(connectTimer); }
+                audio.play().catch(function(){});
+                connectTimer = setTimeout(function() {
+                    if (!audio.paused && audio.readyState >= 2) {
+                        statusEl.style.color = '#73d4ff';
+                    } else {
+                        setPlaying(false);
+                        statusEl.textContent = 'OFFLINE';
+                        statusEl.style.color = '#d12e7a';
+                    }
+                }, 3000);
             } else {
                 audio.pause();
+                if (connectTimer) { clearTimeout(connectTimer); }
                 setPlaying(false);
                 statusEl.textContent = 'PAUSED';
                 statusEl.style.color = '#b89eff';
@@ -335,6 +352,7 @@
         stopBtn.onclick = function() {
             audio.pause();
             audio.currentTime = 0;
+            if (connectTimer) { clearTimeout(connectTimer); }
             setPlaying(false);
             statusEl.textContent = 'STOPPED';
             statusEl.style.color = '#b89eff';

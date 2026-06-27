@@ -8,7 +8,7 @@ var OSO_Chat = (function() {
     var TOKEN_KEY = 'ciao_token';
     var THREAD_KEY = 'ciao_thread_id';
 
-    var MAX_AGENT_BUBBLES = 4;
+    var MAX_AGENT_BUBBLES = 5;
     var messages = [];
     var agentBubbles = [];    // all agent bubbles (history + current stream)
     var chatMessages = [];    // serializable message history [{role, text}]
@@ -225,19 +225,8 @@ var OSO_Chat = (function() {
                 .replace(/\\n/g, '\n')       // JSON-escaped \n → real newline
                 .replace(/<br\s*\/?>/gi, '\n'); // <br> → newline
 
-            var parts = text.split('\n').filter(function(p) { return p.trim(); });
+            var parts = splitAgentText(text);
             if (parts.length === 0) return;
-
-            // If only one part and it's very long, try splitting by double newline or sentence end
-            if (parts.length === 1 && parts[0].length > 200) {
-                var para = parts[0].split(/\n\n+/).filter(function(p) { return p.trim(); });
-                if (para.length > 1) { parts = para; }
-                else {
-                    // Split long text by sentence-ending punctuation + space
-                    var sentences = parts[0].split(/(?<=[。！？!?])\s*/);
-                    if (sentences.length > 1) parts = sentences;
-                }
-            }
 
             parts.forEach(function(part) {
                 var trimmed = part.trim();
@@ -248,11 +237,61 @@ var OSO_Chat = (function() {
             });
         }
 
+        function splitAgentText(text) {
+            var normalized = (text || '').trim();
+            if (!normalized) return [];
+
+            var parts = normalized
+                .split(/\n+/)
+                .map(function(p) { return p.trim(); })
+                .filter(Boolean);
+
+            if (parts.length <= 1) {
+                parts = splitAtNaturalPauses(normalized, targetBubbleCount(normalized));
+            }
+
+            if (parts.length > MAX_AGENT_BUBBLES) {
+                parts = mergeToMaxBubbles(parts, MAX_AGENT_BUBBLES);
+            }
+
+            return parts.slice(0, MAX_AGENT_BUBBLES);
+        }
+
+        function mergeToMaxBubbles(parts, maxCount) {
+            var groups = [];
+            var totalChars = parts.join('').length;
+            var target = Math.max(1, Math.ceil(totalChars / maxCount));
+            var current = '';
+
+            parts.forEach(function(part) {
+                if (!current) {
+                    current = part;
+                    return;
+                }
+                if (groups.length < maxCount - 1 && (current + part).length > target) {
+                    groups.push(current);
+                    current = part;
+                } else {
+                    current += '\n' + part;
+                }
+            });
+
+            if (current) groups.push(current);
+
+            while (groups.length > maxCount) {
+                var tail = groups.pop();
+                groups[groups.length - 1] += '\n' + tail;
+            }
+
+            return groups;
+        }
+
         function targetBubbleCount(text) {
             var len = text.replace(/\s+/g, '').length;
-            if (len <= 120) return 1;
-            if (len <= 300) return 2;
-            if (len <= 560) return 3;
+            if (len <= 60) return 1;
+            if (len <= 140) return 2;
+            if (len <= 260) return 3;
+            if (len <= 420) return 4;
             return MAX_AGENT_BUBBLES;
         }
 
