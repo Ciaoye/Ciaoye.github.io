@@ -6,10 +6,10 @@
 <title>ciao os</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-<link rel="stylesheet" href="css/theme.css"/>
-<link rel="stylesheet" href="css/desktop.css"/>
-<link rel="stylesheet" href="css/window.css"/>
-<link rel="stylesheet" href="css/taskbar.css"/>
+<link rel="stylesheet" href="css/theme.css?v=2"/>
+<link rel="stylesheet" href="css/desktop.css?v=2"/>
+<link rel="stylesheet" href="css/window.css?v=2"/>
+<link rel="stylesheet" href="css/taskbar.css?v=2"/>
 </head>
 <body>
 
@@ -75,23 +75,23 @@
 </div>
 
 <!-- Core Scripts -->
-<script src="js/core/windowManager.js"></script>
-<script src="js/core/desktop.js"></script>
-<script src="js/core/taskbar.js"></script>
-<script src="js/core/fileSystem.js"></script>
-<script src="js/core/sound.js"></script>
+<script src="js/core/windowManager.js?v=2"></script>
+<script src="js/core/desktop.js?v=2"></script>
+<script src="js/core/taskbar.js?v=2"></script>
+<script src="js/core/fileSystem.js?v=2"></script>
+<script src="js/core/sound.js?v=2"></script>
 
 <!-- App Scripts -->
-<script src="js/apps/chat.js?v=20260627b"></script>
-<script src="js/apps/paint.js"></script>
-<script src="js/apps/letter.js?v=20260627b"></script>
-<script src="js/apps/moodTracker.js"></script>
-<script src="js/apps/wikiGraph.js"></script>
-<script src="js/apps/browser.js"></script>
-<script src="js/apps/game2048.js"></script>
-<script src="js/apps/minesweeper.js"></script>
-<script src="js/apps/fileManager.js"></script>
-<script src="js/apps/notepad.js"></script>
+<script src="js/apps/chat.js?v=2"></script>
+<script src="js/apps/paint.js?v=2"></script>
+<script src="js/apps/letter.js?v=2"></script>
+<script src="js/apps/moodTracker.js?v=2"></script>
+<script src="js/apps/wikiGraph.js?v=2"></script>
+<script src="js/apps/browser.js?v=2"></script>
+<script src="js/apps/game2048.js?v=2"></script>
+<script src="js/apps/minesweeper.js?v=2"></script>
+<script src="js/apps/fileManager.js?v=2"></script>
+<script src="js/apps/notepad.js?v=2"></script>
 
 <script>
 (function() {
@@ -186,25 +186,29 @@
     if (sidebarSpan) sidebarSpan.textContent = T.osName;
 
     // Auto-open Chat (left) and Notepad with readme (right)
-    var desktopW = window.innerWidth;
-    var desktopH = window.innerHeight - 28;
-    var savedPos = OSO.WM.loadPositions();
-    setTimeout(function() {
-        // Chat: saved position or default left
-        OSO_Chat.open();
-        var chatWin = OSO.WM.get('chat');
-        if (chatWin) {
-            var cp = savedPos.chat || { x: 8, y: 8 };
-            chatWin._el.style.left = cp.x + 'px';
-            chatWin._el.style.top = cp.y + 'px';
+    window.addEventListener('DOMContentLoaded', function() {
+        try {
+            var desktopW = window.innerWidth;
+            var desktopH = window.innerHeight - 28;
+            var savedPos = (OSO.WM && OSO.WM.loadPositions) ? OSO.WM.loadPositions() : {};
+            // Chat: saved position or default left
+            OSO_Chat.open();
+            var chatWin = OSO.WM.get('chat');
+            if (chatWin) {
+                var cp = savedPos.chat || { x: 8, y: 8 };
+                chatWin._el.style.left = cp.x + 'px';
+                chatWin._el.style.top = cp.y + 'px';
+            }
+            // Notepad: saved position or default right
+            OSO_Notepad.open({
+                content: '你好呀！我是俏也。\n\n这是我在做的一些小项目的展示。\n\n你可以跟 ciao 发短消息（Chat） ！也可以写很长的信（Letter）。\n\n另外，还有几个我这几天在做的小项目：\n- Mood：2008 年到现在，2400+ 情绪的数据可视化\n- Wiki：整理的 Wikipedia 知识图谱\n- Explorer：我写过的东西，和目前整理的 Wikipedia\n\n除此之外加了一些有的没的，比如画画、扫雷、2048……\n\n我应该会经常更新这里的东西。欢迎随时来看看。\n如果想加什么东西，遇到什么问题，请随时联系我！\n\n— 俏也',
+                filename: '/notepad/readme.txt',
+                position: savedPos.notepad || { x: Math.max(0, desktopW - 540), y: 8 }
+            });
+        } catch(e) {
+            console.error('Auto-open failed:', e);
         }
-        // Notepad: saved position or default right
-        OSO_Notepad.open({
-            content: '你好呀！我是俏也。\n\n这是我在做的一些小项目的展示。\n\n你可以跟 ciao 发短消息（Chat） ！也可以写很长的信（Letter）。\n\n另外，还有几个我这几天在做的小项目：\n- Mood：2008 年到现在，2400+ 情绪的数据可视化\n- Wiki：整理的 Wikipedia 知识图谱\n- Explorer：我写过的东西，和目前整理的 Wikipedia\n\n除此之外加了一些有的没的，比如画画、扫雷、2048……\n\n我应该会经常更新这里的东西。欢迎随时来看看。\n如果想加什么东西，遇到什么问题，请随时联系我！\n\n— 俏也',
-            filename: '/notepad/readme.txt',
-            position: savedPos.notepad || { x: Math.max(0, desktopW - 540), y: 8 }
-        });
-    }, 300);
+    });
 
     console.log('%c' + T.osName.toUpperCase() + ' v1.0 %cready',
         'color: #ffb8d9; font-size: 14px;',
