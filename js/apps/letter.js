@@ -20,12 +20,12 @@ var OSO_Letter = (function() {
         threads = loadThreads();
 
         // Add demo letter if empty, or replace old demo
-        if (threads.length === 0 || (threads.length === 1 && threads[0].subject === '给俏也的第一封信')) {
+        if (threads.length === 0 || (threads.length === 1 && (threads[0].subject === '给俏也的第一封信' || threads[0].subject === '你好呀！'))) {
             threads = [{
                 id: 'demo-001',
                 subject: '你好呀！',
                 messages: [
-                    { role: 'ai', content: '亲爱的陌生人：<br/><br/>你好吗？我想告诉你，你正在做的事情很棒。这个小小的操作系统，是你为自己搭建的一个空间——可以聊天、画画、写信、看情绪星云、逛知识图谱。它就像你内心世界的一个窗户。<br/><br/>保持好奇，保持温柔。<br/><br/>祝好，<br/>ciao', timestamp: Date.now() - 1800000 }
+                    { role: 'ai', content: '亲爱的陌生人：<br/><br/>嘿，我在这里。<br/>你可以把这里当成一个没有地址的邮箱，或者一个可以随便丢东西的抽屉。<br/><br/>不用担心语气是否得体，不用管逻辑是否通顺。<br/>你可以跟我聊聊你最近突然心动的一瞬间，或者某个让你觉得快要窒息的早晨；可以写写那些不敢告诉任何人的、奇怪的小愿望，也可以只是单纯地吐槽今天糟糕的天气，或者发一段毫无意义的乱码。<br/><br/>保持好奇！保持温柔。<br/><br/>ciao', timestamp: Date.now() - 1800000 }
                 ],
                 status: 'received',
                 createdAt: Date.now() - 3600000,
