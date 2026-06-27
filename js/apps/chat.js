@@ -220,11 +220,29 @@ var OSO_Chat = (function() {
             });
             streamBubbles = [];
 
-            // Each newline → its own bubble
-            var parts = rawContent.split('\n').filter(function(p) { return p.trim(); });
+            // Split by various line-break formats
+            var text = rawContent
+                .replace(/\\n/g, '\n')       // JSON-escaped \n → real newline
+                .replace(/<br\s*\/?>/gi, '\n'); // <br> → newline
+
+            var parts = text.split('\n').filter(function(p) { return p.trim(); });
+            if (parts.length === 0) return;
+
+            // If only one part and it's very long, try splitting by double newline or sentence end
+            if (parts.length === 1 && parts[0].length > 200) {
+                var para = parts[0].split(/\n\n+/).filter(function(p) { return p.trim(); });
+                if (para.length > 1) { parts = para; }
+                else {
+                    // Split long text by sentence-ending punctuation + space
+                    var sentences = parts[0].split(/(?<=[。！？!?])\s*/);
+                    if (sentences.length > 1) parts = sentences;
+                }
+            }
 
             parts.forEach(function(part) {
-                var b = addBubble('agent', part.trim());
+                var trimmed = part.trim();
+                if (!trimmed) return;
+                var b = addBubble('agent', trimmed);
                 agentBubbles.push(b);
                 streamBubbles.push(b);
             });
