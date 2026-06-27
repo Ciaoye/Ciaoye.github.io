@@ -1,0 +1,455 @@
+/* ===== 俏也 OS — Desktop ===== */
+
+.oso-desktop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 28px; /* taskbar height */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 0;
+}
+
+.oso-desktop-icons {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.oso-desktop-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    position: absolute;
+}
+
+.oso-desktop-icon.dragging {
+    z-index: 50;
+    opacity: 0.85;
+}
+
+.oso-desktop-icon img {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 4px;
+    image-rendering: pixelated;
+    pointer-events: none;
+}
+
+.oso-desktop-icon span {
+    color: var(--text-light);
+    font-size: 11px;
+    text-shadow: 1px 1px 1px #000;
+    padding: 1px 3px;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+
+.oso-desktop-icon:hover span {
+    background-color: #000080;
+    color: #fff;
+}
+
+.oso-desktop-icon.selected span {
+    background-color: #000080;
+    color: #fff;
+}
+
+/* Start menu */
+.oso-start-menu {
+    position: fixed;
+    bottom: 28px;
+    left: 2px;
+    width: 220px;
+    background-color: var(--win-bg);
+    border-top: 2px solid var(--win-highlight);
+    border-left: 2px solid var(--win-highlight);
+    border-right: 2px solid var(--win-shadow);
+    border-bottom: 2px solid var(--win-shadow);
+    box-shadow: 1px 1px 0 0 var(--win-dark);
+    z-index: 20000;
+    display: none;
+}
+
+.oso-start-menu.open {
+    display: block;
+}
+
+.oso-start-menu-sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(180deg, var(--win-title-active-start), var(--win-title-active-end));
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8px;
+}
+
+.oso-start-menu-sidebar span {
+    color: var(--text-light);
+    font-size: 12px;
+    font-weight: bold;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    letter-spacing: 2px;
+    white-space: nowrap;
+}
+
+.oso-start-menu-items {
+    margin-left: 24px;
+    padding: 2px 0;
+}
+
+.oso-start-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--text-dark);
+}
+
+.oso-start-menu-item:hover {
+    background-color: #000080;
+    color: #fff;
+}
+
+.oso-start-menu-item img {
+    width: 20px;
+    height: 20px;
+    image-rendering: pixelated;
+}
+
+.oso-start-menu-divider {
+    height: 1px;
+    background-color: var(--win-shadow);
+    margin: 2px 4px;
+    border-bottom: 1px solid var(--win-highlight);
+}
+
+/* ===== Desktop Icon Tooltip ===== */
+.oso-icon-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #5e2ca5;
+    color: #fff;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.oso-icon-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #5e2ca5;
+}
+
+.oso-desktop-icon:hover .oso-icon-tooltip {
+    opacity: 1;
+}
+
+/* ===== Desktop Widgets ===== */
+.oso-sticky {
+    position: absolute;
+    right: 24px;
+    bottom: 24px;
+    top: auto;
+    width: 180px;
+    min-height: 160px;
+    background: #fffb88;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.25);
+    font-family: 'SimSun', '宋体', serif;
+    font-size: 12px;
+    z-index: 5;
+    transform: rotate(2deg);
+    transition: transform 0.15s;
+    cursor: default;
+}
+
+.oso-sticky:hover {
+    transform: rotate(0deg);
+    z-index: 60;
+}
+
+.oso-sticky-header {
+    background: #ffe44d;
+    padding: 4px 8px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #665500;
+    border-bottom: 1px solid #e6cc00;
+    cursor: move;
+}
+
+.oso-sticky-body {
+    padding: 10px 12px;
+    min-height: 100px;
+    outline: none;
+    color: #554400;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.oso-sticky-body:empty::before {
+    content: '写点什么吧...';
+    color: #bba800;
+}
+
+/* Pixel Desktop Clock */
+.oso-desk-clock {
+    position: absolute;
+    right: 24px;
+    top: 210px;
+    background: rgba(0,0,0,0.55);
+    border: 2px solid #5e2ca5;
+    padding: 10px 16px;
+    text-align: center;
+    z-index: 5;
+    image-rendering: pixelated;
+    cursor: grab;
+}
+
+.oso-desk-clock:active {
+    cursor: grabbing;
+}
+
+.oso-desk-clock-time {
+    color: #73d4ff;
+    font-size: 28px;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 8px rgba(115,212,255,0.6);
+    line-height: 1;
+}
+
+.oso-desk-clock-date {
+    color: #ffb8d9;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    margin-top: 2px;
+    text-shadow: 0 0 4px rgba(255,184,217,0.5);
+}
+
+/* ===== Lofi Player — Retro Pixel ===== */
+.oso-lofi {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    z-index: 5;
+    width: 210px;
+    border: 3px solid #2a1a4e;
+    box-shadow: 4px 4px 0 #1a1a2e;
+    background: #1a1a2e;
+}
+
+.oso-lofi-header {
+    background: #5e2ca5;
+    color: #ffb8d9;
+    font-size: 10px;
+    font-family: 'Courier New', monospace;
+    padding: 3px 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    border-bottom: 2px solid #2a1a4e;
+    letter-spacing: 1px;
+}
+
+.lofi-hdr-icon {
+    width: 12px;
+    height: 12px;
+    image-rendering: pixelated;
+}
+
+.lofi-hdr-title {
+    flex: 1;
+    text-align: center;
+    text-shadow: 1px 1px 0 #2a1a4e;
+}
+
+.lofi-btn-min {
+    width: 16px;
+    height: 14px;
+    background: #2a1a4e;
+    color: #ffb8d9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    cursor: pointer;
+    border: 1px solid #8a41ff;
+    line-height: 1;
+    font-family: 'Courier New', monospace;
+}
+
+.lofi-btn-min:hover { background: #8a41ff; color: #fff; }
+
+.oso-lofi-body {
+    padding: 4px;
+    background: #1a1a2e;
+}
+
+.oso-lofi-body.collapsed {
+    display: none;
+}
+
+.lofi-stations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-bottom: 4px;
+}
+
+.lofi-st-btn {
+    font-size: 9px;
+    font-family: 'Courier New', monospace;
+    padding: 3px 6px;
+    cursor: pointer;
+    background: #2a1a4e;
+    color: #b89eff;
+    border: 1px solid #5e2ca5;
+    white-space: nowrap;
+}
+
+.lofi-st-btn:hover {
+    background: #5e2ca5;
+    color: #fff;
+}
+
+.lofi-st-btn.active {
+    background: #8a41ff;
+    color: #fff;
+    border-color: #b89eff;
+}
+
+.lofi-status {
+    font-size: 9px;
+    font-family: 'Courier New', monospace;
+    color: #73d4ff;
+    text-align: center;
+    padding: 4px;
+    margin-bottom: 4px;
+    border: 1px solid #5e2ca5;
+    background: #0d0d1a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 1px;
+}
+
+.lofi-ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.lofi-btn-play {
+    font-size: 16px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    background: #5e2ca5;
+    color: #fff;
+    border: 2px solid #8a41ff;
+    line-height: 1;
+}
+
+.lofi-btn-play:hover { background: #8a41ff; }
+.lofi-btn-play:active { border-style: inset; }
+
+.lofi-btn-play.playing {
+    background: #d12e7a;
+    border-color: #ff6b9d;
+}
+
+.lofi-btn-stop {
+    font-size: 14px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    background: #2a1a4e;
+    color: #b89eff;
+    border: 2px solid #5e2ca5;
+    line-height: 1;
+}
+
+.lofi-btn-stop:hover { background: #d12e7a; color: #fff; border-color: #ff6b9d; }
+
+.lofi-vol-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.lofi-vol-label {
+    font-size: 8px;
+    font-family: 'Courier New', monospace;
+    color: #b89eff;
+    flex-shrink: 0;
+}
+
+.lofi-vol-bar {
+    flex: 1;
+    height: 10px;
+    background: #0d0d1a;
+    border: 1px solid #5e2ca5;
+    cursor: pointer;
+    position: relative;
+    min-width: 0;
+}
+
+.lofi-vol-fill {
+    height: 100%;
+    background: #73d4ff;
+    width: 50%;
+}
+
+.lofi-credit {
+    font-size: 7px;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    color: #5e2ca5;
+    border-top: 1px solid #2a1a4e;
+    padding-top: 3px;
+}
+
+.lofi-credit a {
+    color: #8a41ff;
+    text-decoration: none;
+}
+
+.lofi-credit a:hover { color: #b89eff; }

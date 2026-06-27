@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Retro Vaporwave Desktop</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+<style>
+        @font-face {
+            font-family: 'MS Sans Serif';
+            src: url('https://fonts.cdnfonts.com/s/14897/MS Sans Serif.woff') format('woff');
+        }
+
+        body {
+            font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+            background-color: #7d5fff;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        .desktop {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('assets/image-32.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Windows 95/98 Style Bevels */
+        .win-outset {
+            background-color: #c0c0c0;
+            border-top: 2px solid #dfdfdf;
+            border-left: 2px solid #dfdfdf;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            box-shadow: 1px 1px 0 0 #000;
+        }
+
+        .win-inset {
+            background-color: #fff;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #dfdfdf;
+            border-bottom: 2px solid #dfdfdf;
+        }
+
+        .win-inset-flat {
+            border-top: 1px solid #808080;
+            border-left: 1px solid #808080;
+            border-right: 1px solid #dfdfdf;
+            border-bottom: 1px solid #dfdfdf;
+        }
+
+        .win-title-bar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            padding: 2px 3px 3px 3px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #fff;
+            font-size: 11px;
+            height: 18px;
+        }
+
+        .win-title-bar.inactive {
+            background: linear-gradient(90deg, #808080, #c0c0c0);
+        }
+
+        /* Purple theme titles */
+        .win-title-bar-purple {
+            background: linear-gradient(90deg, #5e2ca5, #8a41ff);
+        }
+
+        .win-button {
+            width: 14px;
+            height: 12px;
+            background-color: #c0c0c0;
+            border-top: 1px solid #dfdfdf;
+            border-left: 1px solid #dfdfdf;
+            border-right: 1px solid #808080;
+            border-bottom: 1px solid #808080;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 8px;
+            margin-left: 2px;
+            cursor: pointer;
+        }
+
+        .win-button:active {
+            border-top: 1px solid #808080;
+            border-left: 1px solid #808080;
+            border-right: 1px solid #dfdfdf;
+            border-bottom: 1px solid #dfdfdf;
+            padding: 1px 0 0 1px;
+        }
+
+        .win-menu {
+            display: flex;
+            font-size: 11px;
+            padding: 2px 4px;
+            color: #000;
+        }
+
+        .win-menu span {
+            padding: 0 6px;
+        }
+
+        .win-menu span:first-letter {
+            text-decoration: underline;
+        }
+
+        .win-content {
+            padding: 2px;
+            color: #000;
+        }
+
+        /* Icon Styles */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 80px);
+            grid-template-rows: repeat(8, 80px);
+            grid-auto-flow: column;
+            padding: 20px;
+            gap: 10px;
+        }
+
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+        }
+
+        .desktop-icon img {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 4px;
+            image-rendering: pixelated;
+        }
+
+        .desktop-icon span {
+            color: #fff;
+            font-size: 11px;
+            text-shadow: 1px 1px 1px #000;
+            padding: 1px 2px;
+            display: block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .desktop-icon:hover span {
+            background-color: #000080;
+        }
+
+        /* Taskbar */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background-color: #c0c0c0;
+            border-top: 2px solid #dfdfdf;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            z-index: 10000;
+        }
+
+        .start-button {
+            height: 22px;
+            padding: 0 4px;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 11px;
+            margin-right: 4px;
+        }
+
+        .start-button img {
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+        }
+
+        .taskbar-divider {
+            width: 2px;
+            height: 20px;
+            border-left: 1px solid #808080;
+            border-right: 1px solid #dfdfdf;
+            margin: 0 4px;
+        }
+
+        .tray {
+            margin-left: auto;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            font-size: 11px;
+        }
+
+        .tray-icon {
+            margin-right: 8px;
+        }
+
+        /* Specific Windows */
+        .paint-window { top: 3%; left: 52%; width: 440px; }
+        .player-window { top: 35%; left: 58%; width: 380px; }
+        .chat-window { top: 60%; left: 62%; width: 340px; }
+        .playlist-window { bottom: 40px; left: 29%; width: 260px; }
+        .reminder-window { bottom: 40px; left: 4%; width: 220px; }
+
+        .paint-toolbox {
+            width: 56px;
+            padding: 2px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+        }
+
+        .paint-tool {
+            width: 24px;
+            height: 24px;
+            background-color: #c0c0c0;
+            border: 1px solid #dfdfdf;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .paint-colors {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 2px;
+            width: 300px;
+        }
+
+        .color-box {
+            width: 14px;
+            height: 14px;
+            border: 1px solid #808080;
+            margin: 1px;
+        }
+
+        .chat-bubble {
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            max-width: 80%;
+            position: relative;
+        }
+
+        .chat-bubble-received {
+            background-color: #ffb8d9;
+            color: #d12e7a;
+            align-self: flex-start;
+        }
+
+        .chat-bubble-sent {
+            background-color: #9d81ff;
+            color: #fff;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .chat-time {
+            font-size: 9px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .player-controls {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player-btn {
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 18px;
+            background: linear-gradient(to right, #808080, #dfdfdf);
+            border: 1px solid #000;
+            position: relative;
+        }
+
+        .volume-knob {
+            width: 10px;
+            height: 16px;
+            background-color: #c0c0c0;
+            border: 1px solid #dfdfdf;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            position: absolute;
+            left: 60%;
+        }
+
+        .song-list {
+            font-size: 11px;
+            line-height: 1.5;
+            padding: 10px;
+        }
+
+        .song-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .song-active {
+            color: #000;
+        }
+
+        .song-active::before {
+            content: "\25B6";
+            margin-right: 5px;
+        }
+
+        .pixel-art {
+            image-rendering: pixelated;
+        }
+
+        .scroll-bar-v {
+            width: 16px;
+            background-color: #dfdfdf;
+            border: 1px solid #808080;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .scroll-bar-v .arrow {
+            height: 16px;
+            background-color: #c0c0c0;
+            border: 1px solid #dfdfdf;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+
+        .scroll-thumb {
+            height: 30px;
+            background-color: #c0c0c0;
+            border: 1px solid #dfdfdf;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+        }
+    </style>
+</head>
+<body>
+<div class="desktop">
+<!-- Icon Grid -->
+<div class="icon-grid">
+<!-- Col 1 -->
+<div class="desktop-icon"><img alt="My Computer" src="assets/image-1.png"/><span>My Computer</span></div>
+<div class="desktop-icon"><img alt="Documents" src="assets/image-2.png"/><span>Documents</span></div>
+<div class="desktop-icon"><img alt="Recycle Bin" src="assets/image-3.png"/><span>Recycle Bin</span></div>
+<div class="desktop-icon"><img alt="Paint" src="assets/image-4.png"/><span>Paint</span></div>
+<div class="desktop-icon"><img alt="Calculator" src="assets/image-5.png"/><span>Calculator</span></div>
+<div class="desktop-icon"><img alt="Game Boy" src="assets/image-6.png"/><span>Game Boy</span></div>
+<div class="desktop-icon"><img alt="CD Player" src="assets/image-7.png"/><span>CD Player</span></div>
+<div class="desktop-icon"><img alt="Settings" src="assets/image-8.png"/><span>Settings</span></div>
+<!-- Col 2 -->
+<div class="desktop-icon"><img alt="Internet" src="assets/image-9.png"/><span>Internet</span></div>
+<div class="desktop-icon"><img alt="Photos" src="assets/image-10.png"/><span>Photos</span></div>
+<div class="desktop-icon"><img alt="Camera" src="assets/image-11.png"/><span>Camera</span></div>
+<div class="desktop-icon"><img alt="Notepad" src="assets/image-12.png"/><span>Notepad</span></div>
+<div class="desktop-icon"><img alt="Clock" src="assets/image-13.png"/><span>Clock</span></div>
+<div class="desktop-icon"><img alt="Virtual PC" src="assets/image-14.png"/><span>Virtual PC</span></div>
+<div class="desktop-icon"><img alt="Email" src="assets/image-15.png"/><span>Email</span></div>
+<div class="desktop-icon"><img alt="Help" src="assets/image-16.png"/><span>Help</span></div>
+<!-- Col 3 -->
+<div class="desktop-icon"><img alt="Network" src="assets/image-17.png"/><span>Network</span></div>
+<div class="desktop-icon"><img alt="Music" src="assets/image-18.png"/><span>Music</span></div>
+<div class="desktop-icon"><img alt="Videos" src="assets/image-19.png"/><span>Videos</span></div>
+<div class="desktop-icon"><img alt="Diary" src="assets/image-20.png"/><span>Diary</span></div>
+<div class="desktop-icon"><img alt="Calendar" src="assets/image-21.png"/><span>Calendar</span></div>
+<div class="desktop-icon"><img alt="VHS Player" src="assets/image-22.png"/><span>VHS Player</span></div>
+<div class="desktop-icon"><img alt="Chat" src="assets/image-23.png"/><span>Chat</span></div>
+<div class="desktop-icon"><img alt="Readme" src="assets/image-24.png"/><span>Readme</span></div>
+</div>
+<!-- Paint Window -->
+<div class="absolute paint-window win-outset">
+<div class="win-title-bar win-title-bar-purple">
+<div class="flex items-center">
+<img class="w-3 h-3 mr-1" src="assets/image-4.png"/>
+<span>untitled - Paint</span>
+</div>
+<div class="flex">
+<div class="win-button"><i class="fas fa-minus"></i></div>
+<div class="win-button"><i class="far fa-square"></i></div>
+<div class="win-button"><i class="fas fa-times"></i></div>
+</div>
+</div>
+<div class="win-menu">
+<span>File</span><span>Edit</span><span>View</span><span>Image</span><span>Colors</span><span>Help</span>
+</div>
+<div class="flex h-[240px]">
+<div class="paint-toolbox win-inset m-1">
+<div class="paint-tool"><i class="fas fa-expand-arrows-alt"></i></div>
+<div class="paint-tool"><i class="far fa-square"></i></div>
+<div class="paint-tool"><i class="fas fa-eraser"></i></div>
+<div class="paint-tool"><i class="fas fa-fill-drip"></i></div>
+<div class="paint-tool"><i class="fas fa-eye-dropper"></i></div>
+<div class="paint-tool"><i class="fas fa-search"></i></div>
+<div class="paint-tool"><i class="fas fa-pencil-alt"></i></div>
+<div class="paint-tool"><i class="fas fa-brush"></i></div>
+<div class="paint-tool"><i class="fas fa-spray-can"></i></div>
+<div class="paint-tool">A</div>
+<div class="paint-tool">A</div>
+<div class="paint-tool"><i class="fas fa-minus"></i></div>
+<div class="paint-tool"><i class="far fa-circle"></i></div>
+<div class="paint-tool"><i class="fas fa-shapes"></i></div>
+<div class="paint-tool"><i class="far fa-square"></i></div>
+<div class="paint-tool"><i class="far fa-circle"></i></div>
+</div>
+<div class="flex-grow m-1 win-inset overflow-hidden flex relative">
+<img class="w-full h-full object-cover pixel-art" src="assets/image-25.png"/>
+<div class="absolute right-0 top-0 bottom-0 scroll-bar-v">
+<div class="arrow"><i class="fas fa-chevron-up"></i></div>
+<div class="scroll-thumb"></div>
+<div class="arrow"><i class="fas fa-chevron-down"></i></div>
+</div>
+</div>
+</div>
+<div class="flex p-1 border-t border-gray-400 mt-1">
+<div class="win-inset-flat w-8 h-8 flex items-center justify-center mr-1">
+<div class="w-4 h-4 bg-black"></div>
+</div>
+<div class="paint-colors">
+<div class="color-box bg-black"></div>
+<div class="color-box bg-gray-600"></div>
+<div class="color-box bg-red-800"></div>
+<div class="color-box bg-yellow-800"></div>
+<div class="color-box bg-green-800"></div>
+<div class="color-box bg-blue-800"></div>
+<div class="color-box bg-purple-800"></div>
+<div class="color-box bg-teal-800"></div>
+<div class="color-box bg-gray-400"></div>
+<div class="color-box bg-gray-200"></div>
+<div class="color-box bg-red-400"></div>
+<div class="color-box bg-yellow-400"></div>
+<div class="color-box bg-green-400"></div>
+<div class="color-box bg-blue-400"></div>
+<div class="color-box bg-purple-400"></div>
+<div class="color-box bg-teal-400"></div>
+<div class="color-box bg-pink-400"></div>
+<div class="color-box bg-indigo-400"></div>
+<div class="color-box bg-cyan-400"></div>
+<div class="color-box bg-orange-400"></div>
+<div class="color-box bg-lime-400"></div>
+<div class="color-box bg-emerald-400"></div>
+<div class="color-box bg-fuchsia-400"></div>
+<div class="color-box bg-rose-400"></div>
+</div>
+</div>
+<div class="text-[9px] p-1 border-t border-gray-400">
+            For Help, click Help Topics on the Help Menu.
+        </div>
+</div>
+<!-- Dream Player Window -->
+<div class="absolute player-window win-outset">
+<div class="win-title-bar win-title-bar-purple">
+<div class="flex items-center">
+<i class="fas fa-play-circle mr-1"></i>
+<span>Dream Player</span>
+</div>
+<div class="flex">
+<div class="win-button"><i class="fas fa-minus"></i></div>
+<div class="win-button"><i class="far fa-square"></i></div>
+<div class="win-button"><i class="fas fa-times"></i></div>
+</div>
+</div>
+<div class="win-menu">
+<span>File</span><span>View</span><span>Play</span><span>Favorites</span><span>Help</span>
+</div>
+<div class="win-content">
+<div class="win-inset bg-black relative h-[180px] overflow-hidden">
+<img class="w-full h-full object-cover pixel-art" src="assets/image-26.png"/>
+<div class="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 w-2/3"></div>
+</div>
+<div class="player-controls">
+<div class="player-btn"><i class="fas fa-play"></i></div>
+<div class="player-btn"><i class="fas fa-pause"></i></div>
+<div class="player-btn"><i class="fas fa-stop"></i></div>
+<div class="taskbar-divider"></div>
+<div class="player-btn"><i class="fas fa-step-backward"></i></div>
+<div class="player-btn"><i class="fas fa-step-forward"></i></div>
+<div class="taskbar-divider"></div>
+<div class="player-btn"><i class="fas fa-volume-up"></i></div>
+<div class="volume-slider">
+<div class="volume-knob"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Chat Window -->
+<div class="absolute chat-window win-outset">
+<div class="win-title-bar win-title-bar-purple">
+<div class="flex items-center">
+<span class="mr-1">✨</span>
+<span>Chat.exe</span>
+</div>
+<div class="flex">
+<div class="win-button"><i class="fas fa-minus"></i></div>
+<div class="win-button"><i class="far fa-square"></i></div>
+<div class="win-button"><i class="fas fa-times"></i></div>
+</div>
+</div>
+<div class="win-menu">
+<span>File</span><span>Edit</span><span>View</span><span>Friends</span><span>Help</span>
+</div>
+<div class="win-content win-inset m-1 bg-[#f0f0f0] h-[180px] p-4 flex flex-col overflow-y-auto">
+<div class="chat-bubble chat-bubble-received">
+                when the stars align, we'll be okay
+                <div class="chat-time text-right">9:02 PM</div>
+</div>
+<div class="chat-bubble chat-bubble-sent">
+                until then, keep dreaming 🌙
+                <div class="chat-time text-right">9:03 PM</div>
+</div>
+<div class="mt-auto chat-bubble chat-bubble-received flex items-center space-x-1 w-12 h-6">
+<div class="w-1 h-1 bg-gray-500 rounded-full animate-bounce"></div>
+<div class="w-1 h-1 bg-gray-500 rounded-full animate-bounce delay-75"></div>
+<div class="w-1 h-1 bg-gray-500 rounded-full animate-bounce delay-150"></div>
+</div>
+</div>
+<div class="flex p-1 gap-1">
+<div class="win-inset-flat flex-grow bg-white h-6 px-2 text-xs flex items-center"></div>
+<div class="win-outset px-4 py-0 text-[10px] flex items-center justify-center h-6">SEND</div>
+</div>
+</div>
+<!-- Playlist Window -->
+<div class="absolute playlist-window win-outset">
+<div class="win-title-bar win-title-bar-purple">
+<div class="flex items-center">
+<i class="far fa-file-alt mr-1"></i>
+<span>Playlist.txt</span>
+</div>
+<div class="flex">
+<div class="win-button"><i class="fas fa-minus"></i></div>
+<div class="win-button"><i class="far fa-square"></i></div>
+<div class="win-button"><i class="fas fa-times"></i></div>
+</div>
+</div>
+<div class="win-content win-inset m-1 bg-[#e4ccff]">
+<div class="song-list text-purple-900">
+<div class="song-row"><span>1. lavender dreams . . . . . .</span><span>03:21</span></div>
+<div class="song-row song-active text-black flex items-center">
+<span class="mr-1">▶</span>
+<span class="flex-grow">2. ocean drive . . . . . . . .</span>
+<span>04:07</span>
+</div>
+<div class="song-row"><span>3. midnight conversation . .</span><span>02:47</span></div>
+<div class="song-row"><span>4. neon heart . . . . . . . .</span><span>03:35</span></div>
+</div>
+<div class="px-2 pb-2">
+<div class="h-8 w-full flex items-end gap-[1px]">
+<div class="bg-purple-800 flex-grow" style="height: 10%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 40%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 20%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 60%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 30%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 80%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 40%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 50%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 30%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 90%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 20%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 40%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 10%;"></div>
+<div class="bg-purple-800 flex-grow" style="height: 50%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Reminder Window -->
+<div class="absolute reminder-window win-outset">
+<div class="win-title-bar win-title-bar-purple">
+<div class="flex items-center">
+<span>Reminder</span>
+</div>
+<div class="flex">
+<div class="win-button"><i class="fas fa-times"></i></div>
+</div>
+</div>
+<div class="win-content p-4 flex items-center flex-col">
+<div class="flex items-center w-full mb-6">
+<div class="mr-4 text-pink-500 text-2xl drop-shadow-sm">
+<span class="text-pink-400">♥</span>
+</div>
+<div class="text-[11px] leading-tight text-gray-800">
+                    don't forget to <br/> be kind to yourself
+                </div>
+</div>
+<div class="win-outset px-6 py-1 text-xs cursor-pointer active:win-inset-flat font-bold border-gray-400">OK</div>
+</div>
+</div>
+<!-- Taskbar -->
+<div class="taskbar">
+<div class="win-outset start-button cursor-pointer">
+<img alt="Start" src="assets/image-27.png"/>
+<span>Start</span>
+</div>
+<div class="taskbar-divider"></div>
+<div class="flex items-center gap-1 px-1">
+<img class="w-5 h-5 cursor-pointer pixel-art" src="assets/image-28.png"/>
+<img class="w-5 h-5 cursor-pointer pixel-art" src="assets/image-29.png"/>
+<img class="w-5 h-5 cursor-pointer pixel-art" src="assets/image-30.png"/>
+</div>
+<div class="taskbar-divider"></div>
+<div class="tray win-inset-flat bg-[#c0c0c0]">
+<i class="fas fa-volume-up tray-icon opacity-70"></i>
+<span id="clock">9:11 PM</span>
+</div>
+</div>
+</div>
+<script>
+    function updateClock() {
+        const now = new Date();
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; 
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        const strTime = hours + ':' + minutes + ' ' + ampm;
+        document.getElementById('clock').textContent = strTime;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Draggable simple implementation
+    const windows = document.querySelectorAll('.win-outset.absolute');
+    windows.forEach(win => {
+        const titleBar = win.querySelector('.win-title-bar');
+        if (!titleBar) return;
+
+        titleBar.onmousedown = function(event) {
+            let shiftX = event.clientX - win.getBoundingClientRect().left;
+            let shiftY = event.clientY - win.getBoundingClientRect().top;
+
+            // Move front
+            windows.forEach(w => w.style.zIndex = 1);
+            win.style.zIndex = 10;
+
+            function moveAt(pageX, pageY) {
+                win.style.left = pageX - shiftX + 'px';
+                win.style.top = pageY - shiftY + 'px';
+            }
+
+            function onMouseMove(event) {
+                moveAt(event.pageX, event.pageY);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+
+            document.onmouseup = function() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.onmouseup = null;
+            };
+        };
+
+        titleBar.ondragstart = function() {
+            return false;
+        };
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+/* ===== 俏也 OS — Win95 Vaporwave Theme ===== */
+
+@font-face {
+    font-family: 'MS Sans Serif';
+    src: url('https://fonts.cdnfonts.com/s/14897/MS Sans Serif.woff') format('woff');
+}
+
+:root {
+    /* Vaporwave palette */
+    --purple-deep: #5e2ca5;
+    --purple-bright: #8a41ff;
+    --pink-soft: #ffb8d9;
+    --pink-deep: #d12e7a;
+    --teal-vapor: #7d5fff;
+    --cyan-glow: #73d4ff;
+
+    /* Win95 chrome */
+    --win-bg: #c0c0c0;
+    --win-highlight: #dfdfdf;
+    --win-shadow: #808080;
+    --win-dark: #000000;
+    --win-title-active-start: #5e2ca5;
+    --win-title-active-end: #8a41ff;
+    --win-title-inactive-start: #808080;
+    --win-title-inactive-end: #c0c0c0;
+
+    /* Desktop */
+    --desktop-bg: #7d5fff;
+
+    /* Text */
+    --text-dark: #000000;
+    --text-light: #ffffff;
+    --text-muted: #666666;
+
+    /* Fonts */
+    --font-system: 'MS Sans Serif', Tahoma, Geneva, sans-serif;
+    --font-mono: 'Courier New', monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-system);
+    background-color: var(--desktop-bg);
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ===== Win95 Bevel System ===== */
+
+.win-outset {
+    background-color: var(--win-bg);
+    border-top: 2px solid var(--win-highlight);
+    border-left: 2px solid var(--win-highlight);
+    border-right: 2px solid var(--win-shadow);
+    border-bottom: 2px solid var(--win-shadow);
+    box-shadow: 1px 1px 0 0 var(--win-dark);
+}
+
+.win-inset {
+    background-color: #ffffff;
+    border-top: 2px solid var(--win-shadow);
+    border-left: 2px solid var(--win-shadow);
+    border-right: 2px solid var(--win-highlight);
+    border-bottom: 2px solid var(--win-highlight);
+}
+
+.win-button {
+    width: 14px;
+    height: 12px;
+    background-color: var(--win-bg);
+    border-top: 1px solid var(--win-highlight);
+    border-left: 1px solid var(--win-highlight);
+    border-right: 1px solid var(--win-shadow);
+    border-bottom: 1px solid var(--win-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dark);
+    font-size: 8px;
+    margin-left: 2px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.win-button:active {
+    border-top: 1px solid var(--win-shadow);
+    border-left: 1px solid var(--win-shadow);
+    border-right: 1px solid var(--win-highlight);
+    border-bottom: 1px solid var(--win-highlight);
+    padding: 1px 0 0 1px;
+}
+
+.win-button-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* ===== Pixel Art ===== */
+.pixel-art {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}

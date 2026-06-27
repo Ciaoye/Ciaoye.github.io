@@ -1,0 +1,139 @@
+/* ===== 俏也 OS — Window Framework ===== */
+
+.oso-window {
+    position: absolute;
+    min-width: 280px;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+}
+
+.oso-window.maximized {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 28px) !important;
+}
+
+.oso-window-titlebar {
+    background: linear-gradient(90deg, var(--win-title-active-start), var(--win-title-active-end));
+    padding: 2px 3px 3px 3px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-light);
+    font-size: 11px;
+    height: 20px;
+    cursor: default;
+    flex-shrink: 0;
+}
+
+.oso-window.inactive .oso-window-titlebar {
+    background: linear-gradient(90deg, var(--win-title-inactive-start), var(--win-title-inactive-end));
+}
+
+.oso-window-title-left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    flex: 1;
+    min-width: 0;
+}
+
+.oso-window-title-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.oso-window-title-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.oso-window-title-controls {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.oso-window-menu {
+    display: flex;
+    font-size: 11px;
+    padding: 2px 4px;
+    color: var(--text-dark);
+    background-color: var(--win-bg);
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--win-shadow);
+}
+
+.oso-window-menu span {
+    padding: 0 6px;
+    cursor: pointer;
+}
+
+.oso-window-menu span:hover {
+    background-color: var(--win-highlight);
+}
+
+.oso-window-menu span:first-letter {
+    text-decoration: underline;
+}
+
+.oso-window-body {
+    flex: 1;
+    overflow: auto;
+    background-color: var(--win-bg);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.oso-window-statusbar {
+    display: flex;
+    align-items: center;
+    padding: 2px 4px;
+    font-size: 10px;
+    background-color: var(--win-bg);
+    border-top: 1px solid var(--win-shadow);
+    min-height: 18px;
+    flex-shrink: 0;
+    color: var(--text-dark);
+    gap: 8px;
+}
+
+.oso-window-statusbar .statusbar-section {
+    padding: 0 4px;
+    border: 1px solid var(--win-shadow);
+    border-right-color: var(--win-highlight);
+    border-bottom-color: var(--win-highlight);
+}
+
+/* Resize handles */
+.oso-window-resize {
+    position: absolute;
+    z-index: 100;
+}
+
+.oso-window-resize-n  { top: -3px; left: 8px; right: 8px; height: 6px; cursor: n-resize; }
+.oso-window-resize-s  { bottom: -3px; left: 8px; right: 8px; height: 6px; cursor: s-resize; }
+.oso-window-resize-e  { top: 8px; right: -3px; bottom: 8px; width: 6px; cursor: e-resize; }
+.oso-window-resize-w  { top: 8px; left: -3px; bottom: 8px; width: 6px; cursor: w-resize; }
+.oso-window-resize-ne { top: -3px; right: -3px; width: 10px; height: 10px; cursor: ne-resize; }
+.oso-window-resize-nw { top: -3px; left: -3px; width: 10px; height: 10px; cursor: nw-resize; }
+.oso-window-resize-se { bottom: -3px; right: -3px; width: 10px; height: 10px; cursor: se-resize; }
+.oso-window-resize-sw { bottom: -3px; left: -3px; width: 10px; height: 10px; cursor: sw-resize; }
+
+.oso-window.maximized .oso-window-resize { display: none; }
+
+/* Window open animation */
+@keyframes osoWindowOpen {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.oso-window.animating {
+    animation: osoWindowOpen 0.12s ease-out;
+}

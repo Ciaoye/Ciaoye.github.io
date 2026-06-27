@@ -1,0 +1,44 @@
+/* ===== 俏也 OS — Mood Tracker (全屏跳转) ===== */
+
+var OSO_MoodTracker = (function() {
+    'use strict';
+
+    function open() {
+        var existing = document.getElementById('oso-fullscreen-mood');
+        if (existing) { existing.remove(); return; }
+
+        var overlay = document.createElement('div');
+        overlay.id = 'oso-fullscreen-mood';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;';
+
+        overlay.innerHTML = '\
+<div style="display:flex;align-items:center;justify-content:space-between;height:20px;background:linear-gradient(90deg,#5e2ca5,#8a41ff);color:#fff;font-size:11px;padding:1px 3px;flex-shrink:0;border-bottom:1px solid #3a1a7a;">\
+    <span style="display:flex;align-items:center;gap:4px;"><img src="assets/icons/image-20.png" style="width:14px;height:14px;" alt=""/>情绪星云</span>\
+    <div style="display:flex;gap:2px;">\
+        <div onclick="document.getElementById(\'oso-fullscreen-mood\').remove()" style="cursor:pointer;width:16px;height:14px;display:flex;align-items:center;justify-content:center;background:#c0c0c0;border-top:1px solid #dfdfdf;border-left:1px solid #dfdfdf;border-right:1px solid #808080;border-bottom:1px solid #808080;color:#000;font-size:8px;line-height:1;">✕</div>\
+    </div>\
+</div>\
+<iframe id="oso-mood-iframe" style="flex:1;width:100%;border:none;"></iframe>\
+<div id="oso-mood-loading" style="flex:1;display:flex;align-items:center;justify-content:center;color:#808080;font-size:12px;">Loading...</div>';
+
+        document.body.appendChild(overlay);
+        var iframe = document.getElementById('oso-mood-iframe');
+        var loading = document.getElementById('oso-mood-loading');
+
+        fetch('情绪星云_交互可视化.html')
+            .then(function(res) { return res.text(); })
+            .then(function(html) {
+                iframe.srcdoc = html;
+                loading.style.display = 'none';
+                iframe.style.display = '';
+            })
+            .catch(function() {
+                // Fallback: try direct src
+                iframe.src = '情绪星云_交互可视化.html';
+                loading.style.display = 'none';
+                iframe.style.display = '';
+            });
+    }
+
+    return { open: open };
+})();

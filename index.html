@@ -1,0 +1,464 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ciao os</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+<link rel="stylesheet" href="css/theme.css"/>
+<link rel="stylesheet" href="css/desktop.css"/>
+<link rel="stylesheet" href="css/window.css"/>
+<link rel="stylesheet" href="css/taskbar.css"/>
+</head>
+<body>
+
+<div id="oso-desktop" class="oso-desktop" style="background-image: url('assets/Synthwave Desktop Wallpaper Posted By Ryan Simpson.jpg');">
+    <div id="oso-desktop-icons" class="oso-desktop-icons"></div>
+
+    <!-- Desktop Widgets -->
+    <div class="oso-sticky" id="oso-sticky">
+        <div class="oso-sticky-header">Note</div>
+        <div class="oso-sticky-body" contenteditable="true">今天要做的事...</div>
+    </div>
+    <div class="oso-desk-clock" id="oso-desk-clock">
+        <div class="oso-desk-clock-time">12:00</div>
+        <div class="oso-desk-clock-date">6/27</div>
+    </div>
+
+    <!-- Lofi Player -->
+    <div class="oso-lofi" id="oso-lofi">
+        <div class="oso-lofi-header" id="oso-lofi-header">
+            <img src="assets/icons/image-26.png" class="lofi-hdr-icon" alt=""/>
+            <span class="lofi-hdr-title">LOFI RADIO</span>
+            <span class="lofi-btn-min" id="oso-lofi-min">_</span>
+        </div>
+        <div class="oso-lofi-body" id="oso-lofi-body">
+            <div class="lofi-stations" id="lofi-stations"></div>
+            <div class="lofi-status" id="oso-lofi-status">PICK A STATION</div>
+            <div class="lofi-ctrl-row">
+                <button class="lofi-btn-play" id="oso-lofi-play">▶</button>
+                <button class="lofi-btn-stop" id="oso-lofi-stop">■</button>
+                <div class="lofi-vol-wrap">
+                    <span class="lofi-vol-label">VOL</span>
+                    <div class="lofi-vol-bar" id="lofi-vol-bar">
+                        <div class="lofi-vol-fill" id="lofi-vol-fill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="lofi-credit">streams via <a href="https://github.com/labilio/lofi-radio" target="_blank" rel="noopener">labilio/lofi-radio</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- Start Menu -->
+<div id="oso-start-menu" class="oso-start-menu">
+    <div class="oso-start-menu-sidebar">
+        <span>ciao os</span>
+    </div>
+    <div id="oso-start-menu-items" class="oso-start-menu-items"></div>
+</div>
+
+<!-- Taskbar -->
+<div class="oso-taskbar">
+    <div id="oso-start-btn" class="oso-taskbar-start win-outset">
+        <img src="assets/icons/image-27.png" alt="Start" class="pixel-art"/>
+        <span>Start</span>
+    </div>
+    <div class="oso-taskbar-divider"></div>
+    <div id="oso-taskbar-apps" class="oso-taskbar-apps"></div>
+    <div class="oso-taskbar-divider"></div>
+    <div class="oso-taskbar-tray">
+        <i class="fas fa-volume-up oso-taskbar-tray-icon"></i>
+        <span id="oso-clock">12:00 AM</span>
+    </div>
+</div>
+
+<!-- Core Scripts -->
+<script src="js/core/windowManager.js"></script>
+<script src="js/core/desktop.js"></script>
+<script src="js/core/taskbar.js"></script>
+<script src="js/core/fileSystem.js"></script>
+<script src="js/core/sound.js"></script>
+
+<!-- App Scripts -->
+<script src="js/apps/chat.js?v=20260627b"></script>
+<script src="js/apps/paint.js"></script>
+<script src="js/apps/letter.js?v=20260627b"></script>
+<script src="js/apps/moodTracker.js"></script>
+<script src="js/apps/wikiGraph.js"></script>
+<script src="js/apps/browser.js"></script>
+<script src="js/apps/game2048.js"></script>
+<script src="js/apps/minesweeper.js"></script>
+<script src="js/apps/fileManager.js"></script>
+<script src="js/apps/notepad.js"></script>
+
+<script>
+(function() {
+    'use strict';
+
+    /* Placeholder SVG icons for missing app icons (64x64 pixel art) */
+    var ICON_MOOD   = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#2a1a4e"/><circle cx="32" cy="28" r="8" fill="#ff55cc"/><circle cx="25" cy="34" r="6" fill="#66ddff"/><circle cx="39" cy="34" r="6" fill="#aa88ff"/><circle cx="28" cy="28" r="3" fill="#ffee55"/><circle cx="36" cy="28" r="3" fill="#88ffcc"/><circle cx="32" cy="20" r="2" fill="#ff8855"/></svg>');
+    var ICON_WIKI   = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#1a2a3e"/><circle cx="32" cy="28" r="10" fill="#66ddff"/><circle cx="22" cy="34" r="6" fill="#aa88ff"/><circle cx="42" cy="32" r="6" fill="#ff55cc"/><line x1="32" y1="18" x2="22" y2="34" stroke="#88ffcc" stroke-width="2"/><line x1="32" y1="18" x2="42" y2="32" stroke="#88ffcc" stroke-width="2"/><circle cx="22" cy="22" r="3" fill="#ffee55"/><circle cx="45" cy="22" r="3" fill="#ff8855"/></svg>');
+    var ICON_2048   = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#1a1a2e"/><rect x="6" y="6" width="24" height="24" rx="3" fill="#5e2ca5"/><text x="18" y="24" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="Arial">2</text><rect x="34" y="6" width="24" height="24" rx="3" fill="#8a41ff"/><text x="46" y="24" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="Arial">0</text><rect x="6" y="34" width="24" height="24" rx="3" fill="#7d5fff"/><text x="18" y="52" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="Arial">4</text><rect x="34" y="34" width="24" height="24" rx="3" fill="#ff55cc"/><text x="46" y="52" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="Arial">8</text></svg>');
+    var ICON_MINE   = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#2a1a4e"/><rect x="10" y="10" width="16" height="16" fill="#5e2ca5" stroke="#8a41ff" stroke-width="1"/><rect x="26" y="10" width="16" height="16" fill="#7d5fff" stroke="#b89eff" stroke-width="1"/><rect x="42" y="10" width="16" height="16" fill="#5e2ca5" stroke="#8a41ff" stroke-width="1"/><rect x="10" y="26" width="16" height="16" fill="#7d5fff" stroke="#b89eff" stroke-width="1"/><rect x="26" y="26" width="16" height="16" fill="#8a41ff" stroke="#b89eff" stroke-width="1"/><circle cx="34" cy="34" r="6" fill="#1a1a2e"/><circle cx="32" cy="32" r="2" fill="#ff55cc"/><line x1="30" y1="30" x2="26" y2="26" stroke="#1a1a2e" stroke-width="2"/><line x1="38" y1="30" x2="42" y2="26" stroke="#1a1a2e" stroke-width="2"/><line x1="38" y1="38" x2="42" y2="42" stroke="#1a1a2e" stroke-width="2"/><line x1="30" y1="38" x2="26" y2="42" stroke="#1a1a2e" stroke-width="2"/><line x1="34" y1="24" x2="34" y2="16" stroke="#1a1a2e" stroke-width="2"/><rect x="42" y="26" width="16" height="16" fill="#5e2ca5" stroke="#8a41ff" stroke-width="1"/><rect x="10" y="42" width="16" height="16" fill="#7d5fff" stroke="#b89eff" stroke-width="1"/><rect x="26" y="42" width="16" height="16" fill="#5e2ca5" stroke="#8a41ff" stroke-width="1"/><rect x="42" y="42" width="16" height="16" fill="#7d5fff" stroke="#b89eff" stroke-width="1"/></svg>');
+
+    var ICONS_PATH = 'assets/icons/';
+
+    /* ===== UI Text Configuration =====
+     * 同步自 README.md，修改 README 后告诉我
+     */
+    var T = {
+        osName: 'ciao os',
+        startBtn: 'Start',
+        apps: {
+            chat:    { name:'Chat',    menu:'Ciao Chat', tip:'和 ciao 发短信！' },
+            paint:   { name:'Paint',   menu:'Paint',     tip:'画个画吧' },
+            letter:  { name:'Letter',  menu:'Letter',    tip:'和 ciao 发邮件！' },
+            mood:    { name:'Mood Map',menu:'Mood Map',  tip:'我的情绪地图' },
+            wiki:    { name:'Wiki Map',menu:'Wiki Map',  tip:'我的知识地图' },
+            browser: { name:'Browser', menu:'Browser',   tip:'浏览一些漫长的文档' },
+            2048:    { name:'2048',    menu:'2048',      tip:'2048' },
+            minesweeper: { name:'Sweeper', menu:'Sweeper', tip:'扫雷' },
+            files:   { name:'Files',   menu:'Files',     tip:'存了的东西都在这里' },
+            notepad: { name:'Notepad', menu:'Notepad',   tip:'写点东西吧' }
+        }
+    };
+
+    /* ===== App Registration ===== */
+
+    // 1. Chat
+    OSO.Desktop.register('chat', T.apps.chat.name, ICONS_PATH + 'image-23.png', function() {
+        OSO_Chat.open();
+    }, T.apps.chat.menu, T.apps.chat.tip);
+
+    // 2. Paint
+    OSO.Desktop.register('paint', T.apps.paint.name, ICONS_PATH + 'image-4.png', function() {
+        OSO_Paint.open();
+    }, T.apps.paint.menu, T.apps.paint.tip);
+
+    // 3. Letter
+    OSO.Desktop.register('letter', T.apps.letter.name, ICONS_PATH + 'image-15.png', function() {
+        OSO_Letter.open();
+    }, T.apps.letter.menu, T.apps.letter.tip);
+
+    // 4. Mood Tracker
+    OSO.Desktop.register('mood', T.apps.mood.name, ICONS_PATH + 'image-20.png', function() {
+        OSO_MoodTracker.open();
+    }, T.apps.mood.menu, T.apps.mood.tip);
+
+    // 5. Wiki Graph
+    OSO.Desktop.register('wiki', T.apps.wiki.name, ICONS_PATH + 'image-24.png', function() {
+        OSO_WikiGraph.open();
+    }, T.apps.wiki.menu, T.apps.wiki.tip);
+
+    // 6. Browser
+    OSO.Desktop.register('browser', T.apps.browser.name, ICONS_PATH + 'image-9.png', function() {
+        OSO_Browser.open();
+    }, T.apps.browser.menu, T.apps.browser.tip);
+
+    // 7. 2048
+    OSO.Desktop.register('2048', T.apps['2048'].name, ICON_2048, function() {
+        OSO_Game2048.open();
+    }, T.apps['2048'].menu, T.apps['2048'].tip);
+
+    // 8. Minesweeper
+    OSO.Desktop.register('minesweeper', T.apps.minesweeper.name, ICON_MINE, function() {
+        OSO_Minesweeper.open();
+    }, T.apps.minesweeper.menu, T.apps.minesweeper.tip);
+
+    // 9. File Manager
+    OSO.Desktop.register('files', T.apps.files.name, ICONS_PATH + 'image-2.png', function() {
+        OSO_FileManager.open();
+    }, T.apps.files.menu, T.apps.files.tip);
+
+    // 10. Notepad
+    OSO.Desktop.register('notepad', T.apps.notepad.name, ICONS_PATH + 'image-12.png', function() {
+        OSO_Notepad.open();
+    }, T.apps.notepad.menu, T.apps.notepad.tip);
+
+    /* ===== Bootstrap ===== */
+    OSO.Desktop.init();
+    OSO.Taskbar.init();
+
+    // Set OS name in start menu
+    var sidebarSpan = document.querySelector('.oso-start-menu-sidebar span');
+    if (sidebarSpan) sidebarSpan.textContent = T.osName;
+
+    // Auto-open Chat (left) and Notepad with readme (right)
+    var desktopW = window.innerWidth;
+    var desktopH = window.innerHeight - 28;
+    var savedPos = OSO.WM.loadPositions();
+    setTimeout(function() {
+        // Chat: saved position or default left
+        OSO_Chat.open();
+        var chatWin = OSO.WM.get('chat');
+        if (chatWin) {
+            var cp = savedPos.chat || { x: 8, y: 8 };
+            chatWin._el.style.left = cp.x + 'px';
+            chatWin._el.style.top = cp.y + 'px';
+        }
+        // Notepad: saved position or default right
+        OSO_Notepad.open({
+            content: '你好呀！我是俏也。\n\n这是我在做的一些小项目的展示。\n\n你可以跟 ciao 发短消息（Chat） ！也可以写很长的信（Letter）。\n\n另外，还有几个我这几天在做的小项目：\n- Mood：2008 年到现在，2400+ 情绪的数据可视化\n- Wiki：整理的 Wikipedia 知识图谱\n- Explorer：我写过的东西，和目前整理的 Wikipedia\n\n除此之外加了一些有的没的，比如画画、扫雷、2048……\n\n我应该会经常更新这里的东西。欢迎随时来看看。\n如果想加什么东西，遇到什么问题，请随时联系我！\n\n— 俏也',
+            filename: '/notepad/readme.txt',
+            position: savedPos.notepad || { x: Math.max(0, desktopW - 540), y: 8 }
+        });
+    }, 300);
+
+    console.log('%c' + T.osName.toUpperCase() + ' v1.0 %cready',
+        'color: #ffb8d9; font-size: 14px;',
+        'color: #c0c0c0;');
+
+    // Desktop Clock widget
+    (function updateDeskClock() {
+        var now = new Date();
+        var el = document.getElementById('oso-desk-clock');
+        if (!el) return;
+        var tEl = el.querySelector('.oso-desk-clock-time');
+        var dEl = el.querySelector('.oso-desk-clock-date');
+        if (tEl) tEl.textContent = now.toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'});
+        if (dEl) dEl.textContent = (now.getMonth()+1) + '/' + now.getDate();
+        setTimeout(updateDeskClock, 10000);
+    })();
+
+    // Desktop Clock drag
+    (function() {
+        var clock = document.getElementById('oso-desk-clock');
+        if (!clock) return;
+        clock.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            var sx = e.clientX, sy = e.clientY;
+            var ox = clock.offsetLeft, oy = clock.offsetTop;
+            function mm(ev) {
+                clock.style.right = 'auto';
+                clock.style.top = 'auto';
+                clock.style.left = Math.max(0, ox + ev.clientX - sx) + 'px';
+                clock.style.top = Math.max(0, oy + ev.clientY - sy) + 'px';
+            }
+            function mu() {
+                document.removeEventListener('mousemove', mm);
+                document.removeEventListener('mouseup', mu);
+            }
+            document.addEventListener('mousemove', mm);
+            document.addEventListener('mouseup', mu);
+        });
+    })();
+
+    // Lofi Player — Retro Pixel radio from labilio/lofi-radio
+    (function() {
+        var lofi = document.getElementById('oso-lofi');
+        var body = document.getElementById('oso-lofi-body');
+        var header = document.getElementById('oso-lofi-header');
+        var minBtn = document.getElementById('oso-lofi-min');
+        var statusEl = document.getElementById('oso-lofi-status');
+        var stationsEl = document.getElementById('lofi-stations');
+        var playBtn = document.getElementById('oso-lofi-play');
+        var stopBtn = document.getElementById('oso-lofi-stop');
+        var volBar = document.getElementById('lofi-vol-bar');
+        var volFill = document.getElementById('lofi-vol-fill');
+
+        var audio = new Audio();
+        audio.volume = 0.5;
+        audio.crossOrigin = 'anonymous';
+        var curVol = 0.5;
+        var curUrl = '';
+
+        var stations = [
+            { name:'LOFI GIRL',   url:'https://boxradio-edge-00.streamafrica.net/lofi' },
+            { name:'CHILL SKY',   url:'http://chill.radioca.st/stream' },
+            { name:'GROOVE SALAD',url:'https://ice1.somafm.com/groovesalad-128-mp3' },
+            { name:'PARADISE',    url:'https://stream.radioparadise.com/mellow-128' },
+            { name:'JAZZ BOX',    url:'https://boxradio-edge-01.streamafrica.net/jazz' },
+            { name:'RAIN',        url:'https://boxradio-edge-01.streamafrica.net/rain' },
+            { name:'DRONE ZONE',  url:'https://ice1.somafm.com/dronezone-128-mp3' }
+        ];
+
+        // Build station buttons
+        stations.forEach(function(s) {
+            var btn = document.createElement('button');
+            btn.className = 'lofi-st-btn';
+            btn.textContent = s.name;
+            btn.addEventListener('click', function() {
+                // Highlight active
+                stationsEl.querySelectorAll('.lofi-st-btn').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                // Play
+                curUrl = s.url;
+                audio.src = s.url;
+                audio.volume = curVol;
+                audio.play().then(function() {
+                    playBtn.classList.add('playing');
+                    statusEl.textContent = 'NOW: ' + s.name;
+                    statusEl.style.color = '#73d4ff';
+                }).catch(function() {
+                    statusEl.textContent = 'OFFLINE: ' + s.name;
+                    statusEl.style.color = '#d12e7a';
+                });
+            });
+            stationsEl.appendChild(btn);
+        });
+
+        // Play/Pause
+        playBtn.onclick = function() {
+            if (!curUrl) return;
+            if (audio.paused) {
+                audio.src = curUrl;
+                audio.play().then(function() {
+                    playBtn.classList.add('playing');
+                    statusEl.style.color = '#73d4ff';
+                }).catch(function(){});
+            } else {
+                audio.pause();
+                playBtn.classList.remove('playing');
+                statusEl.textContent = 'PAUSED';
+                statusEl.style.color = '#b89eff';
+            }
+        };
+
+        // Stop
+        stopBtn.onclick = function() {
+            audio.pause();
+            audio.currentTime = 0;
+            playBtn.classList.remove('playing');
+            statusEl.textContent = 'STOPPED';
+            statusEl.style.color = '#b89eff';
+        };
+
+        // Volume bar (click to set)
+        volBar.onclick = function(e) {
+            var rect = volBar.getBoundingClientRect();
+            var pct = (e.clientX - rect.left) / rect.width;
+            pct = Math.max(0, Math.min(1, pct));
+            setVol(pct);
+        };
+
+        // Volume bar drag
+        var dragVol = false;
+        volBar.onmousedown = function(e) {
+            dragVol = true;
+            var rect = volBar.getBoundingClientRect();
+            var pct = (e.clientX - rect.left) / rect.width;
+            setVol(Math.max(0, Math.min(1, pct)));
+            e.preventDefault();
+        };
+        document.addEventListener('mousemove', function(e) {
+            if (!dragVol) return;
+            var rect = volBar.getBoundingClientRect();
+            var pct = (e.clientX - rect.left) / rect.width;
+            setVol(Math.max(0, Math.min(1, pct)));
+        });
+        document.addEventListener('mouseup', function() { dragVol = false; });
+
+        function setVol(v) {
+            curVol = v;
+            audio.volume = v;
+            volFill.style.width = (v * 100) + '%';
+            localStorage.setItem('oso_lofi_vol', v);
+        }
+
+        // Load saved vol
+        var sv = localStorage.getItem('oso_lofi_vol');
+        if (sv) { setVol(parseFloat(sv)); }
+
+        // Collapse
+        minBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            body.classList.toggle('collapsed');
+            minBtn.textContent = body.classList.contains('collapsed') ? '□' : '_';
+        });
+
+        // Drag
+        header.addEventListener('mousedown', function(e) {
+            if (e.target === minBtn) return;
+            e.preventDefault();
+            var sx = e.clientX, sy = e.clientY;
+            var ox = lofi.offsetLeft, oy = lofi.offsetTop;
+            function mm(ev) {
+                lofi.style.right = 'auto';
+                lofi.style.top = 'auto';
+                lofi.style.left = Math.max(0, ox + ev.clientX - sx) + 'px';
+                lofi.style.top = Math.max(0, oy + ev.clientY - sy) + 'px';
+            }
+            function mu() {
+                document.removeEventListener('mousemove', mm);
+                document.removeEventListener('mouseup', mu);
+            }
+            document.addEventListener('mousemove', mm);
+            document.addEventListener('mouseup', mu);
+        });
+
+        // Save position
+        window.addEventListener('beforeunload', function() {
+            if (lofi.style.left) {
+                localStorage.setItem('oso_lofi_pos', JSON.stringify({
+                    x: parseInt(lofi.style.left),
+                    y: parseInt(lofi.style.top)
+                }));
+            }
+        });
+        var savedPos = localStorage.getItem('oso_lofi_pos');
+        if (savedPos) {
+            try {
+                var p = JSON.parse(savedPos);
+                lofi.style.right = 'auto';
+                lofi.style.top = 'auto';
+                lofi.style.left = p.x + 'px';
+                lofi.style.top = p.y + 'px';
+            } catch(e) {}
+        }
+    })();
+
+    // Sound Effects: hook into window events
+    OSO.WM.on('open', function() { OSO.Sound.open(); });
+    OSO.WM.on('close', function() { OSO.Sound.close(); });
+    OSO.WM.on('focus', function() { OSO.Sound.click(); });
+
+    // Global click sound for desktop icons and start menu
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.oso-desktop-icon')) {
+            OSO.Sound.click();
+        }
+        if (e.target.closest('.oso-start-menu-item')) {
+            OSO.Sound.click();
+        }
+        if (e.target.closest('#oso-start-btn')) {
+            OSO.Sound.startMenu();
+        }
+    }, true);
+
+    // Sticky Note persistence + drag
+    (function() {
+        var sticky = document.getElementById('oso-sticky');
+        var body = sticky ? sticky.querySelector('.oso-sticky-body') : null;
+        if (!body) return;
+        var saved = localStorage.getItem('oso_sticky');
+        if (saved) body.textContent = saved;
+        body.addEventListener('input', function() {
+            localStorage.setItem('oso_sticky', body.textContent);
+        });
+        var header = sticky.querySelector('.oso-sticky-header');
+        header.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            var sx = e.clientX, sy = e.clientY;
+            var ox = sticky.offsetLeft, oy = sticky.offsetTop;
+            function mm(ev) {
+                sticky.style.right = 'auto';
+                sticky.style.bottom = 'auto';
+                sticky.style.top = 'auto';
+                sticky.style.left = Math.max(0, ox + ev.clientX - sx) + 'px';
+                sticky.style.top = Math.max(0, oy + ev.clientY - sy) + 'px';
+            }
+            function mu() {
+                document.removeEventListener('mousemove', mm);
+                document.removeEventListener('mouseup', mu);
+            }
+            document.addEventListener('mousemove', mm);
+            document.addEventListener('mouseup', mu);
+        });
+    })();
+})();
+</script>
+
+</body>
+</html>
