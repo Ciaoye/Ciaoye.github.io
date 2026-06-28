@@ -15,6 +15,8 @@ var OSO_Chat = (function() {
     var chatSaveTimer = null;
     var currentThreadId = '';
     var streamBubbles = [];   // bubbles being rendered in current SSE stream only
+    var streamChatCount = 0;   // # of chatMessages entries from current stream
+    var closeHandlerRegistered = false;
 
     function open() {
         if (OSO.WM.get('chat')) {
@@ -61,6 +63,14 @@ var OSO_Chat = (function() {
                 if (record && record.data) {
                     var data = typeof record.data === 'string' ? JSON.parse(record.data) : record.data;
                     if (Array.isArray(data)) {
+                        // Deduplicate consecutive identical entries (clean up old buggy data)
+                        var deduped = [];
+                        for (var i = 0; i < data.length; i++) {
+                            if (i === 0 || data[i].role !== data[i-1].role || data[i].text !== data[i-1].text) {
+                                deduped.push(data[i]);
+                            }
+                        }
+                        data = deduped;
                         chatMessages = data;
                         // Render loaded messages (don't use addBubble to avoid re-tracking)
                         if (welcomeEl) welcomeEl.style.display = 'none';
@@ -105,6 +115,7 @@ var OSO_Chat = (function() {
             if (!text) return;
 
             if (text === '/new') {
+                if (chatSaveTimer) clearTimeout(chatSaveTimer);
                 threadId = 'ciao-' + randId();
                 currentThreadId = threadId;
                 chatMessages = [];
@@ -220,6 +231,12 @@ var OSO_Chat = (function() {
             });
             streamBubbles = [];
 
+            // Remove previous stream entries from chatMessages to prevent duplicates
+            if (streamChatCount > 0) {
+                chatMessages.splice(chatMessages.length - streamChatCount, streamChatCount);
+                streamChatCount = 0;
+            }
+
             // Split by various line-break formats
             var text = rawContent
                 .replace(/\\n/g, '\n')       // JSON-escaped \n → real newline
@@ -235,6 +252,9 @@ var OSO_Chat = (function() {
                 agentBubbles.push(b);
                 streamBubbles.push(b);
             });
+
+            // Track stream entry count to enable cleanup on next chunk
+            streamChatCount = parts.filter(function(p) { return p.trim(); }).length;
         }
 
         function splitAgentText(text) {
@@ -407,12 +427,15 @@ var OSO_Chat = (function() {
             }
         });
 
-        // Auto-save on close
-        OSO.WM.on('close', function(closedWin) {
-            if (closedWin.id === 'chat') {
-                saveChatHistory();
-            }
-        });
+        // Auto-save on close (register once)
+        if (!closeHandlerRegistered) {
+            OSO.WM.on('close', function(closedWin) {
+                if (closedWin.id === 'chat') {
+                    saveChatHistory();
+                }
+            });
+            closeHandlerRegistered = true;
+        }
     }
 
     function getChatHTML() {
