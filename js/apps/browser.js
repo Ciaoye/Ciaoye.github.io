@@ -1,4 +1,4 @@
-/* ===== Ciao OS - Browser App (static) ===== */
+/* ===== Ciao OS - life log (static) ===== */
 
 var OSO_Browser = (function() {
     'use strict';
@@ -13,7 +13,7 @@ var OSO_Browser = (function() {
         container.style.cssText = 'display:flex;flex-direction:column;height:100%;overflow:hidden;background:#c0c0c0;';
         container.innerHTML = getHTML();
 
-        var win = OSO.WM.create('browser', 'Browser - WWW', 'assets/icons/image-9.png', container, {
+        var win = OSO.WM.create('browser', 'life log', 'assets/icons/image-24.png', container, {
             width: 720, height: 520, minWidth: 480, minHeight: 340
         });
 
@@ -24,7 +24,7 @@ var OSO_Browser = (function() {
         function normalizeUrl(value) {
             var text = (value || '').trim();
             if (!text) return 'about:blank';
-            if (text === 'wiki') return 'LLM_Wiki_知识星云.html';
+            if (text === 'nebula') return 'LLM_Wiki_知识星云.html';
             if (text === 'mood') return '情绪星云_交互可视化.html';
             if (/^(https?:|file:|about:)/i.test(text)) return text;
             if (/^[\w.-]+\.[a-z]{2,}/i.test(text)) return 'https://' + text;
@@ -65,7 +65,7 @@ var OSO_Browser = (function() {
 .browser-status{height:18px;padding:2px 6px;font-size:10px;color:#333;border-top:1px solid #808080;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}\
 </style>\
 <div class="browser-toolbar">\
-    <button class="browser-link" data-url="LLM_Wiki_知识星云.html">Wiki</button>\
+    <button class="browser-link" data-url="LLM_Wiki_知识星云.html">知识图谱</button>\
     <button class="browser-link" data-url="情绪星云_交互可视化.html">Mood</button>\
     <input class="browser-address" type="text" value="LLM_Wiki_知识星云.html"/>\
     <button class="browser-go">Go</button>\

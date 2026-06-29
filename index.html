@@ -86,6 +86,7 @@
 <script src="js/apps/paint.js?v=2"></script>
 <script src="js/apps/letter.js?v=2"></script>
 <script src="js/apps/moodTracker.js?v=2"></script>
+<script src="js/apps/wiki.js?v=1"></script>
 <script src="js/apps/wikiGraph.js?v=2"></script>
 <script src="js/apps/browser.js?v=2"></script>
 <script src="js/apps/game2048.js?v=2"></script>
@@ -116,8 +117,8 @@
             paint:   { name:'Paint',   menu:'Paint',     tip:'画个画吧' },
             letter:  { name:'Letter',  menu:'Letter',    tip:'和 ciao 发邮件！' },
             mood:    { name:'Mood Map',menu:'Mood Map',  tip:'我的情绪地图' },
-            wiki:    { name:'Wiki Map',menu:'Wiki Map',  tip:'我的知识地图' },
-            browser: { name:'Browser', menu:'Browser',   tip:'浏览一些漫长的文档' },
+            wiki:    { name:'Wikipedia',menu:'Wikipedia',  tip:'我自己的百科' },
+            browser: { name:'life log', menu:'life log', tip:'一些生命数据处理' },
             2048:    { name:'2048',    menu:'2048',      tip:'2048' },
             minesweeper: { name:'Sweeper', menu:'Sweeper', tip:'扫雷' },
             files:   { name:'Files',   menu:'Files',     tip:'存了的东西都在这里' },
@@ -147,13 +148,13 @@
         OSO_MoodTracker.open();
     }, T.apps.mood.menu, T.apps.mood.tip);
 
-    // 5. Wiki Graph
-    OSO.Desktop.register('wiki', T.apps.wiki.name, ICONS_PATH + 'image-24.png', function() {
-        OSO_WikiGraph.open();
+    // 5. Wikipedia
+    OSO.Desktop.register('wiki', T.apps.wiki.name, ICONS_PATH + 'image-9.png', function() {
+        OSO_Wiki.open();
     }, T.apps.wiki.menu, T.apps.wiki.tip);
 
-    // 6. Browser
-    OSO.Desktop.register('browser', T.apps.browser.name, ICONS_PATH + 'image-9.png', function() {
+    // 6. life log
+    OSO.Desktop.register('browser', T.apps.browser.name, ICONS_PATH + 'image-24.png', function() {
         OSO_Browser.open();
     }, T.apps.browser.menu, T.apps.browser.tip);
 
@@ -195,13 +196,13 @@
             OSO_Chat.open();
             var chatWin = OSO.WM.get('chat');
             if (chatWin) {
-                var cp = savedPos.chat || { x: 40, y: 40 };
+                var cp = savedPos.chat || { x: Math.max(20, (desktopW - 430) / 2), y: Math.max(20, (desktopH - 560) / 2) };
                 chatWin._el.style.left = cp.x + 'px';
                 chatWin._el.style.top = cp.y + 'px';
             }
             // Notepad: saved position or default right
             OSO_Notepad.open({
-                content: '你好呀！我是俏也。\n\n这个 ciao os 是我最近做的各种关于"我的"的小项目的展示。\n我搜集了非常多过去散落的各种数据，试图从里面找一点什么。\n\nExplorer：这里有我的 Wikipedia 页面，还有 2008 年到现在的一些时间线和生命线。\nMood Map：2008 年到现在，2400+ 条情绪的地图。\nWiki Map：Wikipedia 页面是怎么相互连接的。\n\nciao 是阅读了这些编年史和 LLM wiki 的 AI。\n你可以跟 ciao 发短消息（Chat） ！也可以写很长的信（Letter）。\n\n除此之外加了一些有的没的，比如画画、扫雷、2048……\n我会继续更新这里的东西。欢迎随时来看看。\n如果想到可以加什么东西，遇到什么问题，请随时联系我！\n\n— 俏也',
+                content: '你好呀！我是俏也。\n\n这个 ciao os 是我最近做的各种关于"我的"的小项目的展示。\n我搜集了非常多过去散落的各种数据，试图从里面找一点什么。\n\nExplorer：这里有我的 Wikipedia 页面，还有 2008 年到现在的一些时间线和生命线。\nMood Map：2008 年到现在，2400+ 条情绪的地图。\nWikipedia：Wikipedia 页面是怎么相互连接的。\n\nciao 是阅读了这些编年史和 LLM wiki 的 AI。\n你可以跟 ciao 发短消息（Chat） ！也可以写很长的信（Letter）。\n\n除此之外加了一些有的没的，比如画画、扫雷、2048……\n我会继续更新这里的东西。欢迎随时来看看。\n如果想到可以加什么东西，遇到什么问题，请随时联系我！\n\n— 俏也',
                 filename: '/notepad/readme.txt',
                 position: savedPos.notepad || { x: Math.max(60, desktopW - 560), y: 40 }
             });

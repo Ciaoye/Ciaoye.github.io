@@ -23,8 +23,8 @@
 | paint       | Paint    | Paint     | 画个画吧        |     |
 | letter      | Letter   | Letter    | 和 ciao 发邮件！ |     |
 | mood        | Mood Map | Mood Map  | 我的情绪地图      |     |
-| wiki        | Wiki Map | Wiki Map  | 我的知识地图      |     |
-| browser     | Browser  | Browser   | 浏览一些漫长的文档   |     |
+| wiki        | Wikipedia | Wikipedia | 我自己的百科      |     |
+| browser     | life log | life log | 浏览一些漫长的文档   |     |
 | 2048        | 2048     | 2048      | 2048        |     |
 | minesweeper | Sweeper  | Sweeper   | 扫雷          |     |
 | files       | Files    | Files     | 存了的东西都在这里   |     |
@@ -158,7 +158,7 @@ ciao
 
 Explorer：这里有我的 Wikipedia 页面，还有 2008 年到现在的一些时间线和生命线。
 Mood Map：2008 年到现在，2400+ 条情绪的地图。
-Wiki Map：Wikipedia 页面是怎么相互连接的。
+Wikipedia：Wikipedia 页面是怎么相互连接的。
 
 ciao 是阅读了这些编年史和 LLM wiki 的 AI。
 你可以跟 ciao 发短消息（Chat） ！也可以写很长的信（Letter）。
@@ -196,19 +196,22 @@ ciao 是阅读了这些编年史和 LLM wiki 的 AI。
 
 ---
 
-## 10. Wiki（知识图谱）
+## 10. Wikipedia（知识百科）& 知识图谱
+
+Wikipedia 以复古网页风格展示 wiki 页面，支持 [[双链]] 导航。点击知识图谱按钮打开知识图谱全屏可视化。
 
 | 位置    | 当前文字 |
 | ----- | ---- |
-| 全屏标题栏 | 知识星云 |
+| Wikipedia 窗口标题 | Wikipedia |
+| 知识图谱 全屏标题栏 | 知识图谱 |
 
 ---
 
-## 11. Browser（浏览器）
+## 11. life log
 
 | 位置 | 当前文字 |
 |------|---------|
-| 窗口标题 | Browser |
+| 窗口标题 | life log |
 
 ---
 

@@ -13,11 +13,11 @@
 | Chat | AI 聊天，像发短信一样 |
 | Letter | AI 笔友，写长信 |
 | Mood Map | 2008 年至今的情绪可视化 |
-| Wiki Map | 个人知识图谱 |
+| Wikipedia | 我自己的百科 |
 | Paint | 像素画板 |
 | Files | 文件管理器，存画作和聊天记录 |
 | Notepad | 记事本 |
-| Browser | 内嵌浏览器 |
+| life log | 浏览文档和知识图谱 |
 | Lofi Radio | 7 个电台，像素风播放器 |
 | 2048 | 经典合并游戏 |
 | Sweeper | 扫雷 |
