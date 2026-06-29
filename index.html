@@ -181,7 +181,7 @@
     if (sidebarSpan) sidebarSpan.textContent = T.osName;
 
     // Auto-open Chat (left) and Notepad with readme (right)
-    window.addEventListener('DOMContentLoaded', function() {
+    function autoOpen() {
         try {
             var desktopW = window.innerWidth;
             var desktopH = window.innerHeight - 28;
@@ -203,7 +203,12 @@
         } catch(e) {
             console.error('Auto-open failed:', e);
         }
-    });
+    }
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', autoOpen);
+    } else {
+        setTimeout(autoOpen, 50);
+    }
 
     console.log('%c' + T.osName.toUpperCase() + ' v1.0 %cready',
         'color: #ffb8d9; font-size: 14px;',

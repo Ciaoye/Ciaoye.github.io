@@ -69,12 +69,12 @@ var OSO_Lifelog = (function() {
 
     function renderTimeline() {
         currentFrame.innerHTML =
-            '<iframe src="data/chronicle/timeline.html" style="width:100%;height:100%;border:none;background:#fff;" scrolling="auto"></iframe>';
+            '<iframe src="data/chronicle/timeline.html?v=2" style="width:100%;height:100%;border:none;background:#fff;" scrolling="auto"></iframe>';
     }
 
     function renderReport() {
         currentFrame.innerHTML =
-            '<iframe src="data/chronicle/report.html" style="width:100%;height:100%;border:none;background:#fff;" scrolling="auto"></iframe>';
+            '<iframe src="data/chronicle/report.html?v=2" style="width:100%;height:100%;border:none;background:#fff;" scrolling="auto"></iframe>';
     }
 
     function getHTML() {

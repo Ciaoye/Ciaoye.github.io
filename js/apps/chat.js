@@ -123,7 +123,8 @@ var OSO_Chat = (function() {
                     }
                 }
             }).catch(function(){});
-        }
+        });
+    }
 
         function renderBubble(role, text) {
             var row = document.createElement('div');
