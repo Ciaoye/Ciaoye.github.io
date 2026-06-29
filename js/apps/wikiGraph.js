@@ -28,7 +28,7 @@ var OSO_WikiGraph = (function() {
         var iframe = document.getElementById('oso-wiki-iframe');
         var loading = document.getElementById('oso-wiki-loading');
 
-        fetch('LLM_Wiki_知识星云.html')
+        fetch('data/LLM_Wiki_知识星云.html')
             .then(function(res) { return res.text(); })
             .then(function(html) {
                 iframe.srcdoc = html;
@@ -36,7 +36,7 @@ var OSO_WikiGraph = (function() {
                 iframe.style.display = '';
             })
             .catch(function() {
-                iframe.src = 'LLM_Wiki_知识星云.html';
+                iframe.src = 'data/LLM_Wiki_知识星云.html';
                 loading.style.display = 'none';
                 iframe.style.display = '';
             });

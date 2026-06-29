@@ -7,12 +7,12 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg:#fbf6ef;
+    --bg:#FFF8F1;
     --paper:#ffffff;
-    --ink:#4d4038;
-    --muted:#8d7c70;
+    --ink:#34424A;
+    --muted:#7E8A93;
     --soft:#f7efe4;
-    --line:#eadfce;
+    --line:#E8EEF2;
     --mint:#78aa94;
     --sun:#d8aa55;
     --coral:#d9856f;
@@ -28,30 +28,30 @@
   html { scroll-behavior:smooth; }
   body {
     margin:0;
-    background:#fff;
+    background:var(--bg);
     color:var(--ink);
     font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
     font-size:14px;
-    line-height:1.75;
+    line-height:1.7;
   }
   header {
-    background:#fff;
+    background:var(--bg);
     border-bottom:1px solid var(--line);
-    padding:58px 24px 38px;
+    padding:40px 24px 28px;
   }
   .wrap { max-width:1160px; margin:0 auto; }
-  h1 { margin:0 0 14px; font-size:40px; line-height:1.16; letter-spacing:0; }
-  h2 { margin:0 0 16px; font-size:28px; line-height:1.3; letter-spacing:0; }
-  h3 { margin:24px 0 10px; font-size:21px; line-height:1.35; letter-spacing:0; }
-  h4 { margin:0 0 8px; font-size:16px; line-height:1.45; }
+  h1 { margin:0 0 10px; font-size:22px; font-weight:500; line-height:1.3; }
+  h2 { margin:0 0 14px; font-size:20px; line-height:1.4; font-weight:500; }
+  h3 { margin:24px 0 8px; font-size:17px; line-height:1.4; }
+  h4 { margin:0 0 6px; font-size:15px; line-height:1.5; }
   p { margin:0 0 15px; }
   a { color:#6e7fa5; }
-  .lead { max-width:900px; color:#66564c; margin:0; font-size:18px; }
+  .lead { max-width:900px; color:var(--ink); margin:0; font-size:15px; }
   .meta-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
   .meta-pill {
     background:rgba(255,255,255,.74);
     border:1px solid rgba(234,223,206,.92);
-    color:#65554c;
+    color:var(--ink);
     border-radius:999px;
     padding:6px 12px;
     font-size:13px;
@@ -68,7 +68,7 @@
   nav a {
     flex:0 0 auto;
     text-decoration:none;
-    color:#65554c;
+    color:var(--ink);
     background:var(--paper);
     border:1px solid var(--line);
     border-radius:999px;
@@ -84,7 +84,7 @@
     border-left:5px solid var(--mint);
     border-radius:10px;
     padding:18px 20px;
-    color:#5f5047;
+    color:var(--ink);
   }
   .notice p:last-child { margin-bottom:0; }
   .figure {
@@ -143,7 +143,7 @@
     border:4px solid var(--bg);
     box-shadow:0 0 0 1px var(--line);
   }
-  .phase-node strong { display:block; text-align:center; font-size:13px; color:#40555e; }
+  .phase-node strong { display:block; text-align:center; font-size:13px; color:var(--ink); }
   .phase-node span { display:block; text-align:center; font-size:12px; color:var(--muted); }
   .table-wrap {
     overflow:auto;
@@ -153,7 +153,7 @@
   }
   table { width:100%; border-collapse:collapse; min-width:780px; }
   th,td { padding:12px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
-  th { background:#f5efe2; font-weight:760; color:#5c4d44; }
+  th { background:#f5efe2; font-weight:760; color:var(--ink); }
   td { font-size:14px; }
   .note { color:var(--muted); font-size:14px; margin-top:8px; }
   .pull {
@@ -164,7 +164,7 @@
     border-left:5px solid var(--coral);
     border-radius:12px;
     font-size:17px;
-    color:#5c4d44;
+    color:var(--ink);
   }
   .soft-callout {
     margin:20px 0;
@@ -172,7 +172,7 @@
     background:#fffdf9;
     border:1px solid var(--line);
     border-radius:10px;
-    color:#5c4d44;
+    color:var(--ink);
   }
   .year-cloud-grid {
     display:grid;
@@ -214,7 +214,7 @@
     transform:rotate(var(--r));
     opacity:.94;
   }
-  .year-cloud-card p { font-size:13px; line-height:1.7; color:#66564c; margin-bottom:0; }
+  .year-cloud-card p { font-size:13px; line-height:1.7; color:var(--ink); margin-bottom:0; }
   .topic-timeline {
     display:grid;
     gap:10px;
@@ -226,7 +226,7 @@
     gap:12px;
     align-items:center;
   }
-  .topic-name { font-size:14px; font-weight:760; color:#5c4d44; }
+  .topic-name { font-size:14px; font-weight:760; color:var(--ink); }
   .topic-track {
     display:grid;
     grid-template-columns:repeat(19,minmax(28px,1fr));
@@ -239,7 +239,7 @@
     background:#f6efe4;
     border:1px solid #eadfce;
     font-size:10px;
-    color:#a39082;
+    color:var(--muted);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -247,13 +247,13 @@
   .topic-cell.on {
     background:color-mix(in srgb, var(--c) 24%, white);
     border-color:color-mix(in srgb, var(--c) 45%, white);
-    color:#4d4038;
+    color:var(--ink);
     font-weight:760;
   }
   .topic-cell.mid {
     background:color-mix(in srgb, var(--c) 12%, white);
     border-color:color-mix(in srgb, var(--c) 28%, white);
-    color:#7d6b5f;
+    color:var(--muted);
   }
   .year-axis {
     display:grid;
@@ -283,7 +283,7 @@
     border-radius:12px;
     padding:15px;
   }
-  .need-phase h3 { margin:0 0 10px; font-size:18px; }
+  .need-phase h3 { margin:0 0 10px; font-size:16px; }
   .need-chips { display:flex; flex-wrap:wrap; gap:8px; }
   .need-chip {
     border-radius:999px;
@@ -291,7 +291,7 @@
     border:1px solid var(--line);
     font-size:13px;
     background:#f8efe5;
-    color:#65554c;
+    color:var(--ink);
   }
   .need-chip.l1 { opacity:.55; }
   .need-chip.l2 { background:#f8efe5; }
@@ -301,7 +301,7 @@
   .need-evolution{position:relative;padding:10px 0 6px 30px;border-left:2px solid var(--line);margin:20px 0}
   .need-step{position:relative;margin-bottom:18px;background:#fffdf9;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
   .need-step::before{content:"";position:absolute;left:-37px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 4px var(--bg)}
-  .need-step h3{font-size:17px;margin:0 0 2px}
+  .need-step h3{font-size:15px;margin:0 0 2px}
   .need-step .years{font-size:12px;color:var(--muted);margin-bottom:5px}
   .emotion-row {
     display:flex;
@@ -326,7 +326,7 @@
     background:#fffdf9;
     border-radius:8px;
     padding:11px 13px;
-    color:#65554c;
+    color:var(--ink);
     font-size:14px;
   }
   .legend {
@@ -340,13 +340,13 @@
   .legend span { display:inline-flex; align-items:center; gap:5px; }
   .dot { width:10px; height:10px; border-radius:3px; display:inline-block; background:var(--c); }
   .section-kicker {
-    color:#806d60;
+    color:var(--muted);
     font-size:15px;
     margin-top:-6px;
     margin-bottom:18px;
   }
   @media (max-width:940px) {
-    h1 { font-size:31px; }
+    h1 { font-size:22px; }
     main, header { padding-left:16px; padding-right:16px; }
     nav .wrap { padding-left:16px; padding-right:16px; }
     .grid.two,.grid.three,.grid.five,.year-cloud-grid,.phase-rail { grid-template-columns:1fr; }
@@ -650,7 +650,7 @@ const years = ["2008","2009","2010","2011","2012","2013","2014","2015","2016","2
 const shortYears = years.map(y => y.slice(2));
 const stageColors = years.map(y => y <= "2013" ? "#78aa94" : y <= "2018" ? "#d8aa55" : y <= "2021" ? "#7fa4bd" : y <= "2024" ? "#9b8ab8" : "#d9856f");
 Chart.defaults.font.family = 'system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
-Chart.defaults.color = "#6f8088";
+Chart.defaults.color = "#7E8A93";
 
 const yearClouds = [
   {y:"2008",age:"12-13",words:[["QQ空间",6],["屏幕",5],["网吧",5],["作业",4],["时光机",6],["故事",5],["被看见",6],["抽屉",3],["动漫",4],["连载",3],["熟人",4],["平台",3],["烦躁",4],["跨年",3],["无聊",3],["访问",3]],note:"最早保存下来的公共声音集中在 8-12 月。它像一个刚打开的窗口，把无聊、期待、平台烦躁、动漫角色和想写故事的冲动一起放出来。"},
