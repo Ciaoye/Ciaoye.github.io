@@ -51,18 +51,61 @@ var OSO_Chat = (function() {
             return Math.random().toString(36).slice(2, 10);
         }
 
+        function chatToText() {
+            var lines = [];
+            for (var i = 0; i < chatMessages.length; i++) {
+                var m = chatMessages[i];
+                var label = m.role === 'user' ? '[你]' : '[ciao]';
+                lines.push(label + ' ' + m.text);
+                lines.push('');
+            }
+            return lines.join('\n');
+        }
+
+        function textToChat(text) {
+            var result = [];
+            var parts = text.split(/\n\[(你|ciao)\]\s*/);
+            for (var i = 1; i < parts.length; i += 2) {
+                var role = parts[i] === '你' ? 'user' : 'agent';
+                var content = parts[i + 1] ? parts[i + 1].trim() : '';
+                if (content) {
+                    // Remove trailing blank line
+                    content = content.replace(/\n+$/, '');
+                    result.push({ role: role, text: content });
+                }
+            }
+            return result;
+        }
+
         function saveChatHistory() {
             if (chatMessages.length === 0) return;
-            var path = '/chat-records/' + currentThreadId + '.json';
-            OSO.FS.save(path, JSON.stringify(chatMessages), 'json').catch(function(){});
+            var path = '/chat-records/' + currentThreadId + '.txt';
+            OSO.FS.save(path, chatToText(), 'txt').catch(function(){});
         }
 
         function loadChatHistory() {
-            var path = '/chat-records/' + currentThreadId + '.json';
-            return OSO.FS.load(path).then(function(record) {
+            // Try new .txt format first, then legacy .json
+            var pathTxt = '/chat-records/' + currentThreadId + '.txt';
+            var pathJson = '/chat-records/' + currentThreadId + '.json';
+            return OSO.FS.load(pathTxt).then(function(record) {
                 if (record && record.data) {
-                    var data = typeof record.data === 'string' ? JSON.parse(record.data) : record.data;
-                    if (Array.isArray(data)) {
+                    var raw = typeof record.data === 'string' ? record.data : '';
+                    var data = textToChat(raw);
+                    if (data.length > 0) {
+                        chatMessages = data;
+                        if (welcomeEl) welcomeEl.style.display = 'none';
+                        data.forEach(function(msg) {
+                            renderBubble(msg.role, msg.text);
+                        });
+                        return data;
+                    }
+                }
+                throw new Error('try legacy');
+            }).catch(function() {
+                return OSO.FS.load(pathJson).then(function(record) {
+                    if (record && record.data) {
+                        var data = typeof record.data === 'string' ? JSON.parse(record.data) : record.data;
+                        if (Array.isArray(data)) {
                         // Deduplicate consecutive identical entries (clean up old buggy data)
                         var deduped = [];
                         for (var i = 0; i < data.length; i++) {
