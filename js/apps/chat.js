@@ -84,47 +84,45 @@ var OSO_Chat = (function() {
         }
 
         function loadChatHistory() {
-            // Try new .txt format first, then legacy .json
-            var pathTxt = '/chat-records/' + currentThreadId + '.txt';
+            // Try legacy .json first, then new .txt format
             var pathJson = '/chat-records/' + currentThreadId + '.json';
-            return OSO.FS.load(pathTxt).then(function(record) {
+            var pathTxt = '/chat-records/' + currentThreadId + '.txt';
+            return OSO.FS.load(pathJson).then(function(record) {
                 if (record && record.data) {
-                    var raw = typeof record.data === 'string' ? record.data : '';
-                    var data = textToChat(raw);
-                    if (data.length > 0) {
-                        chatMessages = data;
-                        if (welcomeEl) welcomeEl.style.display = 'none';
-                        data.forEach(function(msg) {
-                            renderBubble(msg.role, msg.text);
-                        });
-                        return data;
-                    }
-                }
-                throw new Error('try legacy');
-            }).catch(function() {
-                return OSO.FS.load(pathJson).then(function(record) {
-                    if (record && record.data) {
-                        var data = typeof record.data === 'string' ? JSON.parse(record.data) : record.data;
-                        if (Array.isArray(data)) {
-                        // Deduplicate consecutive identical entries (clean up old buggy data)
+                    var data = typeof record.data === 'string' ? JSON.parse(record.data) : record.data;
+                    if (Array.isArray(data)) {
                         var deduped = [];
                         for (var i = 0; i < data.length; i++) {
                             if (i === 0 || data[i].role !== data[i-1].role || data[i].text !== data[i-1].text) {
                                 deduped.push(data[i]);
                             }
                         }
-                        data = deduped;
-                        chatMessages = data;
-                        // Render loaded messages (don't use addBubble to avoid re-tracking)
+                        chatMessages = deduped;
                         if (welcomeEl) welcomeEl.style.display = 'none';
-                        data.forEach(function(msg) {
+                        chatMessages.forEach(function(msg) {
                             renderBubble(msg.role, msg.text);
                         });
+                        return chatMessages;
                     }
                 }
-            }).catch(function(){});
-        });
-    }
+                throw new Error('try txt');
+            }).catch(function() {
+                return OSO.FS.load(pathTxt).then(function(record) {
+                    if (record && record.data) {
+                        var raw = typeof record.data === 'string' ? record.data : '';
+                        var data = textToChat(raw);
+                        if (data.length > 0) {
+                            chatMessages = data;
+                            if (welcomeEl) welcomeEl.style.display = 'none';
+                            data.forEach(function(msg) {
+                                renderBubble(msg.role, msg.text);
+                            });
+                            return data;
+                        }
+                    }
+                }).catch(function(){});
+            });
+        }
 
         function renderBubble(role, text) {
             var row = document.createElement('div');
