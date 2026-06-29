@@ -46,8 +46,10 @@ var OSO_Wiki = (function() {
 
         currentContainer = container;
 
+        var dw = window.innerWidth, dh = window.innerHeight;
         var win = OSO.WM.create('wiki', 'Wikipedia', 'assets/icons/image-9.png', container, {
-            width: 820, height: 620, minWidth: 520, minHeight: 400
+            width: dw - 4, height: dh - 40, minWidth: 520, minHeight: 400,
+            position: { x: 0, y: 0 }
         });
 
         // Content area

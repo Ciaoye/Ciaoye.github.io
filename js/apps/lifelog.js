@@ -19,8 +19,10 @@ var OSO_Lifelog = (function() {
         container.style.cssText = 'display:flex;flex-direction:column;height:100%;overflow:hidden;';
         container.innerHTML = getHTML();
 
+        var dw = window.innerWidth, dh = window.innerHeight;
         var win = OSO.WM.create('lifelog', 'Lifelog', 'assets/icons/image-20.png', container, {
-            width: 820, height: 620, minWidth: 520, minHeight: 400
+            width: dw - 4, height: dh - 40, minWidth: 520, minHeight: 400,
+            position: { x: 0, y: 0 }
         });
 
         // Content area
