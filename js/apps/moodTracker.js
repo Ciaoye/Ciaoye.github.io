@@ -25,7 +25,7 @@ var OSO_MoodTracker = (function() {
         var iframe = document.getElementById('oso-mood-iframe');
         var loading = document.getElementById('oso-mood-loading');
 
-        fetch('情绪星云_交互可视化.html')
+        fetch('data/情绪星云_交互可视化.html')
             .then(function(res) { return res.text(); })
             .then(function(html) {
                 iframe.srcdoc = html;
@@ -34,7 +34,7 @@ var OSO_MoodTracker = (function() {
             })
             .catch(function() {
                 // Fallback: try direct src
-                iframe.src = '情绪星云_交互可视化.html';
+                iframe.src = 'data/情绪星云_交互可视化.html';
                 loading.style.display = 'none';
                 iframe.style.display = '';
             });

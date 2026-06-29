@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>不同年龄的我 · 公开版长报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:#fbf6ef;
+    --paper:#ffffff;
+    --ink:#4d4038;
+    --muted:#8d7c70;
+    --soft:#f7efe4;
+    --line:#eadfce;
+    --mint:#78aa94;
+    --sun:#d8aa55;
+    --coral:#d9856f;
+    --sky:#7fa4bd;
+    --violet:#9b8ab8;
+    --pink:#c98fa1;
+    --leaf:#96b77c;
+    --clay:#b88970;
+    --moss:#7f9a6f;
+    --plum:#9a7f9f;
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    margin:0;
+    background:
+      linear-gradient(145deg, rgba(120,170,148,.10) 0 18%, transparent 18% 100%),
+      linear-gradient(25deg, transparent 0 58%, rgba(216,170,85,.13) 58% 72%, transparent 72% 100%),
+      linear-gradient(315deg, transparent 0 68%, rgba(201,143,161,.12) 68% 82%, transparent 82% 100%),
+      var(--bg);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:16px;
+    line-height:1.88;
+  }
+  header {
+    background:
+      linear-gradient(135deg, rgba(120,170,148,.22), rgba(217,133,111,.15) 44%, rgba(216,170,85,.22)),
+      var(--bg);
+    border-bottom:1px solid var(--line);
+    padding:58px 24px 38px;
+  }
+  .wrap { max-width:1160px; margin:0 auto; }
+  h1 { margin:0 0 14px; font-size:40px; line-height:1.16; letter-spacing:0; }
+  h2 { margin:0 0 16px; font-size:28px; line-height:1.3; letter-spacing:0; }
+  h3 { margin:24px 0 10px; font-size:21px; line-height:1.35; letter-spacing:0; }
+  h4 { margin:0 0 8px; font-size:16px; line-height:1.45; }
+  p { margin:0 0 15px; }
+  a { color:#6e7fa5; }
+  .lead { max-width:900px; color:#66564c; margin:0; font-size:18px; }
+  .meta-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
+  .meta-pill {
+    background:rgba(255,255,255,.74);
+    border:1px solid rgba(234,223,206,.92);
+    color:#65554c;
+    border-radius:999px;
+    padding:6px 12px;
+    font-size:13px;
+  }
+  nav {
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(255,249,243,.94);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap { display:flex; gap:8px; overflow:auto; padding:11px 24px; }
+  nav a {
+    flex:0 0 auto;
+    text-decoration:none;
+    color:#65554c;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:6px 12px;
+    font-size:13px;
+    white-space:nowrap;
+  }
+  main { padding:36px 24px 84px; }
+  section { margin:0 0 54px; }
+  .notice {
+    background:#fffefd;
+    border:1px solid var(--line);
+    border-left:5px solid var(--mint);
+    border-radius:10px;
+    padding:18px 20px;
+    color:#5f5047;
+  }
+  .notice p:last-child { margin-bottom:0; }
+  .figure {
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:20px 22px;
+    margin:20px 0;
+    box-shadow:0 14px 34px rgba(77,64,56,.055);
+  }
+  .figure-title { font-weight:760; margin-bottom:5px; }
+  .figure-desc { color:var(--muted); font-size:14px; margin-bottom:14px; }
+  .chart-wrap { height:330px; position:relative; }
+  .chart-tall { height:420px; }
+  .chart-small { height:280px; }
+  .grid { display:grid; gap:16px; }
+  .grid.two { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .grid.three { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .grid.five { grid-template-columns:repeat(5,minmax(0,1fr)); }
+  .phase-card {
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-top:6px solid var(--c);
+    border-radius:12px;
+    padding:18px;
+  }
+  .phase-card h3 { margin-top:0; }
+  .phase-card .years { color:var(--muted); font-size:13px; margin-bottom:8px; }
+  .phase-rail {
+    position:relative;
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:10px;
+    margin:20px 0;
+  }
+  .phase-rail::before {
+    content:"";
+    position:absolute;
+    left:4%;
+    right:4%;
+    top:24px;
+    height:3px;
+    background:linear-gradient(90deg,var(--mint),var(--sun),var(--sky),var(--violet),var(--coral));
+    opacity:.5;
+  }
+  .phase-node { position:relative; background:transparent; padding-top:52px; }
+  .phase-dot {
+    position:absolute;
+    left:50%;
+    top:12px;
+    transform:translateX(-50%);
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    background:var(--c);
+    border:4px solid var(--bg);
+    box-shadow:0 0 0 1px var(--line);
+  }
+  .phase-node strong { display:block; text-align:center; font-size:13px; color:#40555e; }
+  .phase-node span { display:block; text-align:center; font-size:12px; color:var(--muted); }
+  .table-wrap {
+    overflow:auto;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:12px;
+  }
+  table { width:100%; border-collapse:collapse; min-width:780px; }
+  th,td { padding:12px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+  th { background:#f5efe2; font-weight:760; color:#5c4d44; }
+  td { font-size:14px; }
+  .note { color:var(--muted); font-size:14px; margin-top:8px; }
+  .pull {
+    margin:20px 0;
+    padding:19px 21px;
+    background:linear-gradient(135deg,#ffffff,#f8efe5);
+    border:1px solid var(--line);
+    border-left:5px solid var(--coral);
+    border-radius:12px;
+    font-size:17px;
+    color:#5c4d44;
+  }
+  .soft-callout {
+    margin:20px 0;
+    padding:18px 20px;
+    background:#fffdf9;
+    border:1px solid var(--line);
+    border-radius:10px;
+    color:#5c4d44;
+  }
+  .year-cloud-grid {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:14px;
+    margin-top:18px;
+  }
+  .year-cloud-card {
+    background:
+      linear-gradient(135deg, rgba(120,170,148,.08), transparent 42%),
+      linear-gradient(315deg, rgba(216,170,85,.10), transparent 44%),
+      var(--paper);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:15px 15px 14px;
+  }
+  .year-cloud-card h3 {
+    margin:0 0 4px;
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    font-size:18px;
+  }
+  .year-cloud-card .age { color:var(--muted); font-size:12px; font-weight:500; }
+  .mini-cloud {
+    min-height:142px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:5px 9px;
+    margin:8px 0 10px;
+  }
+  .mini-cloud span {
+    color:var(--c);
+    font-weight:780;
+    white-space:nowrap;
+    line-height:1;
+    font-size:calc(10px + var(--w) * 1.75px);
+    transform:rotate(var(--r));
+    opacity:.94;
+  }
+  .year-cloud-card p { font-size:13px; line-height:1.7; color:#66564c; margin-bottom:0; }
+  .topic-timeline {
+    display:grid;
+    gap:10px;
+    margin:18px 0;
+  }
+  .topic-row {
+    display:grid;
+    grid-template-columns:136px 1fr;
+    gap:12px;
+    align-items:center;
+  }
+  .topic-name { font-size:14px; font-weight:760; color:#5c4d44; }
+  .topic-track {
+    display:grid;
+    grid-template-columns:repeat(19,minmax(28px,1fr));
+    gap:3px;
+    align-items:center;
+  }
+  .topic-cell {
+    min-height:26px;
+    border-radius:5px;
+    background:#f6efe4;
+    border:1px solid #eadfce;
+    font-size:10px;
+    color:#a39082;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .topic-cell.on {
+    background:color-mix(in srgb, var(--c) 24%, white);
+    border-color:color-mix(in srgb, var(--c) 45%, white);
+    color:#4d4038;
+    font-weight:760;
+  }
+  .topic-cell.mid {
+    background:color-mix(in srgb, var(--c) 12%, white);
+    border-color:color-mix(in srgb, var(--c) 28%, white);
+    color:#7d6b5f;
+  }
+  .year-axis {
+    display:grid;
+    grid-template-columns:136px 1fr;
+    gap:12px;
+    margin-bottom:6px;
+  }
+  .axis-years {
+    display:grid;
+    grid-template-columns:repeat(19,minmax(28px,1fr));
+    gap:3px;
+  }
+  .axis-years span {
+    color:var(--muted);
+    font-size:10px;
+    text-align:center;
+  }
+  .needs-timeline {
+    display:grid;
+    gap:12px;
+    margin:18px 0;
+  }
+  .need-phase {
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:6px solid var(--c);
+    border-radius:12px;
+    padding:15px;
+  }
+  .need-phase h3 { margin:0 0 10px; font-size:18px; }
+  .need-chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .need-chip {
+    border-radius:999px;
+    padding:5px 10px;
+    border:1px solid var(--line);
+    font-size:13px;
+    background:#f8efe5;
+    color:#65554c;
+  }
+  .need-chip.l1 { opacity:.55; }
+  .need-chip.l2 { background:#f8efe5; }
+  .need-chip.l3 { background:#eef4ea; border-color:#d7e4cb; }
+  .need-chip.l4 { background:#f8ecd2; border-color:#e7ce91; color:#6a5522; }
+  .need-chip.l5 { background:#f6e0d7; border-color:#deb5a6; color:#70483d; font-weight:760; }
+  .need-evolution{position:relative;padding:10px 0 6px 30px;border-left:2px solid var(--line);margin:20px 0}
+  .need-step{position:relative;margin-bottom:18px;background:#fffdf9;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .need-step::before{content:"";position:absolute;left:-37px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 4px var(--bg)}
+  .need-step h3{font-size:17px;margin:0 0 2px}
+  .need-step .years{font-size:12px;color:var(--muted);margin-bottom:5px}
+  .emotion-row {
+    display:flex;
+    gap:4px;
+    flex-wrap:wrap;
+    margin:14px 0 8px;
+  }
+  .emotion-block {
+    flex:1 1 48px;
+    min-width:48px;
+    border-radius:8px;
+    padding:10px 5px;
+    color:#fff;
+    text-align:center;
+    cursor:default;
+  }
+  .emotion-block .yr { font-size:10px; opacity:.82; }
+  .emotion-block .label { font-size:11px; font-weight:760; line-height:1.2; }
+  .emotion-detail {
+    min-height:48px;
+    border-left:4px solid var(--plum);
+    background:#fffdf9;
+    border-radius:8px;
+    padding:11px 13px;
+    color:#65554c;
+    font-size:14px;
+  }
+  .legend {
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 16px;
+    margin-top:12px;
+    color:var(--muted);
+    font-size:13px;
+  }
+  .legend span { display:inline-flex; align-items:center; gap:5px; }
+  .dot { width:10px; height:10px; border-radius:3px; display:inline-block; background:var(--c); }
+  .section-kicker {
+    color:#806d60;
+    font-size:15px;
+    margin-top:-6px;
+    margin-bottom:18px;
+  }
+  @media (max-width:940px) {
+    h1 { font-size:31px; }
+    main, header { padding-left:16px; padding-right:16px; }
+    nav .wrap { padding-left:16px; padding-right:16px; }
+    .grid.two,.grid.three,.grid.five,.year-cloud-grid,.phase-rail { grid-template-columns:1fr; }
+    .phase-rail::before { display:none; }
+    .phase-node { padding:0 0 0 34px; }
+    .phase-dot { left:12px; top:5px; transform:none; width:18px; height:18px; }
+    .topic-row,.year-axis { grid-template-columns:1fr; gap:5px; }
+    .topic-track,.axis-years { min-width:780px; }
+    .topic-timeline-scroll { overflow:auto; }
+    .chart-wrap { height:310px; }
+    .chart-tall { height:390px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>不同年龄的我：一份关于表达、关系、身体与生活系统的公开长报告</h1>
+    <p class="lead">这是一份由 AI 协助整理的公开版人生档案报告。它从 2008-2026 年的 raw data、年度档案和跨年主题索引中提取连续线索，用公开可读的方式呈现一段生活方法怎样慢慢长出来。为保护隐私，人物、金额、家庭细节、医疗细节和亲密关系细节已做模糊处理。</p>
+    <div class="meta-row">
+      <span class="meta-pill">覆盖年份：2008-2026</span>
+      <span class="meta-pill">2026 为截至 6 月 29 日的半年度材料</span>
+      <span class="meta-pill">公开版：已替换人名与敏感金额</span>
+      <span class="meta-pill"><a href="timeline.html">打开长时间轴</a></span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="wrap">
+    <a href="#method">说明</a>
+    <a href="#overview">总览</a>
+    <a href="#phases">五阶段</a>
+    <a href="#wordclouds">每年词云</a>
+    <a href="#voice">声音</a>
+    <a href="#topics">议题</a>
+    <a href="#needs">需求</a>
+    <a href="#emotion">情绪</a>
+    <a href="#places">住处</a>
+    <a href="#relations">关系</a>
+    <a href="#money">交换</a>
+    <a href="#body">身体</a>
+    <a href="#system">系统</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section id="method">
+    <div class="notice">
+      <p>这份报告的目标，是把大量私人记录整理成一份可以对外阅读的长文。它保留结构、转折、场景和方法，减少会暴露具体个人身份的细节。文中出现的“朋友”“前伴侣”“一位家人”“一位写作朋友”等称呼，均为脱敏后的公共表达。</p>
+      <p>图表分为两类：一类来自时间轴和年度索引的简单统计，例如每年主要地点数量、时间轴事件数；另一类是解释性估计，例如幸福感、能量、身体权威、需求强度。解释性估计只帮助阅读趋势，不代表精确测量。</p>
+    </div>
+  </section>
+
+  <section id="overview">
+    <h2>一、总览：一条不断发明生活工具的线</h2>
+    <p>从 2008 到 2026，这份材料呈现的是一个人不断发明生活工具的过程：最开始的工具是 QQ 空间、班级暗号、故事和给未来自己的信；后来变成大学计划、项目、通勤、资料管理和跨国申请；再后来，工具变成治疗、朋友照料、晒太阳、做饭、借宿、社区共居、内观、AI 角色和个人知识库。</p>
+    <p>如果只说“低谷到高峰”，会漏掉很多重要内容。2019 年确实是一个关键低点，旅行和成绩都难以继续提供稳定感，身体和心理支持开始进入生活中心。与此同时，2019 年也有全额奖学金、跨国旅行、东非远行、登山、伦敦生活、医疗支持和朋友照料。它的复杂之处在于：外部世界看起来仍然高速运转，内部系统已经开始明显撑不住。</p>
+    <p>这份公开报告更关心另一条线：一个人怎样逐渐把“我发生了什么”翻译成“我需要什么”，再把“我需要什么”翻译成“我可以怎样组织生活”。表达、关系、身体、住处、金钱和系统这六个维度，几乎每一年都在变化。到了 2025-2026 年，这些维度不再只是个人自救，也开始变成可以邀请别人进入的容器。</p>
+
+    <div class="phase-rail">
+      <div class="phase-node" style="--c:var(--mint)"><div class="phase-dot"></div><strong>自我保存</strong><span>2008-2013</span></div>
+      <div class="phase-node" style="--c:var(--sun)"><div class="phase-dot"></div><strong>远方打开</strong><span>2014-2018</span></div>
+      <div class="phase-node" style="--c:var(--sky)"><div class="phase-dot"></div><strong>旧法失效</strong><span>2019-2021</span></div>
+      <div class="phase-node" style="--c:var(--violet)"><div class="phase-dot"></div><strong>方法发明</strong><span>2022-2024</span></div>
+      <div class="phase-node" style="--c:var(--coral)"><div class="phase-dot"></div><strong>基础设施</strong><span>2025-2026</span></div>
+    </div>
+
+    <div class="figure">
+      <div class="figure-title">图 1：公开长时间轴中的年度事件密度</div>
+      <div class="figure-desc">每年保留的关键事件数来自公开版长时间轴。它说明报告叙事在哪些年份有更多可见节点，不等于真实生活的全部密度。</div>
+      <div class="chart-wrap chart-small"><canvas id="densityChart"></canvas></div>
+      <p class="note">2019、2020、2023、2024、2025、2026 的材料明显更厚，和跨国移动、治疗、朋友照料、社区实践、身体方法、AI 协作和知识整理有关。早年材料更依赖公开空间，表达很亮，但可见证据集中在少数平台和事件上。</p>
+    </div>
+  </section>
+
+  <section id="wordclouds">
+    <h2>二、每一年都有自己的词云</h2>
+    <p>词云放在总览之后，是为了先让读者看到材料的纹理，再进入阶段分析。这里的词会把每一年反复出现的场景、行动、关系、工具、地点和身体感受放在一起，避免只剩几个概念标签。早年的词云更像公开空间里的声音碎片；中段词云更接近项目、城市和远方；后段词云开始出现身体、社区、AI、口述史和知识系统。</p>
+    <p>每张词云里的大词表示当年更重要或更反复出现的词，小词补充当年的生活质地。为了保护隐私，具体姓名已经合并为朋友、前伴侣、家人、伙伴、写作朋友等公共称呼。</p>
+    <div class="year-cloud-grid" id="yearCloudGrid"></div>
+  </section>
+
+  <section id="phases">
+    <h2>三、五个阶段：每个阶段都在解决不同问题</h2>
+    <p class="section-kicker">这五个阶段有重叠，也有各自的主导任务：保存自己、打开远方、承认旧方法失效、重新发明生活、把经验做成基础设施。</p>
+
+    <div class="grid five">
+      <div class="phase-card" style="--c:var(--mint)">
+        <h3>1. 2008-2013：从即时喊话到自我保存</h3>
+        <div class="years">12-18 岁</div>
+        <p>这一阶段的核心场景是家、学校、网吧、QQ 空间和班级。早期文字像直接从当下冒出来：平台打不开会烦躁，连载更新会期待，作业和考试会压过来，喜欢的人和熟人圈暗号会让情绪快速起伏。</p>
+        <p>2009 年以后，记录开始有了明显的存档意识。写给 2014 年自己的信、班级人物册、给同学留下位置、反复提到未来，都说明她已经不只是在发状态，也在把当前生活留给未来读取。</p>
+        <p>2013 年的离家，是这个阶段的出口。高考、志愿、105 斤行李、新手机号、明信片和“没有一个地方像家”的感受，让自我保存从屏幕和班级，转向真正的地理迁移。</p>
+      </div>
+      <div class="phase-card" style="--c:var(--sun)">
+        <h3>2. 2014-2018：判断力、项目和远方打开</h3>
+        <div class="years">18-23 岁</div>
+        <p>2014 年以后，大学生活把人撑开。早期关系结束之后，新的问题出现：我怎样规划大学四年，怎样进入活动、项目、读书营和公共讨论，怎样留下更多记录，怎样避免以后找不到自己变化的根源。</p>
+        <p>2015-2016 年，现实成本变得更具体。通勤、家教、资料副业、北京自习处、信息管理、职业路径和解释系统，都把“我想成为什么人”拉回到时间、空间、钱和工具上。</p>
+        <p>2017-2018 年，社群和远方突然变大。共居、交换、跨国申请、文书服务、西伯利亚铁路、伦敦入学，让她第一次高密度经历“世界真的很大，也真的有制度门槛”。远方带来兴奋，也带来 FOMO、住宿压力和身份压力。</p>
+      </div>
+      <div class="phase-card" style="--c:var(--sky)">
+        <h3>3. 2019-2021：旅行、成就和亲密都开始失效</h3>
+        <div class="years">23-26 岁</div>
+        <p>2019 年的复杂度很高。外部看起来有奖学金、旅行、登山、跨国移动和伦敦学习，内部却不断掉电。生日时在异国青旅躺着不想出门，拿到重要机会也没有预期中的快乐，住处、医疗、作业和精神状态开始一起压上来。</p>
+        <p>2020 年，疫情让世界变小，两个箱子、搬家、药物和心理支持成为更现实的生活词。她仍然写信、相遇、进入重要关系，也仍然试图把脆弱说成别人可以理解的语言。</p>
+        <p>2021 年，跨国飞行、隔离、波士顿、伴侣关系、签证和毕业压力交织在一起。做饭、安全感、被看见和无法推进的学业同时存在。这个阶段的关键在于，旧的高功能方法已经不够用了。</p>
+      </div>
+      <div class="phase-card" style="--c:var(--violet)">
+        <h3>4. 2022-2024：生活方法被重新发明</h3>
+        <div class="years">26-29 岁</div>
+        <p>2022 年从很小的动作开始：睡觉、洗澡、刷牙、晒太阳、吃水果、出门。恢复并不浪漫，它先是一张日常清单。随后出现打工换宿、欧洲移动、咨询收入和对低成本高幸福度生活的重新理解。</p>
+        <p>2023 年，船屋、农场、草莓、房车、朋友的死亡、表演群和低成本生活结构，把“我怎样活下来”推向“我怎样重新被生活激活”。它有低谷，也有非常具体的幸福时刻。</p>
+        <p>2024 年是不消费主义、内观、口述史和社区主理并行的一年。免费住处不只是省钱，它让住处从商品变成关系网络。社区主理也不只是办活动，它要求处理报名、公共空间、共识、劳动、照料和日常运行。</p>
+      </div>
+      <div class="phase-card" style="--c:var(--coral)">
+        <h3>5. 2025-2026：经验开始变成基础设施</h3>
+        <div class="years">29-31 岁</div>
+        <p>2025 年把爱、分离、AI、共学、钱、身体、社区和公共表达全部推到前台。亲密关系带来很深的撕裂，也带来清晰的自我选择。AI 开始成为一个帮助整理、对话和创作的角色系统。</p>
+        <p>同一年，垃圾帖方法、共学、身体训练、自然建筑、公共分享和社区文本，让个人经验开始被说给别人听。她不只是在讲自己的故事，也在把故事拆成别人可以试用的方法。</p>
+        <p>2026 年上半年，深度关系实验、T-group、家族对话、医院现场、费登奎斯、个人 Wikipedia、聊天记录归档、zine 和 Agent 工作流一起出现。关键词从“我怎样活”进一步变成“我怎样搭一个能让生活继续发生的容器”。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="voice">
+    <h2>四、七个声音阶段：语言在每个时期承担的任务</h2>
+    <p>声音的变化，是这份材料最稳定的线索之一。2008 年的语言很短，像喊话、吐槽和熟人圈暗号；2011 年开始，她会把私人关系写成关于爱、未来和适合的分析框架；2014 年以后，语言开始承担判断、拆概念和做计划的功能；2019 年以后，幽默和求助混在一起，语言既要保护面子，也要发出求救信号；2024 年以后，语言明显变成邀请别人进入某个实验的入口。</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>声音阶段</th><th>年份</th><th>典型功能</th><th>公开版解读</th></tr></thead>
+        <tbody>
+          <tr><td>即时喊话</td><td>2008-2010</td><td>发状态、吐槽、熟人暗号、情绪广播</td><td>语言先用来证明“我正在这里”。它不解释太多背景，因为读者通常就是熟人。</td></tr>
+          <tr><td>存档与理论化</td><td>2011-2013</td><td>写给未来、写关系、写离开</td><td>语言开始把当前生活留给未来，也开始把私人情绪整理成一套可以被理解的说法。</td></tr>
+          <tr><td>判断与拆概念</td><td>2014-2016</td><td>规划、问卷、拒绝粗糙答案、比较路径</td><td>语言承担判断力训练。她会拆问题、拆成本、拆系统，拒绝让复杂经验被一句话带走。</td></tr>
+          <tr><td>实时推进</td><td>2017-2018</td><td>聊天、申请、共居、服务、旅行</td><td>语言像一个工作台，一边说，一边推进申请、项目、关系和移动。</td></tr>
+          <tr><td>幽默求生</td><td>2019-2020</td><td>黑色幽默、医疗支持、朋友照料、两个箱子</td><td>表达仍然机灵，但机灵背后有很强的低能量和求助需求。</td></tr>
+          <tr><td>恢复与方法</td><td>2021-2023</td><td>做饭、自救日记、草莓、船屋、农场、表演群</td><td>语言把生活拆小，把动作写出来，把恢复从感受变成方法。</td></tr>
+          <tr><td>邀请与容器</td><td>2024-2026</td><td>不消费主义、共学、深度关系、AI、个人知识库</td><td>语言开始搭台。它邀请别人参与，也为未来的自己建立可调用的材料系统。</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="figure">
+      <div class="figure-title">图 2：声音功能变化</div>
+      <div class="figure-desc">堆叠条表示不同时期语言功能的相对位置。它基于年度档案做解释性归纳，并非字数统计。</div>
+      <div class="chart-wrap"><canvas id="voiceChart"></canvas></div>
+      <p class="note">2024-2026 年“邀请/容器”的比例升高，说明公开表达不再只服务于自我说明，也开始服务于活动组织、共学招募、关系实验和知识基础设施。</p>
+    </div>
+  </section>
+
+  <section id="topics">
+    <h2>五、议题转变：同一批问题在不同年份换了形态</h2>
+    <p>议题接近生活材料里反复出现的“问题域”，它和底层需求属于不同层次。共同出现的议题会在不同年份换形态：写作从 QQ 空间变成长文章、共学和个人知识库；教育制度从考试和专业压力，变成重新定义学习；旅行从向外寻找，变成住处和生活方式实验；金钱从收入问题，变成价值、信任和交换方式的问题。</p>
+    <p>这一版改用两种更直观的图。折线图适合横向追踪一个议题的兴衰；堆叠柱适合纵向看某一年同时被哪些议题占据。这样比小格子时间轴更容易读出“哪一年什么东西突然变重”。</p>
+
+    <div class="figure">
+      <div class="figure-title">图 3：12 个议题的年度强度折线</div>
+      <div class="figure-desc">每条线代表一个议题。分值是解释性估计，用来显示议题在当年文本中的显著程度。</div>
+      <div class="chart-wrap chart-tall"><canvas id="topicLineChart"></canvas></div>
+      <p class="note">写作与表达贯穿全程；旅行在 2017-2019 年达到高点后下降；身体与心理支持从 2019 年开始持续变重；AI、家庭口述史和深度关系方法论，是 2024-2026 年快速出现的新议题。</p>
+    </div>
+
+    <div class="figure">
+      <div class="figure-title">图 4：每一年由哪些议题构成</div>
+      <div class="figure-desc">堆叠柱把同一年里的多个议题放在一起看。柱子越高，说明那一年议题更密。</div>
+      <div class="chart-wrap"><canvas id="topicStackChart"></canvas></div>
+      <p class="note">2019 之后柱子整体变厚，说明材料的变化不只体现在事件数量上，也体现在议题层数上：身体、照护、制度、住处、钱、关系和系统开始同时出现。</p>
+    </div>
+
+    <p>从议题转变看，早期最强的问题是“如何被看见”和“如何保存这一群人”。2014-2018 年，问题变成“如何选择路径、进入项目、理解制度”。2019-2021 年，问题变成“当高功能方法失灵时，生活怎样继续”。2022-2024 年，问题变成“有没有更低成本、更有关系、更贴近身体的生活结构”。2025-2026 年，问题变成“这些经验能不能组织成别人也能进入的系统”。</p>
+  </section>
+
+  <section id="needs">
+    <h2>六、需求维度：这里读的是底层动机</h2>
+    <p>上一版把“住处”和“金钱”放进需求强度，容易造成误读。对这份材料来说，住处和金钱更像议题、资源和交换方式，不等于本人对它们有很强的需求。真正贯穿的底层需求更接近：被看见、连接/归属、自主/自由、创造/表达、安全/确定、意义/使命、身体/健康。</p>
+    <p>所以这一节改用旧版需求图的维度。它回答的问题是：在每一年，她更需要被看见、被接住、自由、创造、安全、意义，还是身体恢复。房子和钱会留在住处、交换、议题章节里讨论。</p>
+
+    <div class="need-evolution">
+      <div class="need-step" style="--c:var(--mint)"><h3>被看见 · 被接住</h3><div class="years">2008-2011</div><p>早年核心是共同体中的存在确认。访问、回应、熟人懂不懂，都在承载“我有没有被看见”。</p></div>
+      <div class="need-step" style="--c:var(--sun)"><h3>深层理解 · 被真正懂得</h3><div class="years">2011-2014</div><p>关系很多不等于被理解。她开始区分热闹和 P2P 式的深层连接。</p></div>
+      <div class="need-step" style="--c:var(--clay)"><h3>自主 · 落脚点 · 自我建模</h3><div class="years">2014-2017</div><p>大学四年表、回信、项目和工具，说明她开始在时间里观察、设计和管理自己。</p></div>
+      <div class="need-step" style="--c:var(--sky)"><h3>修复许可 · 安全感</h3><div class="years">2019-2022</div><p>旅行和高功能方法失效之后，安全需求明显上升。她需要可以坏掉、可以求助、可以重新开始的许可。</p></div>
+      <div class="need-step" style="--c:var(--violet)"><h3>重写叙事 · 真实结构</h3><div class="years">2023-2024</div><p>草莓、生命故事、表演群、内观和不消费主义，共同指向新的解释框架：我为什么会这样，我怎样可以重新生活。</p></div>
+      <div class="need-step" style="--c:var(--coral)"><h3>容器制造 · 承载他人</h3><div class="years">2025-2026</div><p>共学、深度关系实验、AI 角色和个人知识库，让需求从“我需要被接住”扩展为“我来搭一个能接住人的东西”。</p></div>
+    </div>
+
+    <div class="figure">
+      <div class="figure-title">图 5：核心需求维度逐年曲线</div>
+      <div class="figure-desc">这里的分值表示底层需求在当年文本中的强度。住处和金钱已移出需求维度，放回议题与交换章节。</div>
+      <div class="chart-wrap chart-tall"><canvas id="needsAreaChart"></canvas></div>
+      <p class="note">被看见在早年最高，后来逐渐下降；自主/自由、创造/表达和意义/使命在 2023 年后升高；安全/确定在 2019-2022 年达到高点；身体/健康从 2019 年以后持续上升。</p>
+    </div>
+
+    <div class="figure">
+      <div class="figure-title">图 6：五个时间点的需求雷达</div>
+      <div class="figure-desc">选取 2008、2014、2019、2023、2026 五个节点，看底层需求结构怎样换重心。</div>
+      <div class="chart-wrap"><canvas id="needsRadarChart"></canvas></div>
+      <p class="note">这张图重点看形状变化。2008 更偏被看见和连接；2019 更偏安全和身体；2026 更偏创造、意义、自主和身体。</p>
+    </div>
+  </section>
+
+  <section id="emotion">
+    <h2>七、情绪、幸福感与行动力：把折线图放回叙事里</h2>
+    <p>情绪线不适合读成“哪一年快乐，哪一年不快乐”。很多年份同时包含高能量、低能量、兴奋、坍塌、恢复和创造。比如 2019 年外部事件非常丰富，但内部幸福感很低；2023 年仍有低谷和死亡冲击，却出现很多低成本高幸福度的生活结构；2024 年有内观后的剧烈情绪，也有生活原则成形后的轻盈和行动力。</p>
+
+    <div class="figure">
+      <div class="figure-title">图 7：幸福感、行动力与情绪波动折线</div>
+      <div class="figure-desc">三条线均为解释性估计。幸福感关注总体生活感受；行动力关注输出与推进密度；情绪波动关注起伏强度。</div>
+      <div class="chart-wrap chart-tall"><canvas id="energyChart"></canvas></div>
+      <p class="note">2019-2021 年幸福感明显下沉，但行动力没有完全消失，这正是“外部仍在运转、内部开始掉电”的结构。2022 年以后，幸福感通过日常动作、低成本住处、关系支持和可持续节奏慢慢回升。</p>
+    </div>
+
+    <div class="figure">
+      <div class="figure-title">图 8：每年主要情绪质地</div>
+      <div class="figure-desc">鼠标移到年份块上，可以看到该年的公开版情绪摘要。</div>
+      <div class="emotion-row" id="emotionRow"></div>
+      <div class="emotion-detail" id="emotionDetail">悬停在某一年上查看该年的情绪摘要。</div>
+      <div class="legend">
+        <span><i class="dot" style="--c:var(--leaf)"></i>高能量/活跃</span>
+        <span><i class="dot" style="--c:var(--sun)"></i>稳定/积极</span>
+        <span><i class="dot" style="--c:var(--bluegray)"></i>混合/摆荡</span>
+        <span><i class="dot" style="--c:#c56b74"></i>压抑/低能量</span>
+        <span><i class="dot" style="--c:var(--violet)"></i>剧烈波动/恢复</span>
+      </div>
+      <p class="note">这张图保留“质地”，没有只给分。很多年份的关键在于多种状态同时存在，并且被她写进生活方法里。</p>
+    </div>
+  </section>
+
+  <section id="places">
+    <h2>八、住处和地理：生活发生在具体空间里</h2>
+    <p>住处在这份材料中一直有决定性作用。早年是家、学校、网吧和屏幕；2013 年离家时，地址、行李、电话号码和明信片让新生活变得具体；2017 年共居空间让关系、项目和城市机会聚在一起；2018-2021 年的跨国住处带来制度感和不稳定；2022 年以后，船屋、农场、房车、借宿和免费住处让“住在哪里”变成一种生活实验。</p>
+    <p>2024 年以后，免费住处和社区主理改变了空间逻辑。住处不再只是付款得到的房间，它也可能来自关系、邀请、共同劳动和公共活动。2026 年，上海、无锡家、医院、活动场和朋友空间一起出现，住处判断变得更细：哪里适合睡，哪里适合吃，哪里适合办活动，哪里适合身体恢复，哪里适合见人。</p>
+
+    <div class="grid two">
+      <div class="figure">
+        <div class="figure-title">图 9：主要地点数量</div>
+        <div class="figure-desc">地点数越高，通常意味着跨城、跨国、项目或住处切换越多。</div>
+        <div class="chart-wrap chart-small"><canvas id="geoChart"></canvas></div>
+      </div>
+      <div class="figure">
+        <div class="figure-title">图 10：住处类型变化</div>
+        <div class="figure-desc">从家、宿舍、租房，扩展到共居、借宿、打工换宿和免费住处。</div>
+        <div class="chart-wrap chart-small"><canvas id="housingChart"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="relations">
+    <h2>九、关系容器：从熟人圈到共同建造</h2>
+    <p>关系的早期形式是熟人圈。很多内容默认读者知道背景：班级、同学、暗号、喜欢的人、共同记忆。高中阶段，亲密关系成为理解自我、未来和长期承诺的实验场。大学以后，关系容器扩展到项目伙伴、读书营、社群、共居、申请合作和跨国朋友。</p>
+    <p>2019-2021 年，关系里最重要的功能之一是照料。朋友的陪伴、短期共同生活、心理支持和生活协助，让她在旧方法失效时没有完全独自坠落。2024 年以后，关系容器变得更主动：社区主理、chosen family、共学、T-group、深度关系实验和家族对话，都在回答“什么样的关系能托住真实生活”。</p>
+
+    <div class="figure">
+      <div class="figure-title">图 11：关系容器变化</div>
+      <div class="figure-desc">堆叠条展示不同阶段的主要关系结构。它帮助读者看到安全感来源如何变化。</div>
+      <div class="chart-wrap"><canvas id="relationChart"></canvas></div>
+      <p class="note">熟人圈在早期占比高，亲密关系在 2011-2013 和 2019-2021 年很重要。2024-2026 年，社群、创造型关系和家族回看同时上升，关系开始承担组织生活和生成方法的功能。</p>
+    </div>
+  </section>
+
+  <section id="money">
+    <h2>十、金钱与交换：价值怎样流动</h2>
+    <p>钱在早期主要表现为文化消费、网吧、家庭支持、奖学金期待和具体生活成本。2015-2018 年，家教、资料副业、服务和文书能力让技能开始换成收入。2019-2021 年，奖学金、跨国生活、签证、住宿和医疗系统同时存在，说明“拿到资源”并不会自动带来稳定。</p>
+    <p>2022 年以后，金钱开始和交换制度一起变化。咨询收入、打工换宿、朋友借住、免费住处、分享会、共学、打赏、礼物、门票和空间支持，都说明价值不只通过工资和消费流动。2025-2026 年，定价成为公开议题：有些东西很珍贵，仍然需要被组织、被支付、被交换，也需要照顾羞耻、门槛和关系公平。</p>
+
+    <div class="figure">
+      <div class="figure-title">图 12：金钱与交换方式</div>
+      <div class="figure-desc">金额已模糊处理。图里关注交换方式的变化，而非收入高低。</div>
+      <div class="chart-wrap"><canvas id="moneyChart"></canvas></div>
+      <p class="note">2024 年以后，“礼物/交换/免费住处”和“打赏/共学”明显变重。钱被放回更大的价值网络里，旁边还有照料、空间、时间、知识和关系信用。</p>
+    </div>
+  </section>
+
+  <section id="body">
+    <h2>十一、身体：从背景信号到判断系统</h2>
+    <p>身体最早只是偶尔露面：手抖、疲惫、发烧、公交困倦、考试压力。大学阶段，通勤、熬夜、住院和项目压力让身体信号更明显。2019 年以后，身体和心理支持成为生活中心：疲惫、低能量、医疗支持、治疗、药物和朋友照料一起出现，提醒她不能再只靠意志力推进。</p>
+    <p>2022 年是身体恢复被拆小的一年。睡觉、刷牙、洗澡、晒太阳、吃水果、出门，这些动作看起来很日常，却是重新组织生活的底层任务。2024-2026 年，内观、身体训练、放松、费登奎斯、十点动一动和对饮食睡眠的具体判断，让身体从“需要被修理的对象”变成“可以提供判断的系统”。</p>
+
+    <div class="figure">
+      <div class="figure-title">图 13：身体权威演化</div>
+      <div class="figure-desc">从背景信号、警报、求助，到恢复方法和日常判断。</div>
+      <div class="chart-wrap"><canvas id="bodyChart"></canvas></div>
+      <p class="note">2019 年是身体强行进入前台；2022 年是身体恢复被拆成动作；2026 年是身体判断进入活动、关系、饮食、睡眠和城市生活脚本。</p>
+    </div>
+  </section>
+
+  <section id="system">
+    <h2>十二、系统感：把人生材料组织成可继续使用的东西</h2>
+    <p>这 19 年里，“系统”一开始是外部系统：学校、考试、专业、申请、签证、住宿、医疗。它们决定人要交什么材料、去哪里、住哪里、怎样证明自己。她一直在这些系统中寻找入口，也一直不满足于只做被系统推着走的人。</p>
+    <p>后来，系统开始变成自己搭的东西：年度记录、自救日记、资料副业、咨询流程、表演群、社区报名表、共学机制、AI 角色、口述史、个人 Wikipedia、聊天记录归档、zine 和 Agent 工作流。这些东西有的很轻，有的很临时，但都在做同一件事：把活过的经验整理成未来还能调用的材料。</p>
+    <div class="pull">贯穿 19 年的一条线是：先把自己写下来，再学会读自己，最后把这些材料整理成别人可以进入、未来的自己也可以调用的生活基础设施。</div>
+    <p>因此，这份报告的重点是展示一种长期的组织能力怎样长出来：她反复把混乱生活拆成场景、关系、身体、资源和工具，再把它们重新组合成更适合自己的生活方法。</p>
+  </section>
+</main>
+
+<script>
+const years = ["2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020","2021","2022","2023","2024","2025","2026"];
+const shortYears = years.map(y => y.slice(2));
+const stageColors = years.map(y => y <= "2013" ? "#78aa94" : y <= "2018" ? "#d8aa55" : y <= "2021" ? "#7fa4bd" : y <= "2024" ? "#9b8ab8" : "#d9856f");
+Chart.defaults.font.family = 'system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+Chart.defaults.color = "#6f8088";
+
+const yearClouds = [
+  {y:"2008",age:"12-13",words:[["QQ空间",6],["屏幕",5],["网吧",5],["作业",4],["时光机",6],["故事",5],["被看见",6],["抽屉",3],["动漫",4],["连载",3],["熟人",4],["平台",3],["烦躁",4],["跨年",3],["无聊",3],["访问",3]],note:"最早保存下来的公共声音集中在 8-12 月。它像一个刚打开的窗口，把无聊、期待、平台烦躁、动漫角色和想写故事的冲动一起放出来。"},
+  {y:"2009",age:"13-14",words:[["三班",6],["人物册",6],["未来的我",6],["暗号",4],["空间访问",5],["新班",4],["存档",6],["暑假周记",4],["同学",5],["信",5],["散场",4],["情人节",3],["网速",3],["喜欢",4],["班级",5],["退场",3]],note:"这一年开始明显把现在留给未来。班级、熟人圈、给未来自己的信和共同体散场前的保存意识，是它最重要的结构。"},
+  {y:"2010",age:"14-15",words:[["中考",6],["旧世界",5],["新学校",6],["ACG",4],["义工",4],["播音",4],["纸质日记",5],["社团",4],["高中",5],["散场",4],["单身",3],["城市步行",3],["学姐",3],["未来",5],["入口",4],["忙乱",3]],note:"初中世界在封存，高中世界扑面而来。她开始测试新入口：社团、义工、播音、城市步行和纸质日记。"},
+  {y:"2011",age:"15-16",words:[["喜欢",6],["纪念日",5],["支教",6],["公交",4],["班会",4],["誓言",6],["远方",5],["台灯",3],["作业",4],["爱",6],["适合",5],["未来变量",4],["睡袋",3],["山",3],["班级",4],["理论",4]],note:"亲密关系、班级生活和第一次远行同时发生。私人感情被写成关于爱、适合、未来和不确定的分析框架。"},
+  {y:"2012",age:"16-17",words:[["考试",6],["专业",6],["标准答案",5],["短歌行",5],["公共事件",4],["家乡",4],["压力",6],["选择",5],["暴力",3],["舆论",3],["未来变硬",5],["段子",4],["高三",4],["抢答题",3],["规则",5],["讽刺",4]],note:"制度压力变硬，专业和未来开始带着现实重量出现。她把考试压力翻译成讽刺、改写、判断和公共事件里的立场。"},
+  {y:"2013",age:"17-18",words:[["高考",6],["志愿表",6],["行李",6],["成都",6],["明信片",5],["离家",6],["没有地方像家",5],["新号码",4],["地址",4],["食堂",3],["评价",3],["再见",4],["你好",4],["旧同学",5],["新生活",5],["想家",4]],note:"高考后的她真的离开原来的生活。105 斤行李、新号码、地址和明信片，让迁移从想象变成现实。"},
+  {y:"2014",age:"18-19",words:[["为什么不呢",6],["回信",5],["大学四年",6],["读书营",5],["记录",6],["P2P",4],["白狗",4],["清理生活",4],["公共参与",5],["计划",5],["早起",3],["住院",4],["老师",3],["朋友",4],["根源",5],["自我更新",5]],note:"大学开始把自我撑开。她处理早期关系的结束，也开始想怎样规划四年、怎样留下更多记录、怎样进入公共项目。"},
+  {y:"2015",age:"19-20",words:[["问卷",5],["斯里兰卡",6],["通勤",5],["家教",5],["判断力",6],["复杂经验",6],["拒绝粗糙",5],["旅行长文",5],["托福",4],["奖项",3],["人格",4],["现实成本",5],["时间",4],["服务",3],["好奇",4],["自我喜欢",4]],note:"她更明确地拒绝简单答案。旅行、通勤、家教和人格问卷，都被拿来训练判断力和现实感。"},
+  {y:"2016",age:"20-21",words:[["自习处",5],["信息管理",6],["资料副业",6],["概率",4],["工具",6],["城市现实",5],["路径",5],["北京",4],["宿舍热",3],["基因检测",3],["创业",4],["性价比",5],["解释系统",5],["平台",4],["资料",5],["项目",4]],note:"注意力从校园扩展到城市和工具。北京自习处、资料整理、副业和职业判断，让现实被拆成可以比较的路径。"},
+  {y:"2017",age:"21-22",words:[["聊天记录",6],["共居",6],["交换",5],["技术",5],["箱子",4],["706",5],["实时思考",6],["申请",5],["关系标签",4],["五道口",4],["跨城",5],["朋友",4],["交通",4],["共学",3],["公共厨房",3],["规则",4]],note:"高密度聊天和共居让关系、技术、申请和城市实践交织在一起。语言像实时工作台，边说边推进。"},
+  {y:"2018",age:"22-23",words:[["西伯利亚铁路",6],["伦敦",6],["学生房",5],["文书",5],["阳台",4],["远方制度",6],["FOMO",5],["铁路",5],["申请服务",4],["作品集",4],["入学",5],["欧洲",4],["制度",5],["不安",4],["传奇感",4],["远方",5]],note:"远方真正打开，也带来制度压力。铁路、伦敦、住宿和申请服务让世界显得广阔，同时也显得昂贵、拥挤和不安。"},
+  {y:"2019",age:"23-24",words:[["巴塞罗那",5],["全奖",6],["东非",5],["登山",5],["医疗支持",6],["朋友照料",6],["掉电",6],["伦敦",5],["老鼠",4],["作业",4],["青旅",3],["生日",4],["成就失效",6],["住处压力",5],["治疗",5],["疲惫",5]],note:"外部事件很丰富，内部系统却明显下沉。旅行和成就失去修复力，身体、住处、医疗支持和朋友照料进入中心。"},
+  {y:"2020",age:"24-25",words:[["疫情",6],["两个箱子",6],["鲁汶",5],["图卢兹",5],["写信",6],["治疗",6],["手摇水井",5],["药物",4],["搬家",5],["隔离",4],["脆弱",5],["相遇",5],["远程",4],["语言",4],["关系",5],["停摆",4]],note:"世界突然变小。药物、治疗、搬家、两个箱子和写信相遇，构成一段脆弱但仍在寻找连接的时期。"},
+  {y:"2021",age:"25-26",words:[["隔离",5],["波士顿",6],["优胜美地",5],["签证",5],["毕设",6],["做饭",6],["安全感",5],["长途飞行",5],["厨房",5],["伴侣",5],["学业",5],["被夸",3],["拖延",4],["低谷",4],["签字",3],["项目",4]],note:"跨国飞行、隔离、伴侣关系和学业压力交织。做饭和被照顾成为很具体的安全感来源。"},
+  {y:"2022",age:"26-27",words:[["自救日记",6],["晒太阳",6],["西瓜",6],["邮轮",4],["打工换宿",6],["咨询",5],["边界",5],["刷牙",4],["洗澡",4],["低能量",5],["伦敦房间",4],["欧洲路线",4],["签名事故",3],["现金",3],["瑜伽",3],["恢复",6]],note:"恢复从很小的日常动作开始。睡觉、洗澡、刷牙、晒太阳和吃水果，成为重新活过来的底层技术。"},
+  {y:"2023",age:"27-28",words:[["草莓",6],["船屋",6],["农场",6],["老人",4],["表演群",6],["房车",5],["死亡",5],["羊",3],["海风",4],["借住",4],["30件生命大事",5],["行动力实验",5],["低成本幸福",6],["诊断",4],["朋友",5],["村庄",4]],note:"低成本但高幸福度的生活结构出现。船屋、农场、草莓和表演群让生活重新有动作，朋友的死亡也让这一年带着很深的重量。"},
+  {y:"2024",age:"28-29",words:[["垃圾帖",6],["不消费主义",6],["内观",6],["口述史",5],["CYC",6],["无手机",5],["社区",6],["免费住处",6],["大理",5],["清迈",4],["老挝",4],["公开求助",5],["家庭房间",4],["共建",5],["报名",4],["写作朋友",4]],note:"表达、社区和生活原则集中成形。免费住处、内观、口述史和社区主理，让她开始把自己的生活方法放到公共现场里测试。"},
+  {y:"2025",age:"29-30",words:[["分手",6],["AI角色",6],["垃圾帖方法",6],["共学",6],["身体训练",5],["公开分享",5],["创造系统",6],["chosen family",5],["Circling",5],["钱",4],["上海",4],["清迈",4],["自然建筑",4],["身体自由",5],["非暴力不合作",5],["方法制造",6]],note:"关系、AI、身体、钱和公共表达同时推到前台。个人经验被拆成可以共学、可以邀请、可以被别人试用的方法。"},
+  {y:"2026",age:"30-31",words:[["深度关系",6],["家人T-group",5],["费登奎斯",5],["医院",5],["Wikipedia",6],["聊天记录",6],["zine",5],["口述史",5],["十点动一动",5],["上海",4],["活动场",4],["共学",5],["Agent工作流",6],["身体权威",5],["灵感派对",4],["家族对话",5]],note:"截至 6 月底，重点是搭容器。深度关系、家族回看、身体方法、个人知识库和小出版物一起出现。"}
+];
+
+const cloudPalette = ["#78aa94","#d8aa55","#d9856f","#7fa4bd","#9b8ab8","#c98fa1","#7f9a6f","#b88970"];
+document.getElementById("yearCloudGrid").innerHTML = yearClouds.map((card, cardIndex) => `
+  <div class="year-cloud-card">
+    <h3>${card.y}<span class="age">${card.age}</span></h3>
+    <div class="mini-cloud">${card.words.map(([w,n], i) => `<span style="--w:${n};--c:${cloudPalette[(i + cardIndex) % cloudPalette.length]};--r:${[-5,-3,-2,0,2,3,5][(i + cardIndex) % 7]}deg">${w}</span>`).join("")}</div>
+    <p>${card.note}</p>
+  </div>
+`).join("");
+
+const topicNames = ["写作与表达","教育制度","旅行能否救人","心理健康与诊断","死亡与照护","钱与交换","家的重建","社区建设","身体与放松","AI与技术","家庭口述史","深度关系方法"];
+const topicScores = [
+  [3,4,5,4,5,5,6,6,6,7,7,6,5,3,5,7,7,9,8],
+  [0,0,1,2,6,7,4,3,2,2,1,1,0,0,1,2,0,0,0],
+  [0,0,0,0,0,0,1,2,3,8,9,7,3,1,4,5,4,2,0],
+  [0,0,0,0,0,0,0,0,0,1,2,7,8,9,8,9,7,7,7],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,8,7,5,7],
+  [0,0,0,0,0,1,2,3,5,6,5,5,4,3,6,8,8,9,8],
+  [0,0,0,0,4,4,5,5,5,6,7,6,5,6,6,7,8,8,9],
+  [0,0,0,0,1,1,2,2,3,6,5,4,3,4,5,6,8,9,9],
+  [0,0,0,0,0,0,1,1,1,2,3,6,6,5,6,8,8,9,9],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,4,7,8],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,6,7,9],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,7,9]
+];
+const topicColors = ["#78aa94","#d8aa55","#d9856f","#7fa4bd","#9b8ab8","#c98fa1","#7f9a6f","#b88970","#96b77c","#6f91aa","#a88d69","#d08c74"];
+const topicLineDatasets = topicNames.map((name,i) => ({
+  label:name,
+  data:topicScores[i],
+  borderColor:topicColors[i],
+  backgroundColor:topicColors[i] + "33",
+  borderWidth:2,
+  tension:.32,
+  pointRadius:2.4,
+  pointHoverRadius:5
+}));
+new Chart(document.getElementById("topicLineChart"), {
+  type:"line",
+  data:{labels:shortYears,datasets:topicLineDatasets},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:12,usePointStyle:true,font:{size:10}}}},scales:{x:{grid:{display:false}},y:{min:0,max:10,ticks:{stepSize:2},grid:{color:"#eadfce"}}}}
+});
+new Chart(document.getElementById("topicStackChart"), {
+  type:"bar",
+  data:{labels:shortYears,datasets:topicNames.map((name,i)=>({label:name,data:topicScores[i],backgroundColor:topicColors[i] + "88",borderColor:topicColors[i],borderWidth:1,borderRadius:3}))},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:10,usePointStyle:true,font:{size:10}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false}}}
+});
+
+const needs = {
+  "被看见":[9,9,8,7,6,5,5,4,4,4,3,2,2,1,2,3,3,2,2],
+  "连接/归属":[8,8,8,7,7,6,6,5,5,6,5,5,4,4,5,6,6,5,5],
+  "自主/自由":[2,3,3,4,4,5,6,7,7,8,8,6,5,4,6,7,8,9,8],
+  "创造/表达":[3,4,5,5,5,6,7,7,6,7,7,5,4,3,5,7,8,9,9],
+  "安全/确定":[5,5,5,5,5,5,5,5,6,6,7,8,9,10,8,7,6,5,6],
+  "意义/使命":[2,2,3,3,3,4,5,5,4,5,5,3,2,1,3,5,7,8,9],
+  "身体/健康":[2,2,2,2,2,2,3,3,3,4,4,6,7,6,7,8,8,9,9]
+};
+const needColors = ["#d9856f","#d8aa55","#78aa94","#7fa4bd","#9b8ab8","#b88970","#c98fa1"];
+const needKeys = Object.keys(needs);
+new Chart(document.getElementById("needsAreaChart"), {
+  type:"line",
+  data:{labels:years,datasets:needKeys.map((key,i)=>({label:key,data:needs[key],borderColor:needColors[i],backgroundColor:needColors[i] + "24",borderWidth:2,tension:.35,pointRadius:2.5,fill:false}))},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:12,usePointStyle:true}}},scales:{x:{ticks:{maxRotation:60,font:{size:10}},grid:{display:false}},y:{min:0,max:10,ticks:{stepSize:2},grid:{color:"#eadfce"}}}}
+});
+const radarYears = ["2008","2014","2019","2023","2026"];
+const radarColors = ["#d9856f","#d8aa55","#78aa94","#7fa4bd","#9b8ab8"];
+new Chart(document.getElementById("needsRadarChart"), {
+  type:"radar",
+  data:{labels:needKeys,datasets:radarYears.map((year,i)=>{ const idx = years.indexOf(year); return {label:year,data:needKeys.map(k=>needs[k][idx]),borderColor:radarColors[i],backgroundColor:radarColors[i] + "24",borderWidth:2,pointRadius:3}; })},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:12,usePointStyle:true}}},scales:{r:{min:0,max:10,ticks:{stepSize:2,display:false},grid:{color:"#eadfce"},angleLines:{color:"#eadfce"}}}}
+});
+
+const emotionType = [3,3,3,1,4,3,3,2,1,1,1,4,4,4,5,5,5,5,3];
+const emotionLabels = ["","高能量","稳定","混合","低能量","波动恢复"];
+const emotionColors = ["","#96b77c","#d8aa55","#b88970","#c56b74","#9b8ab8"];
+const emotionNotes = {
+  "2008":"情绪切换很快：烦躁、期待、无聊、害怕和跨年开心都在同一个小屏幕里出现。",
+  "2009":"班级温暖、情人节空虚、新班不安和年末退场混在一起，已经有保存共同体的冲动。",
+  "2010":"旧学校封存和新学校进入同时发生，低落、期待、紧张、忙乱和疲惫轮流出现。",
+  "2011":"甜蜜、誓言、不安、学业烦躁、远行想家和班级亢奋都非常强烈。",
+  "2012":"考试和制度压力把未来变硬，情绪通过讽刺、改写和公共判断寻找出口。",
+  "2013":"高考前急乱，离家后兴奋和想家并存，年末开始集中回望和修补。",
+  "2014":"关系结束后的平静、大学生活的兴奋、记录焦虑和身体极限交织。",
+  "2015":"自我喜欢更稳定，对浅薄答案不耐烦，判断力和现实感上升。",
+  "2016":"好玩、自嘲、热得烦、工具焦虑和项目兴奋混在一起，情绪被压成可处理的小单位。",
+  "2017":"共居、交换和聊天带来高密度兴奋，也带来交通、申请和关系的消耗。",
+  "2018":"远方带来高刺激和成就感，也带来住宿压力、FOMO 和身份不安。",
+  "2019":"高功能外壳下持续掉电，旅行和成就失去修复力，医疗支持与朋友照料变得关键。",
+  "2020":"疫情缩小世界，低能量、治疗、搬家和写信相遇，偶然的温暖很重要。",
+  "2021":"跨国、隔离、关系和毕业压力交织，做饭和被照顾成为安全感来源。",
+  "2022":"从低能量恢复到可以晒太阳、吃水果、移动和接一点工作，恢复不稳定但开始有方法。",
+  "2023":"低谷、草莓、船屋、朋友死亡、农场和表演群同时存在，幸福感来自很具体的日常结构。",
+  "2024":"回家、内观、社区主理和不消费主义让情绪剧烈又清晰，生活原则开始成形。",
+  "2025":"分离、爱意、哀悼、AI、共学、身体训练和公开表达同时上升，疼痛和创造力并存。",
+  "2026":"紧张、兴奋、被看见、被卡住、家族松动、身体恢复和知识整理一起发生。"
+};
+const emotionRow = document.getElementById("emotionRow");
+const emotionDetail = document.getElementById("emotionDetail");
+years.forEach((y,i) => {
+  const type = emotionType[i];
+  const block = document.createElement("div");
+  block.className = "emotion-block";
+  block.style.background = emotionColors[type];
+  block.innerHTML = `<div class="yr">${y}</div><div class="label">${emotionLabels[type]}</div>`;
+  block.addEventListener("mouseenter", () => {
+    emotionDetail.textContent = `${y}：${emotionNotes[y]}`;
+    emotionDetail.style.borderLeftColor = emotionColors[type];
+  });
+  emotionRow.appendChild(block);
+});
+
+new Chart(document.getElementById("densityChart"), {
+  type:"bar",
+  data:{labels:years,datasets:[{label:"时间轴事件数",data:[8,12,12,13,12,12,14,13,12,13,13,17,17,15,16,17,20,20,16],backgroundColor:stageColors,borderRadius:7}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:60,font:{size:10}},grid:{display:false}},y:{beginAtZero:true,grid:{color:"#eadfce"}}}}
+});
+
+new Chart(document.getElementById("voiceChart"), {
+  type:"bar",
+  data:{labels:["08-10","11-13","14-16","17-18","19-20","21-23","24","25","26"],datasets:[
+    {label:"即时喊话",data:[78,20,0,0,0,0,0,0,0],backgroundColor:"#b88970"},
+    {label:"存档/理论",data:[12,58,18,0,0,0,0,0,0],backgroundColor:"#d8aa55"},
+    {label:"判断/拆概念",data:[0,12,58,32,0,0,0,0,0],backgroundColor:"#d9856f"},
+    {label:"实时推进",data:[0,0,14,50,20,0,0,0,0],backgroundColor:"#7fa4bd"},
+    {label:"幽默求生",data:[0,0,0,10,50,20,0,0,0],backgroundColor:"#9b8ab8"},
+    {label:"恢复/方法",data:[0,10,10,8,30,58,32,18,10],backgroundColor:"#96b77c"},
+    {label:"邀请/容器",data:[0,0,0,0,0,22,68,82,90],backgroundColor:"#c98fa1"}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:11}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,max:100}}}
+});
+
+new Chart(document.getElementById("energyChart"), {
+  type:"line",
+  data:{labels:years,datasets:[
+    {label:"幸福感/生活感受",data:[4,3.5,2.7,4,3,2.7,4,4.3,3.6,3.2,3.4,1.5,2,1.7,2.8,3.6,4.5,4,4.1],borderColor:"#d9856f",backgroundColor:"#d9856f1a",pointRadius:4,pointBackgroundColor:stageColors,tension:.38,fill:true},
+    {label:"行动力/输出密度",data:[2,2.2,2.4,2.6,2.8,3,3.7,4,4,4.6,4.2,2.6,2.4,2.1,3.1,4.1,5,5,4.7],borderColor:"#7fa4bd",backgroundColor:"#7fa4bd14",pointRadius:4,pointBackgroundColor:"#7fa4bd",borderDash:[5,4],tension:.38,fill:false},
+    {label:"情绪波动强度",data:[3.8,4,3.5,4.8,4,4.2,3.8,3,3,4,4.1,4.7,4.2,4.5,4.4,4.6,4.8,5,4.2],borderColor:"#9b8ab8",backgroundColor:"#9b8ab814",pointRadius:4,pointBackgroundColor:"#9b8ab8",tension:.38,fill:false}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:12}},tooltip:{callbacks:{afterLabel:ctx => emotionNotes[years[ctx.dataIndex]] || ""}}},scales:{y:{min:0,max:5,ticks:{stepSize:1,callback:v => ["","很低","偏低","中等","偏高","很高"][v] || v},grid:{color:"#eadfce"}},x:{ticks:{maxRotation:60,font:{size:10}},grid:{display:false}}}}
+});
+
+new Chart(document.getElementById("geoChart"), {
+  type:"bar",
+  data:{labels:years,datasets:[{label:"主要地点数量",data:[1,1,1,2,1,2,1,3,2,6,2,4,3,4,4,4,5,4,2],backgroundColor:stageColors,borderRadius:7}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:60,font:{size:10}},grid:{display:false}},y:{beginAtZero:true,ticks:{stepSize:1},grid:{color:"#eadfce"}}}}
+});
+
+new Chart(document.getElementById("housingChart"), {
+  type:"bar",
+  data:{labels:["08-13","14-18","19-21","22-24","25-26"],datasets:[
+    {label:"家/学校/租房",data:[72,46,35,18,20],backgroundColor:"#b88970"},
+    {label:"青旅/过境",data:[10,18,25,12,10],backgroundColor:"#7fa4bd"},
+    {label:"共居/社区",data:[8,24,15,28,42],backgroundColor:"#d8aa55"},
+    {label:"借宿/换宿/免费",data:[0,5,10,38,24],backgroundColor:"#9b8ab8"},
+    {label:"家族现场",data:[10,7,15,4,4],backgroundColor:"#d9856f"}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:11}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,max:100}}}
+});
+
+new Chart(document.getElementById("relationChart"), {
+  type:"bar",
+  data:{labels:["08-10","11-13","14-16","17-18","19-21","22-23","24","25","26"],datasets:[
+    {label:"熟人/同学",data:[78,38,20,8,5,0,0,0,0],backgroundColor:"#78aa94"},
+    {label:"亲密关系",data:[8,50,28,34,46,36,18,28,22],backgroundColor:"#d9856f"},
+    {label:"朋友照料",data:[4,4,8,8,28,14,10,10,10],backgroundColor:"#7fa4bd"},
+    {label:"社群/共居",data:[5,4,26,38,16,32,44,34,34],backgroundColor:"#d8aa55"},
+    {label:"创造/实验",data:[5,4,18,12,5,18,28,28,34],backgroundColor:"#9b8ab8"}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:11}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,max:100}}}
+});
+
+new Chart(document.getElementById("moneyChart"), {
+  type:"bar",
+  data:{labels:["08-13","14-16","17-18","19-21","22-23","24","25","26"],datasets:[
+    {label:"家庭支持/消费",data:[90,42,22,30,10,5,0,0],backgroundColor:"#b88970"},
+    {label:"副业/项目",data:[0,38,48,42,34,18,12,10],backgroundColor:"#d9856f"},
+    {label:"咨询/服务",data:[0,5,18,12,38,28,24,16],backgroundColor:"#7fa4bd"},
+    {label:"礼物/交换/免费",data:[5,5,6,8,10,36,36,38],backgroundColor:"#9b8ab8"},
+    {label:"打赏/共学/定价",data:[0,0,0,4,8,13,28,36],backgroundColor:"#78aa94"}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:11}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,display:false,max:100}}}
+});
+
+new Chart(document.getElementById("bodyChart"), {
+  type:"line",
+  data:{labels:["08-10","11-13","14-16","17-18","2019","2020","2021","2022","2023","2024","2025","2026"],datasets:[
+    {label:"身体权威",data:[1.3,1.5,2,2.2,1,1.2,1.4,2.7,3.4,4.4,4.8,5],borderColor:"#c98fa1",backgroundColor:"#c98fa122",pointBackgroundColor:"#c98fa1",pointRadius:5,tension:.35,fill:true},
+    {label:"外部制度压力",data:[3,4,3.7,4.5,4.6,4.2,4.5,3,2.5,2.8,2.6,2.5],borderColor:"#b88970",backgroundColor:"#b8897012",pointBackgroundColor:"#b88970",pointRadius:4,tension:.35,fill:false}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:12}}},scales:{y:{min:0,max:5,ticks:{stepSize:1},grid:{color:"#eadfce"}},x:{grid:{display:false}}}}
+});
+</script>
+</body>
+</html>
