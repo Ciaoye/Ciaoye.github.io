@@ -508,12 +508,7 @@ var OSO_Chat = (function() {
 
         win.setStatus('Ciao！输入消息开始对话 — /new 开启新对话');
 
-        // Load previous chat history if any
-        loadChatHistory().then(function() {
-            if (chatMessages.length > 0) {
-                win.setStatus('📋 恢复了 ' + chatMessages.length + ' 条消息');
-            }
-        });
+        // Chat history loading disabled - always start fresh
 
         // Auto-save on close (register once)
         if (!closeHandlerRegistered) {
