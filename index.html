@@ -448,16 +448,35 @@
                 }));
             }
         });
-        var savedPos = localStorage.getItem('oso_lofi_pos');
-        if (savedPos) {
-            try {
-                var p = JSON.parse(savedPos);
-                lofi.style.right = 'auto';
-                lofi.style.top = 'auto';
-                lofi.style.left = p.x + 'px';
-                lofi.style.top = p.y + 'px';
-            } catch(e) {}
+        // Mobile detection
+        var mql = window.matchMedia('(max-width: 768px)');
+
+        // Only restore saved position on desktop; mobile uses CSS default
+        if (!mql.matches) {
+            var savedPos = localStorage.getItem('oso_lofi_pos');
+            if (savedPos) {
+                try {
+                    var p = JSON.parse(savedPos);
+                    lofi.style.right = 'auto';
+                    lofi.style.top = 'auto';
+                    lofi.style.left = p.x + 'px';
+                    lofi.style.top = p.y + 'px';
+                } catch(e) {}
+            }
         }
+
+        // Mobile: start collapsed to avoid blocking desktop icons
+        function autoCollapseForMobile() {
+            if (mql.matches) {
+                body.classList.add('collapsed');
+                minBtn.textContent = '□';
+            } else {
+                body.classList.remove('collapsed');
+                minBtn.textContent = '_';
+            }
+        }
+        autoCollapseForMobile();
+        mql.addEventListener('change', autoCollapseForMobile);
     })();
 
     // Sound Effects: hook into window events

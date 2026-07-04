@@ -498,4 +498,9 @@
     .oso-desktop-icon {
         touch-action: manipulation;
     }
+
+    /* Mobile: lofi radio starts collapsed to avoid blocking desktop icons */
+    .oso-lofi-body.collapsed {
+        display: none;
+    }
 }
