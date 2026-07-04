@@ -359,7 +359,7 @@ var OSO_Letter = (function() {
             saveThreads();
             renderSidebar(container);
             showThread(container, win, thread);
-            win.setStatus('收到新回信');
+            win.setStatus(err ? '回信发送失败' : '收到新回信');
         });
     }
 
@@ -377,46 +377,83 @@ var OSO_Letter = (function() {
                 { role: 'user', content: '请回信' }
             ]
         });
+        var maxAttempts = 3;
+        var retryDelayMs = 8000;
 
-        fetch(CHAT_API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-ciao-token': token },
-            body: body
-        })
-        .then(function(res) {
-            if (!res.ok) {
-                throw new Error(res.status === 401 ? '后端鉴权失败，请检查 CIAO_WEB_TOKEN' : 'API error ' + res.status);
+        function retryOrFail(err, attempt) {
+            if (err.message.indexOf('鉴权失败') >= 0) {
+                localStorage.removeItem('ciao_token');
+                callback(null, err);
+                return;
             }
-            var reader = res.body.getReader();
-            var decoder = new TextDecoder();
-            var buffer = '';
-            var content = '';
+            if (attempt < maxAttempts) {
+                setTimeout(function() {
+                    request(attempt + 1);
+                }, retryDelayMs);
+                return;
+            }
+            callback(null, err);
+        }
 
-            function pump() {
-                reader.read().then(function(result) {
-                    if (result.done) { callback(content); return; }
-                    buffer += decoder.decode(result.value, { stream: true });
-                    var lines = buffer.split('\n');
-                    buffer = lines.pop() || '';
-                    lines.forEach(function(line) {
-                        if (!line.startsWith('data: ')) return;
-                        var data = line.slice(6).trim();
-                        if (!data || data === '[DONE]') return;
-                        try {
-                            var p = JSON.parse(data);
-                            var chunk = p.content || p.delta || '';
-                            if (p.type === 'TEXT_MESSAGE_CONTENT' && chunk) content += chunk;
-                        } catch(e) {}
+        function request(attempt) {
+            fetch(CHAT_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-ciao-token': token },
+                body: body
+            })
+            .then(function(res) {
+                if (!res.ok) {
+                    throw new Error(res.status === 401 ? '后端鉴权失败，请检查 CIAO_WEB_TOKEN' : 'API error ' + res.status);
+                }
+                var reader = res.body.getReader();
+                var decoder = new TextDecoder();
+                var buffer = '';
+                var content = '';
+                var streamError = null;
+
+                function pump() {
+                    reader.read().then(function(result) {
+                        if (result.done) {
+                            if (content.trim()) {
+                                callback(content);
+                            } else {
+                                retryOrFail(new Error('empty response'), attempt);
+                            }
+                            return;
+                        }
+                        buffer += decoder.decode(result.value, { stream: true });
+                        var lines = buffer.split('\n');
+                        buffer = lines.pop() || '';
+                        lines.forEach(function(line) {
+                            if (!line.startsWith('data: ')) return;
+                            var data = line.slice(6).trim();
+                            if (!data || data === '[DONE]') return;
+                            try {
+                                var p = JSON.parse(data);
+                                var chunk = p.content || p.delta || '';
+                                if (p.type === 'TEXT_MESSAGE_CONTENT' && chunk) content += chunk;
+                                if (p.type === 'RUN_ERROR') streamError = new Error(p.message || 'agent failed');
+                            } catch(e) {
+                                streamError = e;
+                            }
+                        });
+                        if (streamError) {
+                            retryOrFail(streamError, attempt);
+                            return;
+                        }
+                        pump();
+                    }).catch(function(e) {
+                        retryOrFail(e, attempt);
                     });
-                    pump();
-                });
-            }
-            pump();
-        })
-        .catch(function(e) {
-            if (e.message.indexOf('鉴权失败') >= 0) localStorage.removeItem('ciao_token');
-            callback(null, e);
-        });
+                }
+                pump();
+            })
+            .catch(function(e) {
+                retryOrFail(e, attempt);
+            });
+        }
+
+        request(1);
     }
 
     function saveThreadAsText(thread, win) {

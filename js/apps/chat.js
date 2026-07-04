@@ -4,6 +4,7 @@ var OSO_Chat = (function() {
     'use strict';
 
     var CHAT_API = 'https://ciao-274203-7-1446728973.sh.run.tcloudbase.com/web-chat';
+    var READY_API = CHAT_API.replace(/\/web-chat$/, '/readyz');
     var AGENT_TOKEN = 'ciao_9rJ4vQx72LmP0aT8sYdK3nW6bE1HfZ5c';
     var TOKEN_KEY = 'ciao_token';
     var THREAD_KEY = 'ciao_thread_id';
@@ -17,6 +18,7 @@ var OSO_Chat = (function() {
     var streamBubbles = [];   // bubbles being rendered in current SSE stream only
     var streamChatCount = 0;   // # of chatMessages entries from current stream
     var closeHandlerRegistered = false;
+    var statusPollTimer = null;
 
     function open() {
         if (OSO.WM.get('chat')) {
@@ -144,6 +146,12 @@ var OSO_Chat = (function() {
         function setStatus(online) {
             statusDot.className = 'chat-status-dot' + (online ? '' : ' off');
             statusLabel.textContent = online ? '在线' : '连接断开';
+        }
+
+        function checkStatus() {
+            fetch(READY_API, { cache: 'no-store' })
+                .then(function(res) { setStatus(res.ok); })
+                .catch(function() { setStatus(false); });
         }
 
         function ensureToken() {
@@ -474,10 +482,18 @@ var OSO_Chat = (function() {
             OSO.WM.on('close', function(closedWin) {
                 if (closedWin.id === 'chat') {
                     saveChatHistory();
+                    if (statusPollTimer) {
+                        clearInterval(statusPollTimer);
+                        statusPollTimer = null;
+                    }
                 }
             });
             closeHandlerRegistered = true;
         }
+
+        checkStatus();
+        if (statusPollTimer) clearInterval(statusPollTimer);
+        statusPollTimer = setInterval(checkStatus, 30000);
     }
 
     function getChatHTML() {
@@ -501,19 +517,19 @@ var OSO_Chat = (function() {
 @keyframes tdotBounce { 0%,70%,100%{opacity:0.25;transform:scale(0.7)} 35%{opacity:1;transform:scale(1.1)} }\
 .chat-welcome { text-align:center;padding:32px 20px;color:#5e2ca5;font-size:14px;line-height:2;z-index:1; }\
 .chat-welcome .we-emoji { font-size:40px;display:block;margin-bottom:12px; }\
-.chat-input-area { display:flex;gap:4px;padding:6px 8px;border-top:1px solid rgba(128,128,128,0.3);background:rgba(255,255,255,0.4);backdrop-filter:blur(4px); }\
+.chat-input-area { display:flex;gap:6px;padding:6px 8px;border-top:1px solid rgba(128,128,128,0.3);background:rgba(255,255,255,0.4);backdrop-filter:blur(4px);align-items:center; }\
 .chat-input { flex:1;padding:6px 10px;font-size:12px;font-family:inherit;border:1px solid rgba(128,128,128,0.4);border-radius:8px;outline:none;background:rgba(255,255,255,0.7); }\
 .chat-input:focus { border-color:#8a41ff; }\
 .chat-send { padding:4px 14px;font-size:12px;font-family:inherit;cursor:pointer;border:1px solid rgba(128,128,128,0.4);border-radius:8px;background:#9d81ff;color:#fff;font-weight:bold; }\
 .chat-send:hover { background:#8a41ff; }\
 .chat-send:disabled { opacity:0.5; }\
-.chat-status-bar { display:flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px; }\
-.chat-status-dot { width:6px;height:6px;border-radius:50%;background:#44cc66; }\
-.chat-status-dot.off { background:#ccc; }\
+.chat-status-bar { display:flex;align-items:center;gap:4px;font-size:10px;padding:4px 7px;border:1px solid rgba(128,128,128,0.24);border-radius:999px;background:rgba(255,255,255,0.55);white-space:nowrap;color:#5e2ca5; }\
+.chat-status-dot { width:6px;height:6px;border-radius:50%;background:#44cc66;box-shadow:0 0 5px rgba(68,204,102,0.75); }\
+.chat-status-dot.off { background:#b9b2c8;box-shadow:none; }\
 </style>\
 <div class="chat-messages">' + getWelcomeHTML() + '</div>\
 <div class="chat-input-area">\
-    <div class="chat-status-bar" style="display:none;">\
+    <div class="chat-status-bar">\
         <span class="chat-status-dot"></span>\
         <span class="chat-status-label">在线</span>\
     </div>\
