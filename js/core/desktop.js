@@ -26,6 +26,10 @@ OSO.Desktop = (function() {
         });
     }
 
+    function isMobileMode() {
+        return OSO.Mobile && OSO.Mobile.isMobile();
+    }
+
     function renderIcons() {
         const grid = document.getElementById('oso-desktop-icons');
         if (!grid) return;
@@ -81,6 +85,9 @@ OSO.Desktop = (function() {
 
             iconEl.addEventListener('click', function(e) {
                 selectIcon(iconEl);
+                if (isMobileMode() && app.action) {
+                    app.action();
+                }
             });
 
             iconEl.addEventListener('dblclick', function() {
@@ -90,6 +97,7 @@ OSO.Desktop = (function() {
 
             // Drag support
             iconEl.addEventListener('mousedown', function(e) {
+                if (isMobileMode()) return;
                 if (e.button !== 0) return;
                 e.preventDefault();
                 var startX = e.clientX;

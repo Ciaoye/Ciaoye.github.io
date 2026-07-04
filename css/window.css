@@ -137,3 +137,51 @@
 .oso-window.animating {
     animation: osoWindowOpen 0.12s ease-out;
 }
+
+@media (max-width: 768px) {
+    .oso-window,
+    .oso-window.oso-mobile-window,
+    .oso-window.maximized {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: calc(100dvh - var(--oso-taskbar-height, 46px)) !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        transform: none !important;
+    }
+
+    .oso-window-titlebar {
+        min-height: 34px;
+        height: 34px;
+        padding: 4px 6px;
+        font-size: 13px;
+        cursor: default;
+    }
+
+    .oso-window-title-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .oso-window-menu {
+        font-size: 13px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .oso-window-menu span {
+        padding: 7px 10px;
+        white-space: nowrap;
+    }
+
+    .oso-window-statusbar {
+        min-height: 24px;
+        font-size: 11px;
+    }
+
+    .oso-window-resize {
+        display: none !important;
+    }
+}

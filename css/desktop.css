@@ -453,3 +453,49 @@
 }
 
 .lofi-credit a:hover { color: #b89eff; }
+
+@media (max-width: 768px) {
+    .oso-desktop {
+        bottom: var(--oso-taskbar-height, 46px);
+    }
+
+    .oso-start-menu {
+        bottom: var(--oso-taskbar-height, 46px);
+        left: 4px;
+        width: min(300px, calc(100vw - 8px));
+        max-height: calc(100dvh - var(--oso-taskbar-height, 46px) - 8px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .oso-start-menu-sidebar {
+        width: 30px;
+    }
+
+    .oso-start-menu-sidebar span {
+        font-size: 13px;
+    }
+
+    .oso-start-menu-items {
+        margin-left: 30px;
+    }
+
+    .oso-start-menu-item {
+        min-height: 42px;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .oso-start-menu-item img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .oso-icon-tooltip {
+        display: none;
+    }
+
+    .oso-desktop-icon {
+        touch-action: manipulation;
+    }
+}

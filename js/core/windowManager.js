@@ -1,6 +1,35 @@
 /* ===== 俏也 OS — Window Manager ===== */
 
 const OSO = window.OSO || {};
+OSO.Mobile = OSO.Mobile || (function() {
+    'use strict';
+
+    const query = window.matchMedia('(max-width: 768px)');
+
+    function isMobile() {
+        return query.matches;
+    }
+
+    function syncClass() {
+        document.body.classList.toggle('oso-mobile', isMobile());
+    }
+
+    function init() {
+        syncClass();
+        if (query.addEventListener) {
+            query.addEventListener('change', syncClass);
+        } else if (query.addListener) {
+            query.addListener(syncClass);
+        }
+    }
+
+    return {
+        init: init,
+        isMobile: isMobile
+    };
+})();
+OSO.Mobile.init();
+
 OSO.WM = (function() {
     'use strict';
 
@@ -29,22 +58,41 @@ OSO.WM = (function() {
         };
     }
 
+    function isMobileMode() {
+        return OSO.Mobile && OSO.Mobile.isMobile();
+    }
+
+    function mobileHeightCSS() {
+        return 'calc(100dvh - var(--oso-taskbar-height, 28px))';
+    }
+
+    function applyMobileLayout(win) {
+        if (!isMobileMode()) return;
+        win._el.classList.add('oso-mobile-window');
+        win._el.style.left = '0';
+        win._el.style.top = '0';
+        win._el.style.width = '100vw';
+        win._el.style.height = mobileHeightCSS();
+        win._maximized = true;
+    }
+
     function createWindow(id, title, icon, content, options) {
         options = options || {};
-        const pos = options.position || cascadePosition();
-        const w = options.width || 480;
-        const h = options.height || 380;
+        const mobile = isMobileMode();
+        const pos = mobile ? { x: 0, y: 0 } : (options.position || cascadePosition());
+        const w = mobile ? '100vw' : (options.width || 480);
+        const h = mobile ? mobileHeightCSS() : (options.height || 380);
         const minW = options.minWidth || 280;
         const minH = options.minHeight || 140;
         const showMenu = options.menu === true;
 
         const el = document.createElement('div');
-        el.className = 'oso-window win-outset animating';
+        el.className = 'oso-window win-outset animating' + (mobile ? ' oso-mobile-window' : '');
 
         el.style.left = pos.x + 'px';
         el.style.top = pos.y + 'px';
-        el.style.width = w + 'px';
-        el.style.height = h + 'px';
+        el.style.width = typeof w === 'number' ? w + 'px' : w;
+        el.style.height = typeof h === 'number' ? h + 'px' : h;
         el.style.zIndex = nextZIndex();
 
         const iconHTML = icon
@@ -96,7 +144,7 @@ OSO.WM = (function() {
             _el: el,
             _body: bodyEl,
             _minimized: false,
-            _maximized: false,
+            _maximized: mobile,
             _prevState: null,
             _options: options,
             getBody: function() { return bodyEl; },
@@ -128,6 +176,7 @@ OSO.WM = (function() {
         }, 150);
 
         attachWindowEvents(win);
+        applyMobileLayout(win);
         focusWindow(win);
         windowCount++;
         instances.push(win);
@@ -145,6 +194,7 @@ OSO.WM = (function() {
         // Titlebar drag
         titlebar.addEventListener('mousedown', function(e) {
             if (e.target.closest('.oso-btn-minimize, .oso-btn-maximize, .oso-btn-close')) return;
+            if (isMobileMode()) return;
             if (win._maximized) return;
             e.preventDefault();
 
@@ -175,6 +225,7 @@ OSO.WM = (function() {
 
         titlebar.addEventListener('dblclick', function(e) {
             if (e.target.closest('.oso-btn-minimize, .oso-btn-maximize, .oso-btn-close')) return;
+            if (isMobileMode()) return;
             maximizeWindow(win);
         });
 
@@ -201,6 +252,7 @@ OSO.WM = (function() {
         const handles = el.querySelectorAll('.oso-window-resize');
         handles.forEach(function(handle) {
             handle.addEventListener('mousedown', function(e) {
+                if (isMobileMode()) return;
                 if (win._maximized) return;
                 e.preventDefault();
                 e.stopPropagation();
@@ -272,6 +324,7 @@ OSO.WM = (function() {
         if (win._minimized) {
             win._el.style.display = 'flex';
             win._minimized = false;
+            applyMobileLayout(win);
             focusWindow(win);
         } else {
             win._el.style.display = 'none';
@@ -281,6 +334,10 @@ OSO.WM = (function() {
     }
 
     function maximizeWindow(win) {
+        if (isMobileMode()) {
+            applyMobileLayout(win);
+            return;
+        }
         if (win._maximized) {
             // Restore
             const ps = win._prevState;
@@ -317,6 +374,7 @@ OSO.WM = (function() {
     }
 
     function saveWindowPositions() {
+        if (isMobileMode()) return;
         var pos = {};
         instances.forEach(function(win) {
             if (win._maximized || win._minimized) return;
@@ -352,6 +410,11 @@ OSO.WM = (function() {
         else if (event === 'close') callbacks.onClose.push(fn);
         else if (event === 'focus') callbacks.onFocus.push(fn);
     }
+
+    window.addEventListener('resize', function() {
+        if (!isMobileMode()) return;
+        instances.forEach(applyMobileLayout);
+    });
 
     function escapeHTML(str) {
         const div = document.createElement('div');
