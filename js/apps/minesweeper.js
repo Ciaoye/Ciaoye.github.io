@@ -9,6 +9,7 @@ var OSO_Minesweeper = (function() {
         medium: {rows:16, cols:16, mines:40},
         hard: {rows:16, cols:30, mines:99}
     };
+    var isFlagMode = false;
     var currentDifficulty = 'easy';
 
     function open() {
@@ -29,14 +30,14 @@ var OSO_Minesweeper = (function() {
         renderBoard(container);
 
         function resizeWindow() {
-            var cellW = 20;
+            // Responsive cell size
+            var isMob = window.innerWidth <= 768;
+            var maxGridW = isMob ? window.innerWidth - 24 : 560;
+            var cellW = Math.max(20, Math.floor((maxGridW - (cols + 1) * 2) / cols));
             var w = cols * cellW + 36;
             var h = rows * cellW + 100;
-            var minW = Math.max(240, w - 60);
-            var minH = Math.max(200, h - 80);
             win._el.style.width = w + 'px';
             win._el.style.height = h + 'px';
-            // Snap to center-ish
             var maxLeft = window.innerWidth - w - 20;
             var maxTop = window.innerHeight - h - 40;
             if (win._el.offsetLeft > maxLeft) win._el.style.left = maxLeft + 'px';
@@ -55,6 +56,11 @@ var OSO_Minesweeper = (function() {
         });
         container.querySelector('#mine-btn-new').addEventListener('click', function() {
             initGame(currentDifficulty); renderBoard(container); resizeWindow(); win.setStatus('新游戏');
+        });
+        container.querySelector('#mine-btn-flag').addEventListener('click', function() {
+            isFlagMode = !isFlagMode;
+            renderBoard(container);
+            win.setStatus(isFlagMode ? '🚩 插旗模式 - 点击标记地雷' : '🔍 翻开模式 - 点击翻开格子');
         });
 
         win.setStatus('左键翻开 · 右键标记 · 难度: 初级');
@@ -134,6 +140,7 @@ var OSO_Minesweeper = (function() {
     function renderBoard(container) {
         var gridEl = container.querySelector('#mine-grid');
         var statusEl = container.querySelector('#mine-status');
+        var flagBtn = container.querySelector('#mine-btn-flag');
         if (!gridEl) return;
 
         var mineCount = mines;
@@ -142,9 +149,19 @@ var OSO_Minesweeper = (function() {
                 if (flagged[r][c]) mineCount--;
         container.querySelector('#mine-count').textContent = mineCount;
 
+        // Update flag mode button appearance
+        if (flagBtn) {
+            flagBtn.textContent = isFlagMode ? '🚩插旗中' : '🔍翻开';
+            flagBtn.style.background = isFlagMode ? '#ffaa00' : '#c0c0c0';
+        }
+
         gridEl.innerHTML = '';
-        gridEl.style.gridTemplateColumns = 'repeat(' + cols + ', 20px)';
-        gridEl.style.gridTemplateRows = 'repeat(' + rows + ', 20px)';
+
+        // Responsive cell size: fit within container, min 20px
+        var containerW = Math.min(container.offsetWidth - 16, window.innerWidth - 32, cols === 30 ? 620 : 400);
+        var cellSize = Math.max(20, Math.floor((containerW - (cols + 1) * 2) / cols));
+        gridEl.style.gridTemplateColumns = 'repeat(' + cols + ', ' + cellSize + 'px)';
+        gridEl.style.gridTemplateRows = 'repeat(' + rows + ', ' + cellSize + 'px)';
 
         var digitColors = ['','#0000ff','#008000','#ff0000','#000080','#800000','#008080','#000000','#808080'];
 
@@ -152,7 +169,7 @@ var OSO_Minesweeper = (function() {
             for (var c = 0; c < cols; c++) {
                 (function(rr, cc) {
                     var cell = document.createElement('div');
-                    cell.style.cssText = 'width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;overflow:hidden;';
+                    cell.style.cssText = 'width:' + cellSize + 'px;height:' + cellSize + 'px;font-size:' + Math.max(8, cellSize * 0.55) + 'px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;overflow:hidden;';
 
                     if (revealed[rr][cc]) {
                         if (board[rr][cc] === -1) {
@@ -174,16 +191,25 @@ var OSO_Minesweeper = (function() {
 
                     cell.addEventListener('click', function() {
                         if (gameOver) return;
-                        if (!flagged[rr][cc]) {
-                            reveal(rr, cc);
-                            if (checkWin() && !gameOver) {
-                                gameOver = true;
-                                if (statusEl) statusEl.textContent = '🎉 你赢了!';
+                        if (isFlagMode) {
+                            // Flag mode: toggle flag
+                            if (!revealed[rr][cc]) {
+                                flagged[rr][cc] = !flagged[rr][cc];
+                                renderBoard(container);
                             }
-                            renderBoard(container);
+                        } else {
+                            if (!flagged[rr][cc]) {
+                                reveal(rr, cc);
+                                if (checkWin() && !gameOver) {
+                                    gameOver = true;
+                                    if (statusEl) statusEl.textContent = '🎉 你赢了!';
+                                }
+                                renderBoard(container);
+                            }
                         }
                     });
 
+                    // Long-press always flags (works on desktop right-click and mobile long-press)
                     cell.addEventListener('contextmenu', function(e) {
                         e.preventDefault();
                         if (gameOver || revealed[rr][cc]) return;
@@ -222,6 +248,7 @@ var OSO_Minesweeper = (function() {
     <button id="mine-btn-medium">中级</button>\
     <button id="mine-btn-hard">高级</button>\
     <span style="flex:1;"></span>\
+    <button id="mine-btn-flag">🔍翻开</button>\
     <button id="mine-btn-new">新游戏</button>\
 </div>\
 <div id="mine-grid"></div>\

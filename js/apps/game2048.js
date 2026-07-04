@@ -28,6 +28,35 @@ var OSO_Game2048 = (function() {
 
         document.addEventListener('keydown', handleKey);
 
+        // Touch/swipe support for mobile
+        var touchStartX = 0, touchStartY = 0;
+        var gameContainer = container.querySelector('#game2048-container');
+        gameContainer.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+        gameContainer.addEventListener('touchend', function(e) {
+            if (gameOver) return;
+            var dx = (e.changedTouches[0] ? e.changedTouches[0].clientX : touchStartX) - touchStartX;
+            var dy = (e.changedTouches[0] ? e.changedTouches[0].clientY : touchStartY) - touchStartY;
+            var absDx = Math.abs(dx), absDy = Math.abs(dy);
+            if (Math.max(absDx, absDy) < 30) return; // too small, ignore
+            var moved = false;
+            if (absDx > absDy) {
+                moved = dx > 0 ? moveRight() : moveLeft();
+            } else {
+                moved = dy > 0 ? moveDown() : moveUp();
+            }
+            if (moved) {
+                e.preventDefault();
+                addRandom();
+                render();
+                checkGameOver();
+            }
+        });
+
         // New game button
         container.querySelector('#game2048-new').addEventListener('click', function() {
             grid = Array(4).fill().map(function() { return Array(4).fill(0); });
@@ -37,7 +66,7 @@ var OSO_Game2048 = (function() {
             win.setStatus('新游戏');
         });
 
-        win.setStatus('方向键操作 | 合并相同数字到 2048');
+        win.setStatus('滑动操作 | 方向键操作 | 合并到 2048');
     }
 
     function handleKey(e) {
