@@ -13,6 +13,10 @@ OSO.Desktop = (function() {
                 deselectAll();
             }
         });
+        // Re-render icons on rotation / resize (columns change 2↔3)
+        window.matchMedia('(max-width: 768px)').addEventListener('change', function() {
+            renderIcons();
+        });
     }
 
     function registerApp(id, name, icon, actionFn, menuName, tooltip) {
@@ -43,7 +47,7 @@ OSO.Desktop = (function() {
         } catch(e) {}
 
         var colW = 88, rowH = 88;
-        var cols = 3;
+        var cols = isMobile() ? 2 : 3;
         var startX = 40, startY = 60;
 
         appRegistry.forEach(function(app, i) {
