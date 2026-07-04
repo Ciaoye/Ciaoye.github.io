@@ -47,7 +47,7 @@ OSO.Desktop = (function() {
         } catch(e) {}
 
         var colW = 88, rowH = 88;
-        var cols = isMobile() ? 2 : 3;
+        var cols = isMobileMode() ? 2 : 3;
         var startX = 40, startY = 60;
 
         appRegistry.forEach(function(app, i) {
