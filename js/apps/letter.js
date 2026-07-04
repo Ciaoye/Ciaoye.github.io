@@ -432,6 +432,7 @@ var OSO_Letter = (function() {
                                 var p = JSON.parse(data);
                                 var chunk = p.content || p.delta || '';
                                 if (p.type === 'TEXT_MESSAGE_CONTENT' && chunk) content += chunk;
+                                if (p.type === 'MODEL_UNAVAILABLE') streamError = new Error(p.message || 'model unavailable');
                                 if (p.type === 'RUN_ERROR') streamError = new Error(p.message || 'agent failed');
                             } catch(e) {
                                 streamError = e;

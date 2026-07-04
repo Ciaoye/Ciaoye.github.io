@@ -4,10 +4,13 @@ var OSO_Chat = (function() {
     'use strict';
 
     var CHAT_API = 'https://ciao-274203-7-1446728973.sh.run.tcloudbase.com/web-chat';
-    var READY_API = CHAT_API.replace(/\/web-chat$/, '/readyz');
+    var READY_API = CHAT_API.replace(/\/web-chat$/, '/modelz');
     var AGENT_TOKEN = 'ciao_9rJ4vQx72LmP0aT8sYdK3nW6bE1HfZ5c';
     var TOKEN_KEY = 'ciao_token';
     var THREAD_KEY = 'ciao_thread_id';
+    var MODEL_OFFLINE_MESSAGE = '我现在好像接不上脑子了……你等一下再发一次试试？';
+    var RUN_ERROR_MESSAGE = '我这边刚刚出了一点问题。你再发一次试试，或者问问俏也怎么回事啊！';
+    var PARTIAL_RESPONSE_MESSAGE = '刚刚像是没说完，你可以再发一次试试。';
 
     var MAX_AGENT_BUBBLES = 5;
     var messages = [];
@@ -229,12 +232,13 @@ var OSO_Chat = (function() {
             var decoder = new TextDecoder();
             var buffer = '';
             var rawContent = '';
+            var streamFinished = false;
             streamBubbles = [];  // clear previous round's stream tracking
 
             function pump() {
                 reader.read().then(function(result) {
                     if (result.done) {
-                        finishSSE(typingDiv);
+                        finishSSE(typingDiv, rawContent, streamFinished);
                         return;
                     }
                     buffer += decoder.decode(result.value, { stream: true });
@@ -252,10 +256,24 @@ var OSO_Chat = (function() {
                                 rawContent += chunk;
                                 if (typingDiv.parentNode) typingDiv.remove();
                                 renderAgentBubbles(rawContent);
+                                setStreamStillTyping(true);
+                            }
+                            if (parsed.type === 'TEXT_MESSAGE_END' || parsed.type === 'RUN_FINISHED') {
+                                streamFinished = true;
+                                setStreamStillTyping(false);
+                            }
+                            if (parsed.type === 'MODEL_UNAVAILABLE') {
+                                streamFinished = true;
+                                setStreamStillTyping(false);
+                                if (typingDiv.parentNode) typingDiv.remove();
+                                addBubble('agent', MODEL_OFFLINE_MESSAGE);
+                                setStatus(false);
                             }
                             if (parsed.type === 'RUN_ERROR') {
+                                streamFinished = true;
+                                setStreamStillTyping(false);
                                 if (typingDiv.parentNode) typingDiv.remove();
-                                addBubble('agent', '发生错误，请重试');
+                                addBubble('agent', RUN_ERROR_MESSAGE);
                                 setStatus(false);
                             }
                         } catch(e) {}
@@ -269,9 +287,29 @@ var OSO_Chat = (function() {
             sendBtn.disabled = false;
         }
 
-        function finishSSE(typingDiv) {
+        function finishSSE(typingDiv, rawContent, streamFinished) {
             if (typingDiv.parentNode) typingDiv.remove();
+            setStreamStillTyping(false);
+            if (rawContent && !streamFinished) {
+                addBubble('agent', PARTIAL_RESPONSE_MESSAGE);
+            }
             win.setStatus('');
+        }
+
+        function setStreamStillTyping(active) {
+            streamBubbles.forEach(function(row) {
+                var old = row.querySelector('.cb-streaming-dots');
+                if (old) old.remove();
+            });
+            if (!active || streamBubbles.length === 0) return;
+            var lastRow = streamBubbles[streamBubbles.length - 1];
+            var bubble = lastRow ? lastRow.querySelector('.cb-bubble') : null;
+            if (!bubble) return;
+            var dots = document.createElement('span');
+            dots.className = 'cb-streaming-dots';
+            dots.innerHTML = '<span></span><span></span><span></span>';
+            bubble.appendChild(dots);
+            msgList.scrollTop = msgList.scrollHeight;
         }
 
         function renderAgentBubbles(rawContent) {
@@ -514,6 +552,10 @@ var OSO_Chat = (function() {
 .tdot { width:6px;height:6px;background:#d12e7a;border-radius:50%;animation:tdotBounce 1.3s infinite; }\
 .tdot:nth-child(2) { animation-delay:0.18s; }\
 .tdot:nth-child(3) { animation-delay:0.36s; }\
+.cb-streaming-dots { display:inline-flex; gap:3px; margin-left:6px; vertical-align:middle; }\
+.cb-streaming-dots span { width:4px;height:4px;background:#d12e7a;border-radius:50%;animation:tdotBounce 1.3s infinite; }\
+.cb-streaming-dots span:nth-child(2) { animation-delay:0.18s; }\
+.cb-streaming-dots span:nth-child(3) { animation-delay:0.36s; }\
 @keyframes tdotBounce { 0%,70%,100%{opacity:0.25;transform:scale(0.7)} 35%{opacity:1;transform:scale(1.1)} }\
 .chat-welcome { text-align:center;padding:32px 20px;color:#5e2ca5;font-size:14px;line-height:2;z-index:1; }\
 .chat-welcome .we-emoji { font-size:40px;display:block;margin-bottom:12px; }\
