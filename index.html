@@ -275,7 +275,37 @@
         audio.crossOrigin = 'anonymous';
         var curVol = 0.5;
         var curUrl = '';
+        var curStationName = '';
+        var isUserPaused = false;
         var connectTimer = null;
+
+        // ── Audio events ── drive UI state, not timers
+        audio.addEventListener('playing', function() {
+            setPlaying(true);
+            if (curStationName) {
+                statusEl.textContent = 'NOW: ' + curStationName;
+            }
+            statusEl.style.color = '#73d4ff';
+            if (connectTimer) { clearTimeout(connectTimer); connectTimer = null; }
+        });
+
+        audio.addEventListener('waiting', function() {
+            if (!isUserPaused && curStationName) {
+                statusEl.textContent = 'BUFFERING: ' + curStationName;
+                statusEl.style.color = '#ffb84d';
+            }
+        });
+
+        audio.addEventListener('error', function() {
+            setPlaying(false);
+            if (curStationName) {
+                statusEl.textContent = 'OFFLINE: ' + curStationName;
+            } else {
+                statusEl.textContent = 'OFFLINE';
+            }
+            statusEl.style.color = '#d12e7a';
+            if (connectTimer) { clearTimeout(connectTimer); connectTimer = null; }
+        });
 
         var stations = [
             { name:'LOFI GIRL',   url:'https://boxradio-edge-00.streamafrica.net/lofi' },
@@ -297,25 +327,23 @@
                 btn.classList.add('active');
                 // Play
                 curUrl = s.url;
+                curStationName = s.name;
+                isUserPaused = false;
                 audio.src = s.url;
                 audio.volume = curVol;
-                // Optimistic: show connecting first
-                setPlaying(true);
+                // Show connecting — audio events will update the final state
                 statusEl.textContent = 'CONNECTING: ' + s.name;
                 statusEl.style.color = '#ffb84d';
                 if (connectTimer) { clearTimeout(connectTimer); }
                 audio.play().catch(function(){});
-                // Wait 3s then check if stream actually started
+                // Safety net — if no event fires within 6s, mark offline
                 connectTimer = setTimeout(function() {
-                    if (!audio.paused && audio.readyState >= 2) {
-                        statusEl.textContent = 'NOW: ' + s.name;
-                        statusEl.style.color = '#73d4ff';
-                    } else {
+                    if (audio.paused) {
                         setPlaying(false);
-                        statusEl.textContent = 'OFFLINE: ' + s.name;
+                        statusEl.textContent = 'OFFLINE: ' + curStationName;
                         statusEl.style.color = '#d12e7a';
                     }
-                }, 3000);
+                }, 6000);
             });
             stationsEl.appendChild(btn);
         });
@@ -324,6 +352,8 @@
         var defaultBtn = stationsEl.querySelectorAll('.lofi-st-btn')[1]; // PARADISE is 2nd
         if (defaultBtn) {
             defaultBtn.classList.add('active');
+            curUrl = stations[1].url;
+            curStationName = stations[1].name;
             statusEl.textContent = 'READY: PARADISE';
         }
 
@@ -331,25 +361,24 @@
         playBtn.onclick = function() {
             if (!curUrl) return;
             if (audio.paused) {
-                audio.src = curUrl;
-                // Optimistic: show connecting first
-                setPlaying(true);
-                statusEl.textContent = 'CONNECTING...';
+                isUserPaused = false;
+                // Just call play() — don't reset src, keep the buffer
+                statusEl.textContent = 'CONNECTING: ' + curStationName;
                 statusEl.style.color = '#ffb84d';
                 if (connectTimer) { clearTimeout(connectTimer); }
                 audio.play().catch(function(){});
+                // Safety net
                 connectTimer = setTimeout(function() {
-                    if (!audio.paused && audio.readyState >= 2) {
-                        statusEl.style.color = '#73d4ff';
-                    } else {
+                    if (audio.paused) {
                         setPlaying(false);
-                        statusEl.textContent = 'OFFLINE';
+                        statusEl.textContent = 'OFFLINE: ' + curStationName;
                         statusEl.style.color = '#d12e7a';
                     }
-                }, 3000);
+                }, 6000);
             } else {
+                isUserPaused = true;
                 audio.pause();
-                if (connectTimer) { clearTimeout(connectTimer); }
+                if (connectTimer) { clearTimeout(connectTimer); connectTimer = null; }
                 setPlaying(false);
                 statusEl.textContent = 'PAUSED';
                 statusEl.style.color = '#b89eff';
@@ -358,9 +387,10 @@
 
         // Stop
         stopBtn.onclick = function() {
+            isUserPaused = true;
             audio.pause();
             audio.currentTime = 0;
-            if (connectTimer) { clearTimeout(connectTimer); }
+            if (connectTimer) { clearTimeout(connectTimer); connectTimer = null; }
             setPlaying(false);
             statusEl.textContent = 'STOPPED';
             statusEl.style.color = '#b89eff';
