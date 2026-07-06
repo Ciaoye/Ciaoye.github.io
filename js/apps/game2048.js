@@ -18,13 +18,8 @@ var OSO_Game2048 = (function() {
             width: 460, height: 540, minWidth: 380, minHeight: 440, menu: false
         });
 
-        grid = Array(4).fill().map(function() { return Array(4).fill(0); });
-        score = 0;
-        gameOver = false;
-
         container.innerHTML = get2048HTML();
-        addRandom(); addRandom();
-        render();
+        resetGame();
 
         document.addEventListener('keydown', handleKey);
 
@@ -59,10 +54,7 @@ var OSO_Game2048 = (function() {
 
         // New game button
         container.querySelector('#game2048-new').addEventListener('click', function() {
-            grid = Array(4).fill().map(function() { return Array(4).fill(0); });
-            score = 0; gameOver = false;
-            addRandom(); addRandom();
-            render();
+            resetGame();
             win.setStatus('新游戏');
         });
 
@@ -185,6 +177,21 @@ var OSO_Game2048 = (function() {
         grid[pos[0]][pos[1]] = Math.random() < 0.9 ? 2 : 4;
     }
 
+    function resetGame() {
+        grid = Array(4).fill().map(function() { return Array(4).fill(0); });
+        score = 0;
+        gameOver = false;
+        addRandom();
+        addRandom();
+        render();
+
+        var cont = document.querySelector('#game2048-container');
+        if (cont) {
+            var overlay = cont.querySelector('.game2048-overlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+    }
+
     function checkGameOver() {
         var cont = document.querySelector('#game2048-container');
         if (!cont) return;
@@ -205,6 +212,9 @@ var OSO_Game2048 = (function() {
         var scoreEl = document.querySelector('#game2048-score');
         if (!cont || !scoreEl) return;
         scoreEl.textContent = score;
+
+        var overlay = cont.querySelector('.game2048-overlay');
+        if (overlay) overlay.style.display = gameOver ? 'flex' : 'none';
 
         var gridEl = cont.querySelector('.game2048-grid');
         gridEl.innerHTML = '';
