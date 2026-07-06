@@ -66,6 +66,58 @@ OSO.WM = (function() {
         return 'calc(100dvh - var(--oso-taskbar-height, 28px))';
     }
 
+    function getViewportBounds() {
+        const taskbarHeight = isMobileMode()
+            ? 46
+            : (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--oso-taskbar-height')) || 28);
+        return {
+            width: window.innerWidth,
+            height: Math.max(0, window.innerHeight - taskbarHeight)
+        };
+    }
+
+    function clampWindowRect(el, left, top, width, height) {
+        if (isMobileMode()) {
+            return {
+                left: 0,
+                top: 0,
+                width: window.innerWidth,
+                height: mobileHeightCSS()
+            };
+        }
+
+        const bounds = getViewportBounds();
+        const minWidth = el._minWidth || 280;
+        const minHeight = el._minHeight || 140;
+        const maxWidth = Math.max(minWidth, bounds.width);
+        const maxHeight = Math.max(minHeight, bounds.height);
+        const safeWidth = Math.min(width, maxWidth);
+        const safeHeight = Math.min(height, maxHeight);
+        const maxLeft = Math.max(0, bounds.width - safeWidth);
+        const maxTop = Math.max(0, bounds.height - safeHeight);
+
+        return {
+            left: Math.max(0, Math.min(left, maxLeft)),
+            top: Math.max(0, Math.min(top, maxTop)),
+            width: safeWidth,
+            height: safeHeight
+        };
+    }
+
+    function applyWindowRect(el, rect) {
+        el.style.left = rect.left + 'px';
+        el.style.top = rect.top + 'px';
+        el.style.width = typeof rect.width === 'number' ? rect.width + 'px' : rect.width;
+        el.style.height = typeof rect.height === 'number' ? rect.height + 'px' : rect.height;
+    }
+
+    function keepWindowInBounds(win) {
+        if (!win || !win._el || win._minimized || win._maximized || isMobileMode()) return;
+        const el = win._el;
+        const rect = clampWindowRect(el, el.offsetLeft, el.offsetTop, el.offsetWidth, el.offsetHeight);
+        applyWindowRect(el, rect);
+    }
+
     function applyMobileLayout(win) {
         if (!isMobileMode()) return;
         win._el.classList.add('oso-mobile-window');
@@ -94,6 +146,8 @@ OSO.WM = (function() {
         el.style.width = typeof w === 'number' ? w + 'px' : w;
         el.style.height = typeof h === 'number' ? h + 'px' : h;
         el.style.zIndex = nextZIndex();
+        el._minWidth = minW;
+        el._minHeight = minH;
 
         const iconHTML = icon
             ? `<img class="oso-window-title-icon pixel-art" src="${icon}" alt=""/>`
@@ -177,6 +231,7 @@ OSO.WM = (function() {
 
         attachWindowEvents(win);
         applyMobileLayout(win);
+        keepWindowInBounds(win);
         focusWindow(win);
         windowCount++;
         instances.push(win);
@@ -206,11 +261,8 @@ OSO.WM = (function() {
             function onMove(ev) {
                 let newX = ev.clientX - shiftX;
                 let newY = ev.clientY - shiftY;
-                // Keep titlebar accessible
-                newX = Math.max(-el.offsetWidth + 60, Math.min(window.innerWidth - 60, newX));
-                newY = Math.max(0, Math.min(window.innerHeight - 50, newY));
-                el.style.left = newX + 'px';
-                el.style.top = newY + 'px';
+                const rect = clampWindowRect(el, newX, newY, el.offsetWidth, el.offsetHeight);
+                applyWindowRect(el, rect);
             }
 
             function onUp() {
@@ -290,10 +342,8 @@ OSO.WM = (function() {
                     if (newW < minW) { newW = minW; if (dirW) newL = startL + startW - minW; }
                     if (newH < minH) { newH = minH; if (dirN) newT = startT + startH - minH; }
 
-                    el.style.width = newW + 'px';
-                    el.style.height = newH + 'px';
-                    el.style.left = newL + 'px';
-                    el.style.top = newT + 'px';
+                    const rect = clampWindowRect(el, newL, newT, newW, newH);
+                    applyWindowRect(el, rect);
                 }
 
                 function onUp() {
@@ -341,10 +391,8 @@ OSO.WM = (function() {
         if (win._maximized) {
             // Restore
             const ps = win._prevState;
-            win._el.style.left = ps.left + 'px';
-            win._el.style.top = ps.top + 'px';
-            win._el.style.width = ps.width + 'px';
-            win._el.style.height = ps.height + 'px';
+            const rect = clampWindowRect(win._el, ps.left, ps.top, ps.width, ps.height);
+            applyWindowRect(win._el, rect);
             win._el.classList.remove('maximized');
             win._maximized = false;
         } else {
@@ -378,6 +426,7 @@ OSO.WM = (function() {
         var pos = {};
         instances.forEach(function(win) {
             if (win._maximized || win._minimized) return;
+            keepWindowInBounds(win);
             if (win.id === 'chat' || win.id === 'notepad') {
                 pos[win.id] = {
                     x: parseInt(win._el.style.left) || 0,
@@ -412,8 +461,11 @@ OSO.WM = (function() {
     }
 
     window.addEventListener('resize', function() {
-        if (!isMobileMode()) return;
-        instances.forEach(applyMobileLayout);
+        if (isMobileMode()) {
+            instances.forEach(applyMobileLayout);
+            return;
+        }
+        instances.forEach(keepWindowInBounds);
     });
 
     function escapeHTML(str) {

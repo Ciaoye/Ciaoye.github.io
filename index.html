@@ -187,6 +187,12 @@
             var desktopH = window.innerHeight - 28;
             var savedPos = (OSO.WM && OSO.WM.loadPositions) ? OSO.WM.loadPositions() : {};
             var readmeContent = '你好呀！我是俏也。\n\n这个 ciao os 是我最近做的各种关于"我的"的小项目的展示。\n我搜集了非常多过去散落的各种数据，试图从里面找一点什么。\n目前从 raw data 里面，AI 整理了一些，还没有经过人工检查：\n\nLifelog：2008 年到现在的一些时间线、生命线、情绪地图。\nWikipedia：这里有我目前的 Wikipedia 页面。\n\nciao 是阅读了这些编年史和 LLM wiki 的 AI。\n你可以跟 ciao 发短消息（Chat） ！也可以写很长的信（Letter）。\n\n除此之外加了一些有的没的，比如画画、扫雷、2048……\n我会继续更新这里的东西。欢迎随时来看看。\n如果想到可以加什么东西，遇到什么问题，请随时联系我！\n\n— 俏也';
+            function clampPosition(pos, width, height) {
+                return {
+                    x: Math.max(0, Math.min(pos.x, Math.max(0, desktopW - width))),
+                    y: Math.max(0, Math.min(pos.y, Math.max(0, desktopH - height)))
+                };
+            }
             if (OSO.Mobile && OSO.Mobile.isMobile()) {
                 OSO_Notepad.open({
                     content: readmeContent,
@@ -199,14 +205,16 @@
             var chatWin = OSO.WM.get('chat');
             if (chatWin) {
                 var cp = savedPos.chat || { x: Math.max(20, (desktopW - 430) / 2), y: Math.max(20, (desktopH - 560) / 2) };
+                cp = clampPosition(cp, 430, 560);
                 chatWin._el.style.left = cp.x + 'px';
                 chatWin._el.style.top = cp.y + 'px';
             }
             // Notepad: saved position or default right
+            var notePos = savedPos.notepad || { x: Math.max(60, desktopW - 560), y: 40 };
             OSO_Notepad.open({
                 content: readmeContent,
                 filename: '/notepad/readme.txt',
-                position: savedPos.notepad || { x: Math.max(60, desktopW - 560), y: 40 }
+                position: clampPosition(notePos, 560, 380)
             });
         } catch(e) {
             console.error('Auto-open failed:', e);
