@@ -3,7 +3,8 @@
 var OSO_Game2048 = (function() {
     'use strict';
 
-    var grid, score, gameOver;
+    var grid, score, bestScore, gameOver;
+    var BEST_SCORE_KEY = 'oso-2048-best-score';
 
     function open() {
         if (OSO.WM.get('2048')) {
@@ -19,37 +20,48 @@ var OSO_Game2048 = (function() {
         });
 
         container.innerHTML = get2048HTML();
+        bestScore = loadBestScore();
         resetGame();
 
         document.addEventListener('keydown', handleKey);
 
         // Touch/swipe support for mobile
-        var touchStartX = 0, touchStartY = 0;
+        var touchStartX = 0, touchStartY = 0, touchActive = false;
         var gameContainer = container.querySelector('#game2048-container');
         gameContainer.addEventListener('touchstart', function(e) {
             if (e.touches.length === 1) {
+                touchActive = true;
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
+                e.preventDefault();
+                e.stopPropagation();
             }
-        }, { passive: true });
+        }, { passive: false });
+        gameContainer.addEventListener('touchmove', function(e) {
+            if (!touchActive) return;
+            e.preventDefault();
+            e.stopPropagation();
+        }, { passive: false });
         gameContainer.addEventListener('touchend', function(e) {
+            if (!touchActive) return;
+            touchActive = false;
+            e.preventDefault();
+            e.stopPropagation();
             if (gameOver) return;
             var dx = (e.changedTouches[0] ? e.changedTouches[0].clientX : touchStartX) - touchStartX;
             var dy = (e.changedTouches[0] ? e.changedTouches[0].clientY : touchStartY) - touchStartY;
             var absDx = Math.abs(dx), absDy = Math.abs(dy);
-            if (Math.max(absDx, absDy) < 30) return; // too small, ignore
-            var moved = false;
+            if (Math.max(absDx, absDy) < 24) return; // too small, ignore
+            var direction;
             if (absDx > absDy) {
-                moved = dx > 0 ? moveRight() : moveLeft();
+                direction = dx > 0 ? 'right' : 'left';
             } else {
-                moved = dy > 0 ? moveDown() : moveUp();
+                direction = dy > 0 ? 'down' : 'up';
             }
-            if (moved) {
-                e.preventDefault();
-                addRandom();
-                render();
-                checkGameOver();
-            }
+            move(direction);
+        }, { passive: false });
+        gameContainer.addEventListener('touchcancel', function() {
+            touchActive = false;
         });
 
         // New game button
@@ -66,21 +78,32 @@ var OSO_Game2048 = (function() {
         if (!win || win !== OSO.WM.getAll().slice(-1)[0]) return;
         if (gameOver) return;
 
-        var moved = false;
+        var direction;
         switch(e.key) {
-            case 'ArrowLeft':  moved = moveLeft(); break;
-            case 'ArrowRight': moved = moveRight(); break;
-            case 'ArrowUp':    moved = moveUp(); break;
-            case 'ArrowDown':  moved = moveDown(); break;
+            case 'ArrowLeft':  direction = 'left'; break;
+            case 'ArrowRight': direction = 'right'; break;
+            case 'ArrowUp':    direction = 'up'; break;
+            case 'ArrowDown':  direction = 'down'; break;
             default: return;
         }
 
-        if (moved) {
-            e.preventDefault();
-            addRandom();
-            render();
-            checkGameOver();
-        }
+        e.preventDefault();
+        move(direction);
+    }
+
+    function move(direction) {
+        var moved = false;
+        if (direction === 'left') moved = moveLeft();
+        if (direction === 'right') moved = moveRight();
+        if (direction === 'up') moved = moveUp();
+        if (direction === 'down') moved = moveDown();
+
+        if (!moved) return false;
+        addRandom();
+        updateBestScore();
+        render();
+        checkGameOver();
+        return true;
     }
 
     function moveLeft() {
@@ -192,6 +215,22 @@ var OSO_Game2048 = (function() {
         }
     }
 
+    function loadBestScore() {
+        try {
+            return parseInt(localStorage.getItem(BEST_SCORE_KEY), 10) || 0;
+        } catch (err) {
+            return 0;
+        }
+    }
+
+    function updateBestScore() {
+        if (score <= bestScore) return;
+        bestScore = score;
+        try {
+            localStorage.setItem(BEST_SCORE_KEY, String(bestScore));
+        } catch (err) {}
+    }
+
     function checkGameOver() {
         var cont = document.querySelector('#game2048-container');
         if (!cont) return;
@@ -210,8 +249,10 @@ var OSO_Game2048 = (function() {
     function render() {
         var cont = document.querySelector('#game2048-container');
         var scoreEl = document.querySelector('#game2048-score');
+        var bestScoreEl = document.querySelector('#game2048-best-score');
         if (!cont || !scoreEl) return;
         scoreEl.textContent = score;
+        if (bestScoreEl) bestScoreEl.textContent = bestScore;
 
         var overlay = cont.querySelector('.game2048-overlay');
         if (overlay) overlay.style.display = gameOver ? 'flex' : 'none';
@@ -245,14 +286,14 @@ var OSO_Game2048 = (function() {
     function get2048HTML() {
         return '\
 <style>\
-#game2048-container { position:relative; width:340px; margin:12px auto; }\
+#game2048-container { position:relative; width:340px; margin:12px auto; touch-action:none; user-select:none; }\
 .game2048-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:8px; }\
 .game2048-title { font-size:28px;font-weight:bold;color:#b89eff; }\
 .game2048-scores { display:flex;gap:4px; }\
 .game2048-score-box { background:#2a2a4a;color:#fff;padding:4px 12px;border-radius:4px;text-align:center;border:1px solid #5e2ca5; }\
 .game2048-score-label { font-size:9px;text-transform:uppercase; }\
 .game2048-score-val { font-size:16px;font-weight:bold; }\
-.game2048-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#2a2a4a;padding:8px;border-radius:6px; }\
+.game2048-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#2a2a4a;padding:8px;border-radius:6px; touch-action:none; }\
 .game2048-cell { aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:30px;border-radius:4px;transition:all 0.1s; }\
 .game2048-overlay { position:absolute;inset:0;background:rgba(26,26,46,0.85);display:flex;align-items:center;justify-content:center;border-radius:6px;display:none;flex-direction:column; }\
 .game2048-overlay-text { font-size:28px;font-weight:bold;color:#b89eff;margin-bottom:12px; }\
@@ -266,6 +307,10 @@ var OSO_Game2048 = (function() {
             <div class="game2048-score-box">\
                 <div class="game2048-score-label">分数</div>\
                 <div class="game2048-score-val" id="game2048-score">0</div>\
+            </div>\
+            <div class="game2048-score-box">\
+                <div class="game2048-score-label">最高分</div>\
+                <div class="game2048-score-val" id="game2048-best-score">0</div>\
             </div>\
         </div>\
     </div>\
