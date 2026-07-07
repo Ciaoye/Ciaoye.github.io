@@ -6,6 +6,9 @@ var OSO_Letter = (function() {
     var CHAT_API = 'https://ciao-274203-7-1446728973.sh.run.tcloudbase.com/web-chat';
     var STORAGE_KEY = 'oso_letters';
     var AGENT_TOKEN = 'ciao_9rJ4vQx72LmP0aT8sYdK3nW6bE1HfZ5c';
+    var DISCONNECTED_MESSAGE = '我这边连接断开了……不是你的信没寄出去，是我这里没接上。你等我缓一下再寄一次试试？';
+    var MODEL_OFFLINE_MESSAGE = '我现在接不上脑子了……像是脑袋那边断线了。你等一下再试一次？';
+    var RUN_ERROR_MESSAGE = '我这边刚刚断了一下……不是你写错了，是我这里没接住。你再寄一次试试？';
     var token = localStorage.getItem('ciao_token') || AGENT_TOKEN;
     var currentView = 'inbox'; // inbox | outbox | drafts | compose | thread
     var currentThreadId = null;
@@ -306,12 +309,12 @@ var OSO_Letter = (function() {
         callAI(systemPrompt, function(content, err) {
             if (err) {
                 thread.status = 'sent';
-                thread.messages.push({ role: 'ai', content: '抱歉，暂时无法回信。请稍后再试。', timestamp: Date.now() });
+                thread.messages.push({ role: 'ai', content: err.userMessage || DISCONNECTED_MESSAGE, timestamp: Date.now() });
                 thread.updatedAt = Date.now();
                 saveThreads();
                 renderSidebar(container);
                 showThread(container, win, thread);
-                win.setStatus('回信发送失败');
+                win.setStatus('回信断开');
                 return;
             }
 
@@ -350,7 +353,7 @@ var OSO_Letter = (function() {
         callAI(systemPrompt, function(content, err) {
             if (err) {
                 thread.status = 'sent';
-                thread.messages.push({ role: 'ai', content: '抱歉，暂时无法回复。请稍后再试。', timestamp: Date.now() });
+                thread.messages.push({ role: 'ai', content: err.userMessage || DISCONNECTED_MESSAGE, timestamp: Date.now() });
             } else {
                 thread.messages.push({ role: 'ai', content: content, timestamp: Date.now() });
                 thread.status = 'received';
@@ -359,7 +362,7 @@ var OSO_Letter = (function() {
             saveThreads();
             renderSidebar(container);
             showThread(container, win, thread);
-            win.setStatus(err ? '回信发送失败' : '收到新回信');
+            win.setStatus(err ? '回信断开' : '收到新回信');
         });
     }
 
@@ -377,22 +380,27 @@ var OSO_Letter = (function() {
                 { role: 'user', content: '请回信' }
             ]
         });
-        var maxAttempts = 3;
+        var maxAttempts = 2;
         var retryDelayMs = 8000;
 
-        function retryOrFail(err, attempt) {
-            if (err.message.indexOf('鉴权失败') >= 0) {
+        function fail(err) {
+            if (err.message && err.message.indexOf('鉴权失败') >= 0) {
                 localStorage.removeItem('ciao_token');
-                callback(null, err);
-                return;
             }
-            if (attempt < maxAttempts) {
+            if (!err.userMessage) {
+                err.userMessage = err.kind === 'model_offline' || err.name === 'AbortError' ? MODEL_OFFLINE_MESSAGE : DISCONNECTED_MESSAGE;
+            }
+            callback(null, err);
+        }
+
+        function retryOrFail(err, attempt) {
+            if (err.kind === 'model_offline' && !err.hasContent && attempt < maxAttempts) {
                 setTimeout(function() {
                     request(attempt + 1);
                 }, retryDelayMs);
                 return;
             }
-            callback(null, err);
+            fail(err);
         }
 
         function request(attempt) {
@@ -403,7 +411,9 @@ var OSO_Letter = (function() {
             })
             .then(function(res) {
                 if (!res.ok) {
-                    throw new Error(res.status === 401 ? '后端鉴权失败，请检查 CIAO_WEB_TOKEN' : 'API error ' + res.status);
+                    var err = new Error(res.status === 401 ? '后端鉴权失败，请检查 CIAO_WEB_TOKEN' : 'API error ' + res.status);
+                    if (res.status === 503) err.kind = 'model_offline';
+                    throw err;
                 }
                 var reader = res.body.getReader();
                 var decoder = new TextDecoder();
@@ -417,7 +427,7 @@ var OSO_Letter = (function() {
                             if (content.trim()) {
                                 callback(content);
                             } else {
-                                retryOrFail(new Error('empty response'), attempt);
+                                fail(new Error('empty response'));
                             }
                             return;
                         }
@@ -432,19 +442,27 @@ var OSO_Letter = (function() {
                                 var p = JSON.parse(data);
                                 var chunk = p.content || p.delta || '';
                                 if (p.type === 'TEXT_MESSAGE_CONTENT' && chunk) content += chunk;
-                                if (p.type === 'MODEL_UNAVAILABLE') streamError = new Error(p.message || 'model unavailable');
-                                if (p.type === 'RUN_ERROR') streamError = new Error(p.message || 'agent failed');
+                                if (p.type === 'MODEL_UNAVAILABLE') {
+                                    streamError = new Error(p.message || 'model unavailable');
+                                    streamError.kind = 'model_offline';
+                                    streamError.userMessage = MODEL_OFFLINE_MESSAGE;
+                                }
+                                if (p.type === 'RUN_ERROR') {
+                                    streamError = new Error(p.message || 'agent failed');
+                                    streamError.userMessage = RUN_ERROR_MESSAGE;
+                                }
                             } catch(e) {
                                 streamError = e;
                             }
                         });
                         if (streamError) {
+                            streamError.hasContent = !!content.trim();
                             retryOrFail(streamError, attempt);
                             return;
                         }
                         pump();
                     }).catch(function(e) {
-                        retryOrFail(e, attempt);
+                        fail(e);
                     });
                 }
                 pump();
@@ -565,9 +583,9 @@ var OSO_Letter = (function() {
                 var dateStr = d.toLocaleDateString('zh-CN', {month:'short',day:'numeric'});
                 var statusLabel = t.status === 'draft' ? '[草稿] ' : '';
                 var statusColor = t.status === 'sending' ? 'color:#d12e7a;' : '';
-                html += '<div class="letter-list-item" data-id="' + t.id + '" style="' + statusColor + '">';
-                html += '<div class="letter-list-subject">' + statusLabel + (t.subject || '无主题') + '</div>';
-                html += '<div class="letter-list-preview">' + preview + '</div>';
+                html += '<div class="letter-list-item" data-id="' + escapeHTML(t.id || '') + '" style="' + statusColor + '">';
+                html += '<div class="letter-list-subject">' + escapeHTML(statusLabel + (t.subject || '无主题')) + '</div>';
+                html += '<div class="letter-list-preview">' + escapeHTML(preview) + '</div>';
                 html += '<div class="letter-list-date">' + dateStr + '</div>';
                 html += '</div>';
             });
@@ -583,8 +601,8 @@ var OSO_Letter = (function() {
     <button id="letter-btn-cancel">取消</button>\
 </div>\
 <div class="letter-compose">\
-    <input class="letter-compose-subject" type="text" placeholder="主题（可选）" value="' + (subject || '') + '"/>\
-    <div class="letter-compose-body" contenteditable="true">' + (body || '') + '</div>\
+    <input class="letter-compose-subject" type="text" placeholder="主题（可选）" value="' + escapeHTML(subject || '') + '"/>\
+    <div class="letter-compose-body" contenteditable="true">' + sanitizeHTML(body || '') + '</div>\
 </div>';
     }
 
@@ -592,7 +610,7 @@ var OSO_Letter = (function() {
         var html = '\
 <div class="letter-toolbar">\
     <button id="letter-btn-back">← 返回</button>\
-    <span style="flex:1;font-size:12px;color:#5e2ca5;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (thread.subject || '无主题') + '</span>\
+    <span style="flex:1;font-size:12px;color:#5e2ca5;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHTML(thread.subject || '无主题') + '</span>\
     <button id="letter-btn-reply" class="primary">回复</button>\
     <button id="letter-btn-savetext">保存文本</button>\
     <button id="letter-btn-delete" class="danger">删除</button>\
@@ -601,11 +619,12 @@ var OSO_Letter = (function() {
 
         thread.messages.forEach(function(m, i) {
             var isUser = m.role === 'user';
+            var roleClass = isUser ? 'user' : 'ai';
             var d = new Date(m.timestamp);
             var dateStr = d.toLocaleDateString('zh-CN', {year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
-            html += '<div class="letter-message ' + m.role + '">';
+            html += '<div class="letter-message ' + roleClass + '">';
             html += '<div class="letter-message-header"><span>' + (isUser ? '' : 'ciao') + '</span><span>' + dateStr + '</span></div>';
-            html += '<div class="letter-message-body">' + m.content + '</div>';
+            html += '<div class="letter-message-body">' + sanitizeHTML(m.content) + '</div>';
             html += '</div>';
         });
 
@@ -620,7 +639,7 @@ var OSO_Letter = (function() {
     function getReplyHTML(thread) {
         return '\
 <div class="letter-toolbar">\
-    <span style="font-size:12px;color:#5e2ca5;">回复 — ' + (thread.subject || '无主题') + '</span>\
+    <span style="font-size:12px;color:#5e2ca5;">回复 — ' + escapeHTML(thread.subject || '无主题') + '</span>\
     <span style="flex:1;"></span>\
     <button id="letter-btn-reply-send" class="primary">发送回复</button>\
     <button id="letter-btn-reply-cancel">取消</button>\
@@ -674,6 +693,39 @@ var OSO_Letter = (function() {
         var div = document.createElement('div');
         div.innerHTML = html;
         return div.textContent || '';
+    }
+
+    function escapeHTML(text) {
+        return String(text || '').replace(/[&<>"']/g, function(ch) {
+            return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[ch];
+        });
+    }
+
+    function sanitizeHTML(html) {
+        var holder = document.createElement('div');
+        holder.innerHTML = html || '';
+
+        function renderNode(node) {
+            if (node.nodeType === Node.TEXT_NODE) return escapeHTML(node.nodeValue);
+            if (node.nodeType !== Node.ELEMENT_NODE) return '';
+
+            var tag = node.tagName.toLowerCase();
+            if (tag === 'br') return '<br>';
+
+            var inner = Array.prototype.map.call(node.childNodes, renderNode).join('');
+            if (tag === 'div' || tag === 'p') return inner + '<br>';
+            return inner;
+        }
+
+        return Array.prototype.map.call(holder.childNodes, renderNode)
+            .join('')
+            .replace(/(<br>\s*){3,}/g, '<br><br>');
     }
 
     return { open: open };

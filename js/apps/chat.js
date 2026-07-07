@@ -8,9 +8,11 @@ var OSO_Chat = (function() {
     var AGENT_TOKEN = 'ciao_9rJ4vQx72LmP0aT8sYdK3nW6bE1HfZ5c';
     var TOKEN_KEY = 'ciao_token';
     var THREAD_KEY = 'ciao_thread_id';
-    var MODEL_OFFLINE_MESSAGE = '我现在好像接不上脑子了……你等一下再发一次试试？';
-    var RUN_ERROR_MESSAGE = '我这边刚刚出了一点问题。你再发一次试试，或者问问俏也怎么回事啊！';
+    var DISCONNECTED_MESSAGE = '我这边连接断开了……不是你没发出去，是我这里没接上。你等我缓一下再发一次试试？';
+    var MODEL_OFFLINE_MESSAGE = '我现在接不上脑子了……像是脑袋那边断线了。你等一下再试一次？';
+    var RUN_ERROR_MESSAGE = '我这边刚刚断了一下……不是你说错了，是我这里没接住。你再发一次试试？';
     var PARTIAL_RESPONSE_MESSAGE = '刚刚像是没说完，你可以再发一次试试。';
+    var STREAM_FIRST_EVENT_TIMEOUT_MS = 15000;
 
     var MAX_AGENT_BUBBLES = 5;
     var messages = [];
@@ -188,7 +190,6 @@ var OSO_Chat = (function() {
             sendBtn.disabled = true;
 
             var typingDiv = addTyping();
-            setStatus(true);
             token = ensureToken();
             if (!token) {
                 if (typingDiv.parentNode) typingDiv.remove();
@@ -205,40 +206,59 @@ var OSO_Chat = (function() {
             };
             var body = { app_mode: 'sms', messages: [{ role: 'user', content: text }] };
             if (threadId) body.thread_id = threadId;
+            var controller = new AbortController();
+            var firstEventTimer = setTimeout(function() {
+                controller.abort();
+            }, STREAM_FIRST_EVENT_TIMEOUT_MS);
+            function clearFirstEventTimer() {
+                if (firstEventTimer) {
+                    clearTimeout(firstEventTimer);
+                    firstEventTimer = null;
+                }
+            }
 
             fetch(CHAT_API, {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
+                signal: controller.signal
             })
             .then(function(res) {
                 if (!res.ok) {
-                    throw new Error(res.status === 401 ? '后端鉴权失败，请检查 CIAO_WEB_TOKEN' : 'API error ' + res.status);
+                    var err = new Error(res.status === 401 ? '后端鉴权失败，请检查 CIAO_WEB_TOKEN' : 'API error ' + res.status);
+                    if (res.status === 503) err.kind = 'model_offline';
+                    throw err;
                 }
-                return handleSSE(res, typingDiv);
+                return handleSSE(res, typingDiv, clearFirstEventTimer);
             })
             .catch(function(err) {
                 if (err.message.indexOf('鉴权失败') >= 0) localStorage.removeItem(TOKEN_KEY);
                 if (typingDiv.parentNode) typingDiv.remove();
-                addBubble('agent', '连接失败: ' + err.message);
+                setStatus(false);
+                addBubble('agent', err && (err.kind === 'model_offline' || err.name === 'AbortError') ? MODEL_OFFLINE_MESSAGE : DISCONNECTED_MESSAGE);
+            })
+            .finally(function() {
+                clearFirstEventTimer();
                 inputEl.disabled = false;
                 sendBtn.disabled = false;
-                setStatus(false);
             });
         }
 
-        function handleSSE(res, typingDiv) {
+        function handleSSE(res, typingDiv, clearFirstEventTimer) {
             var reader = res.body.getReader();
             var decoder = new TextDecoder();
             var buffer = '';
             var rawContent = '';
             var streamFinished = false;
+            var firstEventSeen = false;
             streamBubbles = [];  // clear previous round's stream tracking
 
-            function pump() {
+            return new Promise(function(resolve, reject) {
+                function pump() {
                 reader.read().then(function(result) {
                     if (result.done) {
                         finishSSE(typingDiv, rawContent, streamFinished);
+                        resolve();
                         return;
                     }
                     buffer += decoder.decode(result.value, { stream: true });
@@ -247,6 +267,10 @@ var OSO_Chat = (function() {
 
                     lines.forEach(function(line) {
                         if (!line.startsWith('data: ')) return;
+                        if (!firstEventSeen) {
+                            firstEventSeen = true;
+                            clearFirstEventTimer();
+                        }
                         var data = line.slice(6).trim();
                         if (!data || data === '[DONE]') return;
                         try {
@@ -279,12 +303,11 @@ var OSO_Chat = (function() {
                         } catch(e) {}
                     });
                     pump();
-                });
+                }).catch(reject);
+                }
+                pump();
             }
-            pump();
-
-            inputEl.disabled = false;
-            sendBtn.disabled = false;
+            );
         }
 
         function finishSSE(typingDiv, rawContent, streamFinished) {
@@ -292,6 +315,10 @@ var OSO_Chat = (function() {
             setStreamStillTyping(false);
             if (rawContent && !streamFinished) {
                 addBubble('agent', PARTIAL_RESPONSE_MESSAGE);
+            }
+            if (!rawContent && !streamFinished) {
+                addBubble('agent', DISCONNECTED_MESSAGE);
+                setStatus(false);
             }
             win.setStatus('');
         }
@@ -482,10 +509,21 @@ var OSO_Chat = (function() {
             return row;
         }
 
+        function escapeHTML(text) {
+            return String(text || '').replace(/[&<>"']/g, function(ch) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[ch];
+            });
+        }
+
         function formatText(text) {
             if (!text) return '';
-            // Strip markdown (old approach) then re-apply highlights
-            var clean = text
+            var clean = escapeHTML(text)
                 .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
                 .replace(/\*(.+?)\*/g, '<i>$1</i>')
                 .replace(/~~(.+?)~~/g, '<s>$1</s>')
