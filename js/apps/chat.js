@@ -10,7 +10,11 @@ var OSO_Chat = (function() {
     var THREAD_KEY = 'ciao_thread_id';
     var DISCONNECTED_MESSAGE = '我这边连接断开了……不是你没发出去，是我这里没接上。你等我缓一下再发一次试试？';
     var MODEL_OFFLINE_MESSAGE = '我现在接不上脑子了……像是脑袋那边断线了。你等一下再试一次？';
-    var RUN_ERROR_MESSAGE = '我这边刚刚断了一下……不是你说错了，是我这里没接住。你再发一次试试？';
+    var RUN_ERROR_MESSAGE = '我这边刚刚断了一下……不是你说错了，是我这里卡了一下。你再发一次试试？';
+    var IMAGE_TOO_LARGE_MESSAGE = '这张图片有点大，我这里处理起来有点吃力。换一张小一点的再发我，好不好？';
+    var IMAGE_READ_ERROR_MESSAGE = '这张图片我还没读出来……你换一张 PNG、JPEG 或 WebP 再试试？';
+    var MAX_IMAGE_INPUT_BYTES = 20 * 1024 * 1024;
+    var MAX_IMAGE_DATA_URL_LENGTH = 180 * 1024;
     var PARTIAL_RESPONSE_MESSAGE = '刚刚像是没说完，你可以再发一次试试。';
     var STREAM_FIRST_EVENT_TIMEOUT_MS = 15000;
 
@@ -45,6 +49,10 @@ var OSO_Chat = (function() {
         var statusDot = container.querySelector('.chat-status-dot');
         var statusLabel = container.querySelector('.chat-status-label');
         var welcomeEl = container.querySelector('.chat-welcome');
+        var attachBtn = container.querySelector('.chat-attach');
+        var imageInput = container.querySelector('.chat-image-input');
+        var attachmentPreview = container.querySelector('.chat-attachment-preview');
+        var selectedImage = null;
 
         var token = localStorage.getItem(TOKEN_KEY) || AGENT_TOKEN;
         var threadId = localStorage.getItem(THREAD_KEY) || ('ciao-' + randId());
@@ -165,9 +173,116 @@ var OSO_Chat = (function() {
             return '';
         }
 
+        function loadImageForCompression(file) {
+            if (typeof createImageBitmap === 'function') {
+                return createImageBitmap(file);
+            }
+            return new Promise(function(resolve, reject) {
+                var image = new Image();
+                var objectUrl = URL.createObjectURL(file);
+                image.onload = function() {
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(image);
+                };
+                image.onerror = function() {
+                    URL.revokeObjectURL(objectUrl);
+                    reject(new Error('image decode failed'));
+                };
+                image.src = objectUrl;
+            });
+        }
+
+        function compressImageFile(file) {
+            if (!file.type.startsWith('image/') || file.size > MAX_IMAGE_INPUT_BYTES) {
+                return Promise.reject(new Error('image input too large or unsupported'));
+            }
+            return loadImageForCompression(file).then(function(source) {
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+                if (!context) throw new Error('image canvas unavailable');
+                var dataUrl = '';
+                var maxSides = [1600, 1280, 1024];
+                var qualities = [0.84, 0.72, 0.60, 0.48];
+                for (var sideIndex = 0; sideIndex < maxSides.length && dataUrl.length <= MAX_IMAGE_DATA_URL_LENGTH; sideIndex += 1) {
+                    var scale = Math.min(1, maxSides[sideIndex] / Math.max(source.width, source.height));
+                    canvas.width = Math.max(1, Math.round(source.width * scale));
+                    canvas.height = Math.max(1, Math.round(source.height * scale));
+                    context.drawImage(source, 0, 0, canvas.width, canvas.height);
+                    for (var qualityIndex = 0; qualityIndex < qualities.length; qualityIndex += 1) {
+                        dataUrl = canvas.toDataURL('image/webp', qualities[qualityIndex]);
+                        if (dataUrl.startsWith('data:image/webp') && dataUrl.length <= MAX_IMAGE_DATA_URL_LENGTH) break;
+                    }
+                    if (dataUrl.length > MAX_IMAGE_DATA_URL_LENGTH) dataUrl = canvas.toDataURL('image/jpeg', 0.5);
+                }
+                if (typeof source.close === 'function') source.close();
+                if (!dataUrl || dataUrl.length > MAX_IMAGE_DATA_URL_LENGTH) {
+                    throw new Error('compressed image still too large');
+                }
+                return {
+                    dataUrl: dataUrl,
+                    name: file.name,
+                    type: dataUrl.slice(5, dataUrl.indexOf(';')),
+                    size: dataUrl.length,
+                    originalSize: file.size
+                };
+            });
+        }
+
+        function clearSelectedImage() {
+            selectedImage = null;
+            imageInput.value = '';
+            attachmentPreview.innerHTML = '';
+            attachmentPreview.hidden = true;
+        }
+
+        function renderSelectedImage() {
+            attachmentPreview.innerHTML = '';
+            if (!selectedImage) {
+                attachmentPreview.hidden = true;
+                return;
+            }
+            var thumb = document.createElement('img');
+            thumb.src = selectedImage.dataUrl;
+            thumb.alt = selectedImage.name;
+            var name = document.createElement('span');
+            name.className = 'chat-attachment-name';
+            name.textContent = selectedImage.name;
+            var remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'chat-attachment-remove';
+            remove.textContent = '×';
+            remove.setAttribute('aria-label', '移除图片');
+            remove.addEventListener('click', clearSelectedImage);
+            attachmentPreview.appendChild(thumb);
+            attachmentPreview.appendChild(name);
+            attachmentPreview.appendChild(remove);
+            attachmentPreview.hidden = false;
+        }
+
+        attachBtn.addEventListener('click', function() { imageInput.click(); });
+        imageInput.addEventListener('change', function() {
+            var file = imageInput.files && imageInput.files[0];
+            if (!file) return;
+            var allowed = ['image/png', 'image/jpeg', 'image/webp'];
+            if (!allowed.includes(file.type) || file.size > MAX_IMAGE_INPUT_BYTES) {
+                clearSelectedImage();
+                addBubble('agent', IMAGE_READ_ERROR_MESSAGE);
+                return;
+            }
+            compressImageFile(file).then(function(image) {
+                selectedImage = image;
+                renderSelectedImage();
+            }).catch(function(error) {
+                console.warn('image compression failed:', error);
+                clearSelectedImage();
+                addBubble('agent', IMAGE_READ_ERROR_MESSAGE);
+            });
+        });
+
         function sendMessage() {
             var text = inputEl.value.trim();
-            if (!text) return;
+            var image = selectedImage;
+            if (!text && !image) return;
 
             if (text === '/new') {
                 if (chatSaveTimer) clearTimeout(chatSaveTimer);
@@ -180,12 +295,18 @@ var OSO_Chat = (function() {
                 msgList.innerHTML = getWelcomeHTML();
                 welcomeEl = msgList.querySelector('.chat-welcome');
                 inputEl.value = '';
+                clearSelectedImage();
                 win.setStatus('新对话');
                 return;
             }
 
-            addBubble('user', text);
+            var content = image ? [
+                { type: 'text', text: text || '请看看这张图片。' },
+                { type: 'image_url', image_url: { url: image.dataUrl } }
+            ] : text;
+            addBubble('user', text, image);
             inputEl.value = '';
+            clearSelectedImage();
             inputEl.disabled = true;
             sendBtn.disabled = true;
 
@@ -204,7 +325,7 @@ var OSO_Chat = (function() {
                 'Content-Type': 'application/json',
                 'x-ciao-token': token
             };
-            var body = { app_mode: 'sms', messages: [{ role: 'user', content: text }] };
+            var body = { app_mode: 'sms', messages: [{ role: 'user', content: content }] };
             if (threadId) body.thread_id = threadId;
             var controller = new AbortController();
             var firstEventTimer = setTimeout(function() {
@@ -227,6 +348,7 @@ var OSO_Chat = (function() {
                 if (!res.ok) {
                     var err = new Error(res.status === 401 ? '后端鉴权失败，请检查 CIAO_WEB_TOKEN' : 'API error ' + res.status);
                     if (res.status === 503) err.kind = 'model_offline';
+                    if (res.status === 413) err.kind = 'payload_too_large';
                     throw err;
                 }
                 return handleSSE(res, typingDiv, clearFirstEventTimer);
@@ -234,8 +356,12 @@ var OSO_Chat = (function() {
             .catch(function(err) {
                 if (err.message.indexOf('鉴权失败') >= 0) localStorage.removeItem(TOKEN_KEY);
                 if (typingDiv.parentNode) typingDiv.remove();
-                setStatus(false);
-                addBubble('agent', err && (err.kind === 'model_offline' || err.name === 'AbortError') ? MODEL_OFFLINE_MESSAGE : DISCONNECTED_MESSAGE);
+                if (!err || err.kind !== 'payload_too_large') setStatus(false);
+                addBubble('agent', err && (err.kind === 'model_offline' || err.name === 'AbortError')
+                    ? MODEL_OFFLINE_MESSAGE
+                    : err && err.kind === 'payload_too_large'
+                    ? IMAGE_TOO_LARGE_MESSAGE
+                    : DISCONNECTED_MESSAGE);
             })
             .finally(function() {
                 clearFirstEventTimer();
@@ -476,7 +602,7 @@ var OSO_Chat = (function() {
             return parts.slice(0, MAX_AGENT_BUBBLES);
         }
 
-        function addBubble(role, text) {
+        function addBubble(role, text, image) {
             if (welcomeEl) welcomeEl.style.display = 'none';
 
             var row = document.createElement('div');
@@ -484,7 +610,18 @@ var OSO_Chat = (function() {
 
             var b = document.createElement('div');
             b.className = 'cb-bubble';
-            b.innerHTML = formatText(text);
+            if (image && image.dataUrl) {
+                var imageEl = document.createElement('img');
+                imageEl.className = 'cb-message-image';
+                imageEl.src = image.dataUrl;
+                imageEl.alt = image.name || '已上传图片';
+                b.appendChild(imageEl);
+            }
+            if (text) {
+                var textEl = document.createElement('div');
+                textEl.innerHTML = formatText(text);
+                b.appendChild(textEl);
+            }
             row.appendChild(b);
 
             msgList.appendChild(row);
@@ -578,6 +715,7 @@ var OSO_Chat = (function() {
 .cb-bubble { max-width:78%; padding:10px 14px; border-radius:14px; font-size:12.5px; line-height:1.55; word-break:break-word; position:relative; }\
 .cb-row.agent .cb-bubble { background:#ffb8d9; color:#d12e7a; border-bottom-left-radius:4px; }\
 .cb-row.user .cb-bubble { background:#9d81ff; color:#fff; border-bottom-right-radius:4px; }\
+.cb-message-image { display:block; max-width:220px; max-height:220px; object-fit:contain; border-radius:8px; margin-bottom:5px; background:#fff; }\
 .cb-bubble code { background:rgba(0,0,0,0.08); padding:1px 5px; border-radius:3px; font-size:11px; font-family:monospace; }\
 .cb-bubble pre { background:rgba(0,0,0,0.06); padding:8px; border-radius:5px; overflow-x:auto; font-size:11px; margin:4px 0; }\
 .cb-bubble pre code { background:none; padding:0; }\
@@ -592,7 +730,14 @@ var OSO_Chat = (function() {
 @keyframes tdotBounce { 0%,70%,100%{opacity:0.25;transform:scale(0.7)} 35%{opacity:1;transform:scale(1.1)} }\
 .chat-welcome { text-align:center;padding:32px 20px;color:#5e2ca5;font-size:14px;line-height:2;z-index:1; }\
 .chat-welcome .we-emoji { font-size:40px;display:block;margin-bottom:12px; }\
+.chat-attachment-preview { display:flex; align-items:center; gap:6px; padding:5px 8px 0; background:rgba(255,255,255,0.4); }\
+.chat-attachment-preview[hidden] { display:none; }\
+.chat-attachment-preview img { width:36px; height:36px; object-fit:cover; border-radius:5px; background:#fff; }\
+.chat-attachment-name { max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:10px; color:#5e2ca5; }\
+.chat-attachment-remove { border:0; background:transparent; color:#5e2ca5; cursor:pointer; font-size:16px; }\
 .chat-input-area { display:flex;gap:6px;padding:6px 8px;border-top:1px solid rgba(128,128,128,0.3);background:rgba(255,255,255,0.4);backdrop-filter:blur(4px);align-items:center; }\
+.chat-attach { padding:3px 8px; font-size:17px; line-height:1; font-family:inherit; cursor:pointer; border:1px solid rgba(128,128,128,0.4); border-radius:8px; background:#ffe0f5; color:#5e2ca5; }\
+.chat-attach:disabled { opacity:0.5; }\
 .chat-input { flex:1;padding:6px 10px;font-size:12px;font-family:inherit;border:1px solid rgba(128,128,128,0.4);border-radius:8px;outline:none;background:rgba(255,255,255,0.7); }\
 .chat-input:focus { border-color:#8a41ff; }\
 .chat-send { padding:4px 14px;font-size:12px;font-family:inherit;cursor:pointer;border:1px solid rgba(128,128,128,0.4);border-radius:8px;background:#9d81ff;color:#fff;font-weight:bold; }\
@@ -603,12 +748,15 @@ var OSO_Chat = (function() {
 .chat-status-dot.off { background:#b9b2c8;box-shadow:none; }\
 </style>\
 <div class="chat-messages">' + getWelcomeHTML() + '</div>\
+<div class="chat-attachment-preview" hidden></div>\
 <div class="chat-input-area">\
     <div class="chat-status-bar">\
         <span class="chat-status-dot"></span>\
         <span class="chat-status-label">在线</span>\
     </div>\
-    <input type="text" class="chat-input" placeholder="输入消息... (Enter 发送, /new 开新对话)" maxlength="2000"/>\
+    <button type="button" class="chat-attach" aria-label="添加图片" title="添加图片">+</button>\
+    <input type="file" class="chat-image-input" accept="image/png,image/jpeg,image/webp" hidden/>\
+    <input type="text" class="chat-input" placeholder="输入消息，或点 + 加一张图" maxlength="2000"/>\
     <button class="chat-send">发送</button>\
 </div>';
     }
