@@ -22,7 +22,7 @@ var OSO_Minesweeper = (function() {
         container.style.cssText = 'height:100%;overflow:auto;background:#c0c0c0;padding:8px;';
         container.innerHTML = getHTML();
 
-        var win = OSO.WM.create('minesweeper', '扫雷', null, container, {
+        var win = OSO.WM.create('minesweeper', '扫雷', 'assets/stickers/sweeper.svg', container, {
             width: 520, height: 520, minWidth: 300, minHeight: 300, menu: false
         });
 

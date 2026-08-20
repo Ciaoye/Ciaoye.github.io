@@ -13,7 +13,7 @@ var OSO_MoodTracker = (function() {
 
         overlay.innerHTML = '\
 <div style="display:flex;align-items:center;justify-content:space-between;height:20px;background:linear-gradient(90deg,#5e2ca5,#8a41ff);color:#fff;font-size:11px;padding:1px 3px;flex-shrink:0;border-bottom:1px solid #3a1a7a;">\
-    <span style="display:flex;align-items:center;gap:4px;"><img src="assets/icons/image-20.png" style="width:14px;height:14px;" alt=""/>情绪星云</span>\
+    <span style="display:flex;align-items:center;gap:4px;"><img src="assets/stickers/lifelog.svg" style="width:14px;height:14px;" alt=""/>情绪星云</span>\
     <div style="display:flex;gap:2px;">\
         <div onclick="document.getElementById(\'oso-fullscreen-mood\').remove()" style="cursor:pointer;width:16px;height:14px;display:flex;align-items:center;justify-content:center;background:#c0c0c0;border-top:1px solid #dfdfdf;border-left:1px solid #dfdfdf;border-right:1px solid #808080;border-bottom:1px solid #808080;color:#000;font-size:8px;line-height:1;">✕</div>\
     </div>\

@@ -10,10 +10,20 @@
 <link rel="stylesheet" href="css/desktop.css?v=2"/>
 <link rel="stylesheet" href="css/window.css?v=2"/>
 <link rel="stylesheet" href="css/taskbar.css?v=2"/>
+<link rel="stylesheet" href="css/editorial.css?v=4"/>
 </head>
 <body>
 
-<div id="oso-desktop" class="oso-desktop" style="background-image: url('assets/Synthwave Desktop Wallpaper Posted By Ryan Simpson.jpg');">
+<div id="oso-desktop" class="oso-desktop">
+    <header class="oso-editorial-masthead" aria-label="ciao os personal archive">
+        <div class="oso-masthead-kicker">PERSONAL ARCHIVE · 2008—NOW</div>
+        <div class="oso-masthead-title">ciao os</div>
+        <div class="oso-masthead-note">open a little window into my life</div>
+    </header>
+    <div class="oso-editorial-caption" aria-hidden="true">
+        <span>CLICK TWICE TO OPEN</span>
+        <span>DRAG THINGS AROUND</span>
+    </div>
     <div id="oso-desktop-icons" class="oso-desktop-icons"></div>
 
     <!-- Desktop Widgets -->
@@ -29,7 +39,7 @@
     <!-- Lofi Player -->
     <div class="oso-lofi" id="oso-lofi">
         <div class="oso-lofi-header" id="oso-lofi-header">
-            <img src="assets/icons/image-26.png" class="lofi-hdr-icon" alt=""/>
+            <img src="assets/stickers/lofi.svg" class="lofi-hdr-icon" alt=""/>
             <span class="lofi-hdr-title">LOFI RADIO</span>
             <span class="lofi-btn-min" id="oso-lofi-min">_</span>
         </div>
@@ -62,7 +72,7 @@
 <!-- Taskbar -->
 <div class="oso-taskbar">
     <div id="oso-start-btn" class="oso-taskbar-start win-outset">
-        <img src="assets/icons/image-27.png" alt="Start" class="pixel-art"/>
+        <img src="assets/stickers/start.svg" alt="Start"/>
         <span>Start</span>
     </div>
     <div class="oso-taskbar-divider"></div>
@@ -75,36 +85,30 @@
 </div>
 
 <!-- Core Scripts -->
-<script src="js/core/windowManager.js?v=2"></script>
+<script src="js/core/windowManager.js?v=3"></script>
 <script src="js/core/desktop.js?v=2"></script>
 <script src="js/core/taskbar.js?v=2"></script>
 <script src="js/core/fileSystem.js?v=2"></script>
 <script src="js/core/sound.js?v=2"></script>
 
 <!-- App Scripts -->
-<script src="js/apps/chat.js?v=20260704b"></script>
-<script src="js/apps/paint.js?v=2"></script>
-<script src="js/apps/letter.js?v=20260704b"></script>
-<script src="js/apps/moodTracker.js?v=2"></script>
-<script src="js/apps/lifelog.js?v=1"></script>
-<script src="js/apps/wiki.js?v=1"></script>
-<script src="js/apps/wikiGraph.js?v=2"></script>
-<script src="js/apps/game2048.js?v=3"></script>
-<script src="js/apps/minesweeper.js?v=2"></script>
-<script src="js/apps/fileManager.js?v=2"></script>
-<script src="js/apps/notepad.js?v=2"></script>
+<script src="js/apps/chat.js?v=20260820d"></script>
+<script src="js/apps/paint.js?v=20260820c"></script>
+<script src="js/apps/letter.js?v=20260820c"></script>
+<script src="js/apps/moodTracker.js?v=20260820c"></script>
+<script src="js/apps/lifelog.js?v=20260820c"></script>
+<script src="js/apps/wiki.js?v=20260820c"></script>
+<script src="js/apps/wikiGraph.js?v=20260820c"></script>
+<script src="js/apps/game2048.js?v=20260820e"></script>
+<script src="js/apps/minesweeper.js?v=20260820c"></script>
+<script src="js/apps/fileManager.js?v=20260820c"></script>
+<script src="js/apps/notepad.js?v=20260820c"></script>
 
 <script>
 (function() {
     'use strict';
 
-    /* Placeholder SVG icons for missing app icons (64x64 pixel art) */
-    var ICON_MOOD   = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#2a1a4e"/><circle cx="32" cy="28" r="8" fill="#ff55cc"/><circle cx="25" cy="34" r="6" fill="#66ddff"/><circle cx="39" cy="34" r="6" fill="#aa88ff"/><circle cx="28" cy="28" r="3" fill="#ffee55"/><circle cx="36" cy="28" r="3" fill="#88ffcc"/><circle cx="32" cy="20" r="2" fill="#ff8855"/></svg>');
-    var ICON_WIKI   = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#1a2a3e"/><circle cx="32" cy="28" r="10" fill="#66ddff"/><circle cx="22" cy="34" r="6" fill="#aa88ff"/><circle cx="42" cy="32" r="6" fill="#ff55cc"/><line x1="32" y1="18" x2="22" y2="34" stroke="#88ffcc" stroke-width="2"/><line x1="32" y1="18" x2="42" y2="32" stroke="#88ffcc" stroke-width="2"/><circle cx="22" cy="22" r="3" fill="#ffee55"/><circle cx="45" cy="22" r="3" fill="#ff8855"/></svg>');
-    var ICON_2048   = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#1a1a2e"/><rect x="6" y="6" width="24" height="24" rx="3" fill="#5e2ca5"/><text x="18" y="24" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="Arial">2</text><rect x="34" y="6" width="24" height="24" rx="3" fill="#8a41ff"/><text x="46" y="24" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="Arial">0</text><rect x="6" y="34" width="24" height="24" rx="3" fill="#7d5fff"/><text x="18" y="52" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="Arial">4</text><rect x="34" y="34" width="24" height="24" rx="3" fill="#ff55cc"/><text x="46" y="52" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="Arial">8</text></svg>');
-    var ICON_MINE   = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#2a1a4e"/><rect x="10" y="10" width="16" height="16" fill="#5e2ca5" stroke="#8a41ff" stroke-width="1"/><rect x="26" y="10" width="16" height="16" fill="#7d5fff" stroke="#b89eff" stroke-width="1"/><rect x="42" y="10" width="16" height="16" fill="#5e2ca5" stroke="#8a41ff" stroke-width="1"/><rect x="10" y="26" width="16" height="16" fill="#7d5fff" stroke="#b89eff" stroke-width="1"/><rect x="26" y="26" width="16" height="16" fill="#8a41ff" stroke="#b89eff" stroke-width="1"/><circle cx="34" cy="34" r="6" fill="#1a1a2e"/><circle cx="32" cy="32" r="2" fill="#ff55cc"/><line x1="30" y1="30" x2="26" y2="26" stroke="#1a1a2e" stroke-width="2"/><line x1="38" y1="30" x2="42" y2="26" stroke="#1a1a2e" stroke-width="2"/><line x1="38" y1="38" x2="42" y2="42" stroke="#1a1a2e" stroke-width="2"/><line x1="30" y1="38" x2="26" y2="42" stroke="#1a1a2e" stroke-width="2"/><line x1="34" y1="24" x2="34" y2="16" stroke="#1a1a2e" stroke-width="2"/><rect x="42" y="26" width="16" height="16" fill="#5e2ca5" stroke="#8a41ff" stroke-width="1"/><rect x="10" y="42" width="16" height="16" fill="#7d5fff" stroke="#b89eff" stroke-width="1"/><rect x="26" y="42" width="16" height="16" fill="#5e2ca5" stroke="#8a41ff" stroke-width="1"/><rect x="42" y="42" width="16" height="16" fill="#7d5fff" stroke="#b89eff" stroke-width="1"/></svg>');
-
-    var ICONS_PATH = 'assets/icons/';
+    var STICKERS_PATH = 'assets/stickers/';
 
     /* ===== UI Text Configuration =====
      * 同步自 README.md，修改 README 后告诉我
@@ -128,47 +132,47 @@
     /* ===== App Registration ===== */
 
     // 1. Chat
-    OSO.Desktop.register('chat', T.apps.chat.name, ICONS_PATH + 'image-23.png', function() {
+    OSO.Desktop.register('chat', T.apps.chat.name, STICKERS_PATH + 'chat.svg', function() {
         OSO_Chat.open();
     }, T.apps.chat.menu, T.apps.chat.tip);
 
     // 2. Paint
-    OSO.Desktop.register('paint', T.apps.paint.name, ICONS_PATH + 'image-4.png', function() {
+    OSO.Desktop.register('paint', T.apps.paint.name, STICKERS_PATH + 'paint.svg', function() {
         OSO_Paint.open();
     }, T.apps.paint.menu, T.apps.paint.tip);
 
     // 3. Letter
-    OSO.Desktop.register('letter', T.apps.letter.name, ICONS_PATH + 'image-15.png', function() {
+    OSO.Desktop.register('letter', T.apps.letter.name, STICKERS_PATH + 'letter.svg', function() {
         OSO_Letter.open();
     }, T.apps.letter.menu, T.apps.letter.tip);
 
     // 4. Lifelog
-    OSO.Desktop.register('mood', T.apps.mood.name, ICONS_PATH + 'image-20.png', function() {
+    OSO.Desktop.register('mood', T.apps.mood.name, STICKERS_PATH + 'lifelog.svg', function() {
         OSO_Lifelog.open();
     }, T.apps.mood.menu, T.apps.mood.tip);
 
     // 5. Wikipedia
-    OSO.Desktop.register('wiki', T.apps.wiki.name, ICONS_PATH + 'image-9.png', function() {
+    OSO.Desktop.register('wiki', T.apps.wiki.name, STICKERS_PATH + 'wiki.svg', function() {
         OSO_Wiki.open();
     }, T.apps.wiki.menu, T.apps.wiki.tip);
 
     // 6. 2048
-    OSO.Desktop.register('2048', T.apps['2048'].name, ICON_2048, function() {
+    OSO.Desktop.register('2048', T.apps['2048'].name, STICKERS_PATH + '2048.svg', function() {
         OSO_Game2048.open();
     }, T.apps['2048'].menu, T.apps['2048'].tip);
 
     // 8. Minesweeper
-    OSO.Desktop.register('minesweeper', T.apps.minesweeper.name, ICON_MINE, function() {
+    OSO.Desktop.register('minesweeper', T.apps.minesweeper.name, STICKERS_PATH + 'sweeper.svg', function() {
         OSO_Minesweeper.open();
     }, T.apps.minesweeper.menu, T.apps.minesweeper.tip);
 
     // 9. File Manager
-    OSO.Desktop.register('files', T.apps.files.name, ICONS_PATH + 'image-2.png', function() {
+    OSO.Desktop.register('files', T.apps.files.name, STICKERS_PATH + 'files.svg', function() {
         OSO_FileManager.open();
     }, T.apps.files.menu, T.apps.files.tip);
 
     // 10. Notepad
-    OSO.Desktop.register('notepad', T.apps.notepad.name, ICONS_PATH + 'image-12.png', function() {
+    OSO.Desktop.register('notepad', T.apps.notepad.name, STICKERS_PATH + 'notepad.svg', function() {
         OSO_Notepad.open();
     }, T.apps.notepad.menu, T.apps.notepad.tip);
 

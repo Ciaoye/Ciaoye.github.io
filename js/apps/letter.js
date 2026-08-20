@@ -41,7 +41,7 @@ var OSO_Letter = (function() {
         container.style.cssText = 'display:flex;height:100%;overflow:hidden;';
         container.innerHTML = getLayoutHTML();
 
-        var win = OSO.WM.create('letter', 'Letter', 'assets/icons/image-15.png', container, {
+        var win = OSO.WM.create('letter', 'Letter', 'assets/stickers/letter.svg', container, {
             width: 720, height: 540, minWidth: 560, minHeight: 400
         });
 
@@ -49,10 +49,13 @@ var OSO_Letter = (function() {
         showCompose(container, win);
 
         // New letter button
-        container.querySelector('#letter-btn-new').addEventListener('click', function() {
-            currentThreadId = null;
-            showCompose(container, win);
-        });
+        var newLetterButton = container.querySelector('#letter-btn-new');
+        if (newLetterButton) {
+            newLetterButton.addEventListener('click', function() {
+                currentThreadId = null;
+                showCompose(container, win);
+            });
+        }
 
         win.setStatus('写信 · 收件箱 · 发件箱 · 草稿箱');
     }

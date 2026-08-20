@@ -13,7 +13,7 @@ var OSO_Browser = (function() {
         container.style.cssText = 'display:flex;flex-direction:column;height:100%;overflow:hidden;background:#c0c0c0;';
         container.innerHTML = getHTML();
 
-        var win = OSO.WM.create('browser', 'life log', 'assets/icons/image-24.png', container, {
+        var win = OSO.WM.create('browser', 'life log', 'assets/stickers/lifelog.svg', container, {
             width: 720, height: 520, minWidth: 480, minHeight: 340
         });
 

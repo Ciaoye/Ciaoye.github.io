@@ -1,0 +1,902 @@
+/* ===== ciao os — colorful editorial sticker system ===== */
+
+:root {
+    --ink: #3c2935;
+    --paper: #fff1d6;
+    --paper-2: #fff9e9;
+    --paper-deep: #f5d8bb;
+    --blush: #ff9fc8;
+    --apricot: #ff8752;
+    --butter: #ffe55f;
+    --sage: #bdeb62;
+    --sky: #8eb8ff;
+    --lilac: #bd91ec;
+    --aqua: #69d8cc;
+    --wine: #7d4169;
+    --soft-shadow: rgba(60, 41, 53, 0.28);
+
+    --purple-deep: var(--wine);
+    --purple-bright: var(--apricot);
+    --pink-soft: var(--blush);
+    --pink-deep: var(--wine);
+    --teal-vapor: var(--sky);
+    --cyan-glow: var(--sky);
+    --win-bg: var(--paper);
+    --win-highlight: var(--paper-2);
+    --win-shadow: #9f9387;
+    --win-dark: var(--ink);
+    --win-title-active-start: var(--butter);
+    --win-title-active-end: var(--butter);
+    --win-title-inactive-start: #ded4c8;
+    --win-title-inactive-end: #ded4c8;
+    --desktop-bg: var(--blush);
+    --text-dark: var(--ink);
+    --text-light: var(--ink);
+    --text-muted: #766d65;
+    --font-system: "Arial Narrow", "Aptos Narrow", "Noto Sans SC", Arial, sans-serif;
+    --font-editorial: Georgia, "Times New Roman", "Songti SC", serif;
+    --font-mono: "Courier New", "Noto Sans Mono CJK SC", monospace;
+    --oso-taskbar-height: 44px;
+}
+
+body {
+    color: var(--ink);
+    background: #cbdafb;
+}
+
+button,
+input,
+textarea,
+[contenteditable="true"] {
+    color: var(--ink);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[contenteditable="true"]:focus-visible {
+    outline: 2px dashed var(--wine);
+    outline-offset: 2px;
+}
+
+/* Desktop: paper, print registration, and stationery patterns */
+.oso-desktop {
+    bottom: var(--oso-taskbar-height) !important;
+    background-color: #cbdafb !important;
+    background-image:
+        linear-gradient(90deg, var(--sage) 0 100%),
+        linear-gradient(rgba(255,255,255,.72) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, rgba(255,255,255,.72) 1.5px, transparent 1.5px),
+        radial-gradient(circle at 78% 35%, rgba(248, 241, 231, .96) 0 16%, transparent 16.2%),
+        radial-gradient(circle at 80% 38%, rgba(189, 235, 98, .72) 0 22%, transparent 22.2%),
+        linear-gradient(120deg, transparent 0 67%, rgba(255, 159, 200, .78) 67% 82%, transparent 82%),
+        linear-gradient(#cbdafb, #cbdafb) !important;
+    background-size: 100% 44px, 32px 32px, 32px 32px, auto, auto, auto, auto !important;
+    background-position: 0 0, 0 44px, 0 44px, center, center, center, center !important;
+    background-repeat: no-repeat, repeat, repeat, no-repeat, no-repeat, no-repeat, no-repeat !important;
+    isolation: isolate;
+}
+
+.oso-desktop::before,
+.oso-desktop::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.oso-desktop::before {
+    right: -22px;
+    bottom: 4px;
+    width: 360px;
+    height: 150px;
+    border: 2px solid var(--ink);
+    border-radius: 50% 50% 0 0;
+    background-color: rgba(248, 241, 231, .56);
+    background-image:
+        linear-gradient(45deg, rgba(255, 159, 200, .92) 25%, transparent 25%, transparent 75%, rgba(255, 159, 200, .92) 75%),
+        linear-gradient(45deg, rgba(255, 159, 200, .92) 25%, transparent 25%, transparent 75%, rgba(255, 159, 200, .92) 75%);
+    background-position: 0 0, 16px 16px;
+    background-size: 32px 32px;
+    transform: rotate(-3deg);
+}
+
+.oso-desktop::after {
+    left: -45px;
+    bottom: 42px;
+    width: 290px;
+    height: 86px;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    background: rgba(255, 229, 95, .9);
+    transform: rotate(5deg);
+}
+
+.oso-editorial-masthead {
+    position: absolute;
+    top: 4px;
+    left: 38px;
+    height: 36px;
+    z-index: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 13px;
+    color: var(--ink);
+    pointer-events: none;
+}
+
+.oso-masthead-kicker,
+.oso-masthead-note {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.oso-masthead-title {
+    font-family: var(--font-editorial);
+    font-size: 26px;
+    font-style: italic;
+    line-height: 1;
+}
+
+.oso-editorial-seal {
+    position: absolute;
+    left: 306px;
+    top: 50px;
+    width: 86px;
+    height: 86px;
+    z-index: 1;
+    transform: rotate(10deg);
+    filter: drop-shadow(3px 4px 0 rgba(52, 47, 42, .12));
+    pointer-events: none;
+}
+
+.oso-editorial-caption {
+    position: absolute;
+    left: 32px;
+    bottom: 22px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    transform: rotate(4deg);
+    pointer-events: none;
+}
+
+.oso-editorial-caption span {
+    width: max-content;
+    padding: 3px 8px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    background: var(--paper-2);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: .08em;
+}
+
+/* Desktop app cards */
+.oso-desktop-icons {
+    z-index: 2;
+}
+
+.oso-desktop-icon {
+    width: 76px;
+    height: 76px;
+    border: 2px solid var(--ink);
+    border-radius: 13px;
+    background: var(--paper-2);
+    box-shadow: 4px 5px 0 rgba(60, 41, 53, .3);
+    transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+}
+
+.oso-desktop-icon:nth-child(3n + 1) { transform: rotate(-1.5deg); }
+.oso-desktop-icon:nth-child(3n + 2) { transform: rotate(1.2deg); }
+.oso-desktop-icon:nth-child(3n) { transform: rotate(-.4deg); }
+.oso-desktop-icon:nth-child(6n + 1) { background: #fff7da; }
+.oso-desktop-icon:nth-child(6n + 2) { background: #ffd1e3; }
+.oso-desktop-icon:nth-child(6n + 3) { background: #cdeeff; }
+.oso-desktop-icon:nth-child(6n + 4) { background: #ddf59e; }
+.oso-desktop-icon:nth-child(6n + 5) { background: #d8c4f5; }
+.oso-desktop-icon:nth-child(6n) { background: #ffe7a6; }
+
+.oso-desktop-icon:hover {
+    z-index: 40;
+    transform: translateY(-4px) rotate(0);
+    box-shadow: 6px 8px 0 rgba(60, 41, 53, .32);
+    background: #fff9e9;
+}
+
+.oso-desktop-icon.selected {
+    background: var(--sage);
+    box-shadow: 3px 4px 0 var(--ink);
+}
+
+.oso-desktop-icon img {
+    width: 45px;
+    height: 45px;
+    margin-bottom: 1px;
+    filter: none;
+}
+
+img[src*="assets/stickers/"] {
+    image-rendering: auto !important;
+    filter: none !important;
+}
+
+.oso-desktop-icon span,
+.oso-desktop-icon:hover span,
+.oso-desktop-icon.selected span {
+    max-width: 68px;
+    padding: 0;
+    color: var(--ink);
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: .02em;
+    text-shadow: none;
+}
+
+.oso-icon-tooltip {
+    bottom: calc(100% + 10px);
+    padding: 5px 10px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    background: var(--paper-2);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+.oso-icon-tooltip::after {
+    border-top-color: var(--ink);
+}
+
+/* Window chrome: magazine cards rather than OS bevels */
+.win-outset,
+.win-inset {
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+    box-shadow: none;
+}
+
+.oso-window {
+    overflow: hidden;
+    border: 2px solid var(--ink) !important;
+    border-radius: 16px;
+    background: var(--paper);
+    box-shadow: 7px 8px 0 var(--soft-shadow) !important;
+}
+
+.oso-window.maximized {
+    height: calc(100vh - var(--oso-taskbar-height)) !important;
+    border-radius: 0 0 14px 14px;
+}
+
+.oso-window-titlebar {
+    min-height: 32px;
+    height: 32px;
+    padding: 5px 8px;
+    border-bottom: 1.5px solid var(--ink);
+    background: var(--butter);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: .04em;
+}
+
+.oso-window:nth-of-type(4n + 1) .oso-window-titlebar { background: var(--blush); }
+.oso-window:nth-of-type(4n + 2) .oso-window-titlebar { background: var(--butter); }
+.oso-window:nth-of-type(4n + 3) .oso-window-titlebar { background: var(--sky); }
+.oso-window:nth-of-type(4n) .oso-window-titlebar { background: var(--sage); }
+
+.oso-window.inactive .oso-window-titlebar {
+    background: #d8c4f5;
+    color: var(--ink);
+}
+
+.oso-window-title-left::before {
+    content: "{{";
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: -2px;
+}
+
+.oso-window-title-icon {
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(52, 47, 42, .5);
+    border-radius: 4px;
+    background: var(--paper-2);
+    filter: saturate(.58) brightness(1.1);
+}
+
+.win-button {
+    width: 20px;
+    height: 20px;
+    margin-left: 4px;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper-2);
+    color: var(--ink);
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    box-shadow: 1px 1px 0 var(--ink);
+}
+
+.win-button:hover { background: var(--apricot); }
+.oso-btn-minimize:hover { background: var(--sage); }
+.oso-btn-maximize:hover { background: var(--sky); }
+.win-button:active {
+    border: 1px solid var(--ink);
+    padding: 0;
+    transform: translate(1px, 1px);
+    box-shadow: none;
+}
+
+.oso-window-menu {
+    padding: 3px 7px;
+    border-bottom: 1px solid rgba(52, 47, 42, .35);
+    background: var(--paper-deep);
+    font-family: var(--font-mono);
+    font-size: 9px;
+}
+
+.oso-window-menu span {
+    padding: 3px 9px;
+    border-radius: 999px;
+}
+
+.oso-window-menu span:hover { background: var(--sky); }
+
+.oso-window-body,
+.oso-window-body > div {
+    background: var(--paper) !important;
+}
+
+.oso-window-statusbar {
+    min-height: 22px;
+    padding: 3px 7px;
+    border-top: 1px solid rgba(52, 47, 42, .35);
+    background: var(--paper-deep);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: .02em;
+}
+
+.oso-window-statusbar .statusbar-section {
+    border: 0;
+    padding: 0;
+}
+
+/* Taskbar becomes a stationery tray */
+.oso-taskbar {
+    height: var(--oso-taskbar-height);
+    gap: 6px;
+    padding: 5px 8px;
+    border-top: 1.5px solid var(--ink);
+    background-color: #fff6ba;
+    background-image:
+        linear-gradient(45deg, rgba(189,235,98,.55) 25%, transparent 25%, transparent 75%, rgba(189,235,98,.55) 75%),
+        linear-gradient(45deg, rgba(189,235,98,.55) 25%, transparent 25%, transparent 75%, rgba(189,235,98,.55) 75%);
+    background-position: 0 0, 10px 10px;
+    background-size: 20px 20px;
+}
+
+.oso-taskbar-start,
+.oso-taskbar-app,
+.oso-taskbar-tray {
+    height: 32px;
+    border: 1px solid var(--ink) !important;
+    border-radius: 999px;
+    background: var(--paper-2);
+    box-shadow: 2px 2px 0 rgba(52, 47, 42, .2);
+    font-family: var(--font-mono);
+    font-size: 9px;
+}
+
+.oso-taskbar-start {
+    padding: 0 13px 0 8px;
+    background: var(--apricot);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.oso-taskbar-start:active,
+.oso-taskbar-app:active {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+}
+
+.oso-taskbar-start img,
+.oso-taskbar-app img {
+    filter: none;
+}
+
+.oso-taskbar-start img { width: 24px; height: 24px; }
+.oso-taskbar-app img { width: 19px; height: 19px; }
+.oso-start-menu-item img { width: 27px; height: 27px; }
+
+.oso-taskbar-app.active {
+    background: var(--sage);
+    font-weight: bold;
+}
+
+.oso-taskbar-tray {
+    padding: 0 11px;
+    background: var(--sky);
+}
+
+.oso-taskbar-divider { display: none; }
+
+/* Start menu as an index card with tabs */
+.oso-start-menu {
+    bottom: calc(var(--oso-taskbar-height) + 8px);
+    left: 8px;
+    width: 250px;
+    overflow: hidden;
+    border: 1.5px solid var(--ink);
+    border-radius: 16px;
+    background: var(--paper);
+    box-shadow: 7px 8px 0 rgba(60, 41, 53, .34);
+}
+
+.oso-start-menu-sidebar {
+    width: 34px;
+    border-right: 1.5px solid var(--ink);
+    background: var(--aqua);
+}
+
+.oso-start-menu-sidebar span {
+    color: var(--ink);
+    font-family: var(--font-editorial);
+    font-size: 15px;
+    font-style: italic;
+    font-weight: normal;
+    letter-spacing: .02em;
+}
+
+.oso-start-menu-items {
+    margin-left: 34px;
+    padding: 8px;
+}
+
+.oso-start-menu-item {
+    margin-bottom: 3px;
+    padding: 6px 8px;
+    border: 1px solid rgba(60, 41, 53, .28);
+    border-radius: 9px;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 10px;
+}
+
+.oso-start-menu-item:nth-child(4n + 1) { background: rgba(255, 159, 200, .34); }
+.oso-start-menu-item:nth-child(4n + 2) { background: rgba(142, 184, 255, .34); }
+.oso-start-menu-item:nth-child(4n + 3) { background: rgba(255, 229, 95, .38); }
+.oso-start-menu-item:nth-child(4n) { background: rgba(189, 235, 98, .34); }
+
+.oso-start-menu-item:hover {
+    border-color: var(--ink);
+    background: var(--sage);
+    color: var(--ink);
+    transform: translateX(2px);
+}
+
+.oso-start-menu-item img { filter: none; }
+.oso-start-menu-divider { background: var(--ink); border: 0; }
+
+/* Desktop widgets */
+.oso-lofi {
+    top: 58px;
+    right: 18px;
+    width: 232px;
+    overflow: hidden;
+    border: 1.5px solid var(--ink);
+    border-radius: 16px;
+    background: var(--paper);
+    box-shadow: 6px 7px 0 var(--soft-shadow);
+}
+
+.oso-lofi-header {
+    padding: 7px 9px;
+    border-bottom: 1.5px solid var(--ink);
+    background: var(--aqua);
+    color: var(--ink);
+    text-shadow: none;
+}
+
+.lofi-hdr-icon { width: 18px; height: 18px; filter: none; }
+.lofi-hdr-title { text-shadow: none; }
+.lofi-btn-min {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper-2);
+    color: var(--ink);
+}
+
+.lofi-btn-min:hover { background: var(--apricot); color: var(--ink); }
+.oso-lofi-body { padding: 8px; background: var(--paper); }
+.lofi-stations { gap: 5px; }
+.lofi-st-btn {
+    padding: 4px 7px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    background: var(--paper-2);
+    color: var(--ink);
+}
+.lofi-st-btn:nth-child(4n + 1) { background: #ffd1e3; }
+.lofi-st-btn:nth-child(4n + 2) { background: #cdeeff; }
+.lofi-st-btn:nth-child(4n + 3) { background: #ddf59e; }
+.lofi-st-btn:nth-child(4n) { background: #ffe7a6; }
+.lofi-st-btn:hover { background: var(--sky); color: var(--ink); }
+.lofi-st-btn.active { border-color: var(--ink); background: var(--butter); color: var(--ink); }
+.lofi-status {
+    border: 1px dashed var(--ink);
+    border-radius: 7px;
+    background: var(--paper-deep);
+    color: var(--wine) !important;
+}
+.lofi-btn-play,
+.lofi-btn-stop {
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    background: var(--sky);
+    color: var(--ink);
+}
+.lofi-btn-play:hover,
+.lofi-btn-stop:hover,
+.lofi-btn-play.playing { border-color: var(--ink); background: var(--apricot); color: var(--ink); }
+.lofi-vol-label { color: var(--ink); }
+.lofi-vol-bar { border: 1px solid var(--ink); border-radius: 999px; background: var(--paper-deep); overflow: hidden; }
+.lofi-vol-fill { background: var(--sky); }
+.lofi-credit { border-top: 1px dashed rgba(52, 47, 42, .45); color: #766d65; }
+.lofi-credit a { color: var(--wine); }
+
+.oso-desk-clock {
+    top: 292px;
+    right: 32px;
+    padding: 10px 22px;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    background: var(--butter);
+    box-shadow: 4px 5px 0 var(--soft-shadow);
+    transform: rotate(2deg);
+}
+.oso-desk-clock-time { color: var(--ink); font-size: 24px; text-shadow: none; }
+.oso-desk-clock-date { color: var(--wine); text-shadow: none; }
+
+.oso-sticky {
+    right: 24px;
+    bottom: 32px;
+    width: 184px;
+    min-height: 154px;
+    border: 1.5px solid var(--ink);
+    border-radius: 3px 3px 18px 3px;
+    background-color: var(--paper-2);
+    background-image: repeating-linear-gradient(0deg, transparent 0 23px, rgba(133, 91, 91, .16) 23px 24px);
+    box-shadow: 6px 7px 0 var(--soft-shadow);
+    transform: rotate(1.2deg);
+}
+.oso-sticky-header {
+    padding: 6px 9px;
+    border-bottom: 1.5px solid var(--ink);
+    background: var(--blush);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+.oso-sticky-body { color: var(--ink); font-family: var(--font-editorial); line-height: 24px; }
+.oso-sticky-body:empty::before { color: #9b8f84; }
+
+/* Shared buttons and fields inside the apps */
+.oso-window-body button,
+.np-toolbar button,
+.np-menu-file,
+.np-open-cancel,
+.fm-toolbar button,
+.fm-btn,
+.fm-preview-header button,
+.letter-toolbar button,
+.lifelog-toolbar button,
+.wiki-toolbar button,
+.mine-toolbar button,
+#game2048-new {
+    border: 1px solid var(--ink) !important;
+    border-radius: 999px !important;
+    background: var(--paper-2) !important;
+    color: var(--ink) !important;
+    box-shadow: 1px 2px 0 rgba(52, 47, 42, .18);
+}
+
+.oso-window-body button:hover,
+.np-toolbar button:hover,
+.fm-toolbar button:hover,
+.letter-toolbar button:hover,
+.lifelog-toolbar button:hover,
+.wiki-toolbar button:hover,
+.mine-toolbar button:hover,
+#game2048-new:hover {
+    background: var(--butter) !important;
+}
+
+.letter-toolbar button.primary,
+.lifelog-toolbar button.lifelog-btn-mood,
+.wiki-toolbar button.wiki-btn-nebula,
+.chat-send,
+#game2048-new {
+    background: var(--apricot) !important;
+    color: var(--ink) !important;
+}
+
+input,
+textarea,
+.letter-compose-body,
+.letter-reply-body,
+.fm-path,
+.np-title-input,
+.np-textarea {
+    border: 1px solid var(--ink) !important;
+    border-radius: 8px !important;
+    background: var(--paper-2) !important;
+}
+
+/* Chat */
+.chat-messages {
+    padding: 14px !important;
+    gap: 7px !important;
+    background-color: var(--paper) !important;
+    background-image: linear-gradient(rgba(142, 184, 255, .32) 1px, transparent 1px), linear-gradient(90deg, rgba(142, 184, 255, .32) 1px, transparent 1px) !important;
+    background-size: 22px 22px !important;
+}
+.chat-messages::before { display: none; }
+.cb-bubble {
+    border: 1px solid var(--ink);
+    border-radius: 13px !important;
+    color: var(--ink) !important;
+    box-shadow: 3px 4px 0 rgba(52, 47, 42, .13);
+}
+.cb-row.agent .cb-bubble { border-bottom-left-radius: 2px !important; background: var(--butter) !important; }
+.cb-row.user .cb-bubble { border-bottom-right-radius: 2px !important; background: var(--lilac) !important; }
+.chat-welcome { color: var(--ink) !important; font-family: var(--font-editorial); }
+.chat-welcome .we-emoji {
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 16px;
+    display: block;
+    border: 0;
+    background: transparent;
+    filter: none;
+}
+.chat-input-area,
+.chat-attachment-preview {
+    border-top: 1.5px solid var(--ink) !important;
+    background: var(--blush) !important;
+    backdrop-filter: none !important;
+}
+.chat-input { border-radius: 999px !important; }
+.chat-attach { background: var(--butter) !important; }
+.chat-send { border: 1px solid var(--ink) !important; border-radius: 999px !important; }
+.chat-status-bar { border: 1px solid var(--ink) !important; background: var(--paper-2) !important; color: var(--ink) !important; }
+.chat-status-dot { background: #7e9c75 !important; box-shadow: none !important; }
+.chat-status-dot.off { background: #ad8985 !important; }
+.chat-attachment-name,
+.chat-attachment-remove { color: var(--ink) !important; }
+
+/* Letter, notes, files */
+.letter-sidebar {
+    border-right: 1.5px solid var(--ink) !important;
+    background: var(--blush) !important;
+    box-shadow: none !important;
+}
+.letter-sidebar-item { border: 0 !important; border-bottom: 1px dashed rgba(52, 47, 42, .45) !important; color: var(--ink) !important; }
+.letter-sidebar-item:hover,
+.letter-sidebar-item.active { background: var(--butter) !important; color: var(--ink) !important; }
+.letter-sidebar-item:nth-child(2) { background: rgba(142, 184, 255, .36); }
+.letter-sidebar-item:nth-child(3) { background: rgba(255, 229, 95, .4); }
+.letter-sidebar-item:nth-child(4) { background: rgba(189, 235, 98, .36); }
+.letter-toolbar,
+.letter-compose,
+.letter-reply,
+.np-toolbar,
+.np-status-bar,
+.fm-toolbar,
+.fm-status-bar,
+.lifelog-toolbar,
+.wiki-toolbar {
+    border-color: var(--ink) !important;
+    background: var(--paper-deep) !important;
+}
+.letter-main,
+.letter-list,
+.letter-empty { background: var(--paper-2) !important; }
+.letter-list-item { border-bottom: 1px dashed rgba(52, 47, 42, .36) !important; background: var(--paper-2) !important; }
+.letter-list-item:hover { background: var(--sky) !important; color: var(--ink) !important; }
+.letter-list-subject { color: var(--ink) !important; }
+.letter-thread {
+    background-color: var(--paper-2) !important;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(133, 91, 91, .13) 27px, rgba(133, 91, 91, .13) 28px) !important;
+}
+.letter-message { border: 1px solid var(--ink) !important; border-radius: 14px 14px 14px 2px; box-shadow: 4px 5px 0 rgba(52, 47, 42, .1) !important; }
+.letter-message.user { background: rgba(174, 190, 216, .72) !important; }
+.letter-message.ai { background: rgba(233, 229, 142, .72) !important; }
+.letter-message-body { color: var(--ink) !important; }
+.np-toolbar,
+.fm-toolbar { padding: 6px 8px !important; }
+.np-textarea { margin: 6px !important; padding: 12px !important; font-family: var(--font-mono) !important; line-height: 1.65 !important; }
+.np-menu-dropdown,
+.np-open-dialog,
+.fm-preview-box { border: 1.5px solid var(--ink) !important; border-radius: 12px; background: var(--paper) !important; box-shadow: 5px 6px 0 var(--soft-shadow) !important; }
+.np-menu-dropdown div:hover,
+.np-open-item:hover { background: var(--sky) !important; color: var(--ink) !important; }
+.fm-file-list { margin: 6px !important; border: 1px solid var(--ink) !important; border-radius: 10px; background: var(--paper-2) !important; }
+.fm-folder-header { border-color: var(--ink) !important; background: var(--butter) !important; color: var(--ink) !important; }
+.fm-file-row { border-bottom: 1px dashed rgba(52, 47, 42, .25) !important; }
+.fm-file-row:hover { background: var(--sky) !important; }
+
+/* Knowledge and life tools */
+.lifelog-toolbar,
+.wiki-toolbar { padding: 7px 9px !important; gap: 6px !important; }
+.lifelog-toolbar button,
+.wiki-toolbar button { height: 28px !important; }
+.lifelog-toolbar + div,
+.wiki-toolbar + div { background: var(--paper-2) !important; }
+.wiki-content h1,
+.wiki-content h2,
+.lifelog-content h1,
+.lifelog-content h2 { border-color: var(--ink) !important; color: var(--ink) !important; }
+.wiki-content a { color: var(--wine) !important; }
+
+/* Paint, Minesweeper, 2048 */
+.paint-toolbar,
+.paint-toolbar + div > div:last-child {
+    border-color: var(--ink) !important;
+    background: var(--paper-deep) !important;
+}
+.paint-tool-btn { border: 1px solid var(--ink) !important; border-radius: 7px !important; background: var(--paper-2) !important; }
+.paint-tool-btn.active { background: var(--butter) !important; color: var(--ink) !important; }
+.paint-color-box { border-color: var(--ink) !important; border-radius: 50%; }
+#mine-grid { border: 1.5px solid var(--ink); border-radius: 8px; background: var(--ink) !important; overflow: hidden; }
+#game2048-container { font-family: var(--font-mono); }
+.game2048-title { color: var(--ink) !important; font-family: var(--font-editorial); font-style: italic; }
+.game2048-score-box { border: 1px solid var(--ink) !important; border-radius: 10px !important; background: var(--sky) !important; color: var(--ink) !important; }
+.game2048-grid { border: 1.5px solid var(--ink); border-radius: 14px !important; background: var(--paper-deep) !important; }
+.game2048-cell { border: 1px solid rgba(52, 47, 42, .32); border-radius: 10px !important; color: var(--ink) !important; }
+.game2048-overlay { background: rgba(248, 241, 231, .9) !important; }
+.game2048-overlay-text { color: var(--ink) !important; }
+
+/* The two data visualizations keep their original purple identity. */
+#oso-fullscreen-mood,
+#oso-fullscreen-wiki {
+    inset: 6px !important;
+    overflow: hidden;
+    border: 4px solid #63339a;
+    border-radius: 13px;
+    background: #4b246f;
+    box-shadow: 0 0 0 2px #2f153f, 9px 10px 0 rgba(52, 47, 42, .22);
+}
+
+#oso-fullscreen-mood > div:first-child,
+#oso-fullscreen-wiki > div:first-child {
+    height: 30px !important;
+    min-height: 30px;
+    padding: 4px 7px !important;
+    border-bottom: 2px solid #2f153f !important;
+    background: linear-gradient(90deg, #553078, #8451ae) !important;
+    color: #fffaf2 !important;
+    font-family: var(--font-mono);
+    letter-spacing: .05em;
+}
+
+#oso-fullscreen-mood > div:first-child img,
+#oso-fullscreen-wiki > div:first-child img {
+    width: 17px !important;
+    height: 17px !important;
+    filter: none;
+}
+
+#oso-fullscreen-mood > div:first-child div[onclick],
+#oso-fullscreen-wiki > div:first-child div[onclick] {
+    width: 22px !important;
+    height: 20px !important;
+    border: 1px solid #2f153f !important;
+    border-radius: 50%;
+    background: #f8f1e7 !important;
+    color: #342f2a !important;
+    box-shadow: 1px 1px 0 #2f153f;
+}
+
+@keyframes osoWindowOpen {
+    from { transform: translateY(10px) rotate(-.4deg); opacity: 0; }
+    to { transform: translateY(0) rotate(0); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    :root { --oso-taskbar-height: 52px; }
+
+    .oso-desktop {
+        background-image:
+            linear-gradient(90deg, var(--sage) 0 100%),
+            linear-gradient(rgba(255,255,255,.7) 1.5px, transparent 1.5px),
+            linear-gradient(90deg, rgba(255,255,255,.7) 1.5px, transparent 1.5px),
+            radial-gradient(circle at 72% 55%, rgba(255, 249, 233, .78) 0 22%, transparent 22.5%),
+            linear-gradient(#cbdafb, #cbdafb) !important;
+        background-size: 100% 48px, 28px 28px, 28px 28px, auto, auto !important;
+        background-position: 0 0, 0 48px, 0 48px, center, center !important;
+        background-repeat: no-repeat, repeat, repeat, no-repeat, no-repeat !important;
+    }
+
+    .oso-editorial-masthead { left: 14px; top: 6px; gap: 8px; }
+    .oso-masthead-kicker,
+    .oso-masthead-note { display: none; }
+    .oso-masthead-title { font-size: 25px; }
+    .oso-editorial-seal { width: 62px; height: 62px; left: auto; right: 10px; top: 56px; }
+    .oso-editorial-caption { display: none; }
+
+    .oso-desktop-icon {
+        width: 72px;
+        height: 72px;
+        transform: none !important;
+    }
+
+    .oso-lofi {
+        top: 58px;
+        right: 8px;
+        width: 178px;
+    }
+
+    .oso-desk-clock { display: none; }
+    .oso-sticky { right: 10px; bottom: 18px; width: 150px; min-height: 130px; }
+
+    .oso-window,
+    .oso-window.oso-mobile-window,
+    .oso-window.maximized {
+        height: calc(100dvh - var(--oso-taskbar-height)) !important;
+        border-width: 0 0 1.5px 0 !important;
+        border-radius: 0 0 14px 14px !important;
+        box-shadow: none !important;
+    }
+
+    .oso-window-titlebar { min-height: 40px; height: 40px; padding: 6px 8px; }
+    .win-button { width: 25px; height: 25px; }
+
+    .oso-taskbar { padding: 6px; }
+    .oso-taskbar-start,
+    .oso-taskbar-app,
+    .oso-taskbar-tray { height: 39px; }
+    .oso-taskbar-start span,
+    .oso-taskbar-app span { display: none; }
+    .oso-taskbar-start { padding: 0 8px; }
+
+    .oso-start-menu {
+        bottom: calc(var(--oso-taskbar-height) + 6px);
+        width: min(310px, calc(100vw - 12px));
+    }
+    .oso-start-menu-sidebar { width: 34px; }
+    .oso-start-menu-items { margin-left: 34px; }
+
+    .letter-sidebar { width: 105px !important; }
+    .letter-list-preview { display: none; }
+    #game2048-container { width: min(340px, calc(100vw - 28px)) !important; }
+
+    #oso-fullscreen-mood,
+    #oso-fullscreen-wiki {
+        inset: 0 !important;
+        border-width: 3px;
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}

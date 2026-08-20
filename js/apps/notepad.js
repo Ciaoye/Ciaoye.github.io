@@ -34,7 +34,7 @@ var OSO_Notepad = (function() {
         container.style.cssText = 'display:flex;flex-direction:column;height:100%;overflow:hidden;';
 
         container.innerHTML = getHTML();
-        var win = OSO.WM.create('notepad', 'untitled - Notepad', 'assets/icons/image-12.png', container, {
+        var win = OSO.WM.create('notepad', 'untitled - Notepad', 'assets/stickers/notepad.svg', container, {
             width: 520, height: 420, minWidth: 300, minHeight: 200,
             position: options.position || undefined
         });

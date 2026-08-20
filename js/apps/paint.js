@@ -20,7 +20,7 @@ var OSO_Paint = (function() {
         container.style.cssText = 'display:flex;flex-direction:column;height:100%;overflow:hidden;';
 
         container.innerHTML = getPaintHTML();
-        var win = OSO.WM.create('paint', 'untitled - Paint', 'assets/icons/image-4.png', container, {
+        var win = OSO.WM.create('paint', 'untitled - Paint', 'assets/stickers/paint.svg', container, {
             width: 600, height: 460, minWidth: 400, minHeight: 300
         });
 

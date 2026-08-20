@@ -47,7 +47,7 @@ var OSO_Wiki = (function() {
         currentContainer = container;
 
         var desktopW = window.innerWidth;
-        var win = OSO.WM.create('wiki', 'Wikipedia', 'assets/icons/image-9.png', container, {
+        var win = OSO.WM.create('wiki', 'Wikipedia', 'assets/stickers/wiki.svg', container, {
             width: 820, height: 620, minWidth: 520, minHeight: 400,
             position: { x: Math.max(0, (desktopW - 820) / 2), y: 0 }
         });

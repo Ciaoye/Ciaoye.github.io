@@ -21,7 +21,7 @@ var OSO_Lifelog = (function() {
 
         var desktopW = window.innerWidth, dh = window.innerHeight;
         var ww = Math.round(desktopW * 0.8);
-        var win = OSO.WM.create('lifelog', 'Lifelog', 'assets/icons/image-20.png', container, {
+        var win = OSO.WM.create('lifelog', 'Lifelog', 'assets/stickers/lifelog.svg', container, {
             width: ww, height: dh - 40, minWidth: 520, minHeight: 400,
             position: { x: Math.max(0, (desktopW - ww) / 2), y: 0 }
         });

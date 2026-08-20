@@ -406,7 +406,7 @@ OSO.WM = (function() {
             win._el.style.left = '0';
             win._el.style.top = '0';
             win._el.style.width = '100vw';
-            win._el.style.height = 'calc(100vh - 28px)';
+            win._el.style.height = 'calc(100vh - var(--oso-taskbar-height, 44px))';
             win._el.classList.add('maximized');
             win._maximized = true;
         }

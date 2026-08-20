@@ -15,7 +15,7 @@ var OSO_FileManager = (function() {
         container.style.cssText = 'display:flex;flex-direction:column;height:100%;overflow:hidden;';
 
         container.innerHTML = getHTML();
-        var win = OSO.WM.create('filemanager', 'File Manager', 'assets/icons/image-5.png', container, {
+        var win = OSO.WM.create('filemanager', 'File Manager', 'assets/stickers/files.svg', container, {
             width: 620, height: 460, minWidth: 400, minHeight: 300
         });
 

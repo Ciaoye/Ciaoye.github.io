@@ -13,9 +13,9 @@ var OSO_Game2048 = (function() {
         }
 
         var container = document.createElement('div');
-        container.style.cssText = 'display:flex;flex-direction:column;align-items:center;height:100%;overflow:hidden;background:#1a1a2e;';
+        container.style.cssText = 'display:flex;flex-direction:column;align-items:center;height:100%;overflow:hidden;background:#f8f1e7;';
 
-        var win = OSO.WM.create('2048', '2048', 'assets/icons/image-6.png', container, {
+        var win = OSO.WM.create('2048', '2048', 'assets/stickers/2048.svg', container, {
             width: 460, height: 540, minWidth: 380, minHeight: 440, menu: false
         });
 
@@ -276,11 +276,11 @@ var OSO_Game2048 = (function() {
 
     function getTileColor(v) {
         var colors = {
-            0: '#2a2a4a', 2: '#3d3d6e', 4: '#5e2ca5', 8: '#7d5fff',
-            16: '#8a41ff', 32: '#9d81ff', 64: '#b89eff', 128: '#73d4ff',
-            256: '#5de3ff', 512: '#ffb8d9', 1024: '#ff88b7', 2048: '#ff55cc'
+            0: '#f5d8bb', 2: '#fff9e9', 4: '#ffe55f', 8: '#bdeb62',
+            16: '#8eb8ff', 32: '#bd91ec', 64: '#ff9fc8', 128: '#ff8752',
+            256: '#69d8cc', 512: '#f5c544', 1024: '#f07294', 2048: '#b964d8'
         };
-        return colors[v] || '#ffee55';
+        return colors[v] || '#7d4169';
     }
 
     function get2048HTML() {

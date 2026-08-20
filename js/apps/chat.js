@@ -39,7 +39,7 @@ var OSO_Chat = (function() {
         container.style.cssText = 'display:flex;flex-direction:column;height:100%;overflow:hidden;background:linear-gradient(180deg,#fad7ff,#c7b2ff 50%,#73d4ff);position:relative;';
 
         container.innerHTML = getChatHTML();
-        var win = OSO.WM.create('chat', '俏也 Chat', 'assets/icons/image-23.png', container, {
+        var win = OSO.WM.create('chat', '俏也 Chat', 'assets/stickers/chat.svg', container, {
             width: 430, height: 560, minWidth: 340, minHeight: 380, menu: false
         });
 
@@ -762,7 +762,7 @@ var OSO_Chat = (function() {
     }
 
     function getWelcomeHTML() {
-        return '<div class="chat-welcome"><span class="we-emoji">👾</span>Ciao！我是俏也的分身。<br/>你想聊点什么？</div>';
+        return '<div class="chat-welcome"><img class="we-emoji" src="assets/stickers/chat.svg" alt=""/>Ciao！我是俏也的分身。<br/>你想聊点什么？</div>';
     }
 
     return { open: open };
