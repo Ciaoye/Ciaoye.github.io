@@ -1,0 +1,212 @@
+[
+  {
+    "chapter": "employment",
+    "heading": "2. 英国",
+    "name": "Change Please",
+    "caption": "基金会官网使用的咖啡服务照片",
+    "credit": "Change Please Foundation 官网",
+    "source": "https://www.changeplease.org/pages/foundation",
+    "image_url": "https://changeplease.org/cdn/shop/files/CP__8098F.jpg?v=1737560292&width=1000",
+    "file": "case-change.jpg",
+    "dimensions": [
+      1000,
+      667
+    ]
+  },
+  {
+    "chapter": "employment",
+    "heading": "6. 柏林",
+    "name": "Querstadtein",
+    "caption": "官网展示的亲历者导览项目照片",
+    "credit": "Querstadtein 官网",
+    "source": "https://querstadtein.org/en/",
+    "image_url": "https://querstadtein.org/app/uploads/2021/08/00_SamerDieter_04-2016earbeitet-470x310.jpg",
+    "file": "case-quer.jpg",
+    "dimensions": [
+      470,
+      310
+    ]
+  },
+  {
+    "chapter": "employment",
+    "heading": "1. 台湾",
+    "name": "芒草心·街遊",
+    "caption": "街遊官网使用的项目主视觉",
+    "credit": "街遊 Hidden Taipei 官网",
+    "source": "https://www.hiddentaipei.org/",
+    "image_url": "https://static.wixstatic.com/media/f7983b_c1d772c310f9495ea541ff8cef58bd51~mv2.jpg/v1/fill/w_1920,h_1080,al_c/f7983b_c1d772c310f9495ea541ff8cef58bd51~mv2.jpg",
+    "file": "case-hidden.jpg",
+    "dimensions": [
+      1500,
+      844
+    ]
+  },
+  {
+    "chapter": "spaces",
+    "heading": "4.1 跳海",
+    "name": "跳海 Living",
+    "caption": "南头古城项目的多人住宿空间",
+    "credit": "晚点周末原报道（新浪转载）",
+    "source": "https://finance.sina.com.cn/stock/t/2025-09-14/doc-infqnmfe7139818.shtml",
+    "image_url": "https://n.sinaimg.cn/spider20250914/267/w640h427/20250914/b217-4ba9db24875b8c7af8717eff1de2c424.jpg",
+    "file": "case-tiao.jpg",
+    "dimensions": [
+      640,
+      427
+    ]
+  },
+  {
+    "chapter": "spaces",
+    "heading": "5.1",
+    "name": "706 长宁生活实验室",
+    "caption": "上观新闻 2022 年采访中的共居生活；非北京本部",
+    "credit": "上观新闻原报道（人民号存档）",
+    "source": "https://www.peopleapp.com/rmharticle/30027368392",
+    "image_url": "https://rmrbcmsonline.peopleapp.com/rb_recsys/img/2022/0320/ecbec9eaa5eb7e721adc51617c3f159d_690121785990967296.jpeg",
+    "file": "case-706.jpg",
+    "dimensions": [
+      799,
+      600
+    ]
+  },
+  {
+    "chapter": "spaces",
+    "heading": "5.2 上海",
+    "name": "Dweller",
+    "caption": "青年报采访中的共居空间",
+    "credit": "青年报原报道",
+    "source": "https://www.why.com.cn/wx/article/2026/04/27/17772715381108423055.html",
+    "image_url": "http://wx.youthdaily.cn/ueditor/php/upload/image/20260427/1777271733737392.png",
+    "file": "case-dweller.jpg",
+    "dimensions": [
+      640,
+      360
+    ]
+  },
+  {
+    "chapter": "employment",
+    "heading": "3. 伦敦",
+    "name": "Unseen Tours",
+    "caption": "官网介绍的导览员 David",
+    "credit": "Unseen Tours 官网",
+    "source": "https://unseentours.org.uk/",
+    "image_url": "https://unseentours.org.uk/wp-content/uploads/2019/12/David.png",
+    "file": "case-unseen.jpg",
+    "dimensions": [
+      252,
+      556
+    ]
+  },
+  {
+    "chapter": "employment",
+    "heading": "5. 台湾",
+    "name": "重修旧好／人生维修部",
+    "caption": "原报道中的项目现场",
+    "credit": "社企流原报道",
+    "source": "https://www.seinsights.asia/article/3289/3269/6653?page=3",
+    "image_url": "https://storage.googleapis.com/static-seinsights-tw-prod/images/e6bd942a-fe82-4bb1-b44e-b9d713f3b3b6-w800.jpg",
+    "file": "case-repair.jpg",
+    "dimensions": [
+      800,
+      600
+    ]
+  },
+  {
+    "chapter": "employment",
+    "heading": "14. 深圳",
+    "name": "喜憨儿洗车中心",
+    "caption": "央视报道中的洗车工作现场",
+    "credit": "央视网原报道",
+    "source": "https://people.cctv.com/2024/04/21/ARTImTPvZ8KggPQ80wPDJ4nm240421.shtml",
+    "image_url": "https://p2.img.cctvpic.com/photoworkspace/contentimg/2024/04/21/2024042113124638068.jpg",
+    "file": "case-xihan.jpg",
+    "dimensions": [
+      1500,
+      1125
+    ]
+  },
+  {
+    "chapter": "employment",
+    "heading": "18. 无声",
+    "name": "无声咖啡",
+    "caption": "原报道中的咖啡空间",
+    "credit": "广东省残联转载报道",
+    "source": "https://www.gddpf.org.cn/xwzx/mtgz/content/post_1256728.html",
+    "image_url": "https://www.gddpf.org.cn/img/0/733/733419/1256728.png",
+    "file": "case-silent.jpg",
+    "dimensions": [
+      550,
+      366
+    ]
+  },
+  {
+    "chapter": "spaces",
+    "heading": "2.1 长沙",
+    "name": "目田书店／花炮大楼",
+    "caption": "澎湃采访中的书店空间",
+    "credit": "澎湃新闻原报道",
+    "source": "https://m.thepaper.cn/baijiahao_9267051",
+    "image_url": "https://imagepphcloud.thepaper.cn/pph/image/89/756/608.jpg",
+    "file": "case-mutian.jpg",
+    "dimensions": [
+      1080,
+      716
+    ]
+  },
+  {
+    "chapter": "employment",
+    "heading": "10. 英国",
+    "name": "Emmaus",
+    "caption": "官网使用的 St Albans 工作坊照片",
+    "credit": "Emmaus UK 官网",
+    "source": "https://emmaus.org.uk/what-we-do/social-enterprise/",
+    "image_url": "https://emmaus.org.uk/wp-content/uploads/2019/04/emmaus-st-albans-workshop-3-368x346.jpg",
+    "file": "case-emmaus.jpg",
+    "dimensions": [
+      368,
+      346
+    ]
+  },
+  {
+    "chapter": "employment",
+    "heading": "11. 澳大利亚",
+    "name": "Soft Landing",
+    "caption": "官网使用的床垫回收工作照片",
+    "credit": "Soft Landing 官网",
+    "source": "https://softlanding.com.au/",
+    "image_url": "https://softlanding.com.au/wp-content/uploads/2020/09/20200909_WP_FPL_0093_-scaled.jpg",
+    "file": "case-soft.jpg",
+    "dimensions": [
+      1500,
+      1000
+    ]
+  },
+  {
+    "chapter": "employment",
+    "heading": "12. 美国",
+    "name": "Homeless Garden Project",
+    "caption": "官网的农场训练项目照片",
+    "credit": "Homeless Garden Project 官网",
+    "source": "https://homelessgardenproject.org/",
+    "image_url": "https://homelessgardenproject.org/wp-content/uploads/2023/03/JobTrainingProgram_Section2_website.jpg",
+    "file": "case-garden.jpg",
+    "dimensions": [
+      1000,
+      667
+    ]
+  },
+  {
+    "chapter": "employment",
+    "heading": "4. The Big",
+    "name": "Big Issue",
+    "caption": "集团官网使用的团队照片；非街头售卖现场",
+    "credit": "Big Issue 官网；原图署名 Exposure Photo Agency",
+    "source": "https://www.bigissue.com/about-the-big-issue-group/",
+    "image_url": "https://www.bigissue.com/wp-content/uploads/2025/05/Staff_091024_sb133.jpg",
+    "file": "case-bigissue.jpg",
+    "dimensions": [
+      1417,
+      797
+    ]
+  }
+]
